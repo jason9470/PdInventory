@@ -1,0 +1,62 @@
+@model PdInventory.Models.PdCategory
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "新增個資類別" : $"編輯個資類別 {Model.DisplayCode}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" class="col-lg-8">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label asp-for="Code" class="form-label"></label>
+            <input asp-for="Code" class="form-control" placeholder="例：C001" />
+            <span asp-validation-for="Code" class="text-danger"></span>
+            <div class="form-text">系統內部代號（英數字）</div>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="DisplayCode" class="form-label"></label>
+            <input asp-for="DisplayCode" class="form-control" placeholder="例：Ｃ○○一" />
+            <span asp-validation-for="DisplayCode" class="text-danger"></span>
+            <div class="form-text">法務部公告之顯示代號</div>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="GroupName" class="form-label"></label>
+            <input asp-for="GroupName" class="form-control" list="groupOptions" placeholder="例：識別類" />
+            <datalist id="groupOptions">
+                <option>識別類</option>
+                <option>特徵類</option>
+                <option>家庭情形</option>
+                <option>社會情況</option>
+                <option>教育、考選、技術或其他專業</option>
+                <option>受僱情形</option>
+                <option>財務細節</option>
+                <option>商業資訊</option>
+                <option>健康與其他</option>
+                <option>其他各類資訊</option>
+            </datalist>
+        </div>
+        <div class="col-md-12">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="例：辨識個人者。" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="col-md-12">
+            <label asp-for="Example" class="form-label"></label>
+            <textarea asp-for="Example" class="form-control" rows="3"
+                      placeholder="例如：姓名、職稱、住址、電話號碼…"></textarea>
+        </div>
+    </div>
+
+    <div class="my-4">
+        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

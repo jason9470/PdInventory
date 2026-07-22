@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "首頁";
+}
+
+<div class="text-center my-4">
+    <h1 class="display-6">個資盤點管理系統</h1>
+    <p class="text-muted">取代人工維護之「個資清冊.xlsx」，提供盤點表維護與法務部公告代碼管理</p>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">個人資料檔案盤點表</h5>
+                <p class="card-text text-muted">人為產出之個資檔案盤點，含個資生命循環（蒐集、處理、傳輸、保存、處置）。</p>
+                <p class="fs-3 mb-2">@ViewBag.InventoryCount <small class="fs-6 text-muted">筆</small></p>
+                <a class="btn btn-primary" asp-controller="Inventory" asp-action="Index">進入維護</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">系統自動拋轉清單</h5>
+                <p class="card-text text-muted">系統間自動拋入/拋出之個資檔案傳輸紀錄。</p>
+                <p class="fs-3 mb-2">@ViewBag.TransferCount <small class="fs-6 text-muted">筆</small></p>
+                <a class="btn btn-primary" asp-controller="Transfers" asp-action="Index">進入維護</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">資訊系統盤點表</h5>
+                <p class="card-text text-muted">資訊系統、資料庫與檔案伺服器之系統 layout 與備份盤點。</p>
+                <p class="fs-3 mb-2">@ViewBag.SystemCount <small class="fs-6 text-muted">套</small></p>
+                <a class="btn btn-primary" asp-controller="Systems" asp-action="Index">進入維護</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">附表一：法務部公告個人資料類別</h5>
+                <p class="card-text text-muted">盤點表「使用資料(欄位)」之下拉選項維護資料（Ｃ○○一～Ｃ一三四）。</p>
+                <p class="fs-3 mb-2">@ViewBag.CategoryCount <small class="fs-6 text-muted">項</small></p>
+                <a class="btn btn-outline-primary" asp-controller="Categories" asp-action="Index">進入維護</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">附表二：法務部公告特定目的列表</h5>
+                <p class="card-text text-muted">盤點表「特定目的」之下拉選項維護資料（001～182）。</p>
+                <p class="fs-3 mb-2">@ViewBag.PurposeCount <small class="fs-6 text-muted">項</small></p>
+                <a class="btn btn-outline-primary" asp-controller="Purposes" asp-action="Index">進入維護</a>
+            </div>
+        </div>
+    </div>
+</div>

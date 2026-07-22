@@ -1,0 +1,100 @@
+@model PdInventory.Models.TransferRecord
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "新增拋轉紀錄" : $"編輯拋轉紀錄 {Model.SeqNo}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">I. 公司拋轉機制資訊</div>
+        <div class="card-body row g-3">
+            <div class="col-md-2">
+                <label asp-for="SeqNo" class="form-label"></label>
+                <input asp-for="SeqNo" class="form-control" />
+                <span asp-validation-for="SeqNo" class="text-danger"></span>
+            </div>
+            <div class="col-md-2">
+                <label asp-for="TransferType" class="form-label"></label>
+                <select asp-for="TransferType" class="form-select">
+                    <option value="">請選擇</option>
+                    <option>拋入</option>
+                    <option>拋出</option>
+                    <option>拋出/拋入</option>
+                    <option>拋入/拋出</option>
+                </select>
+                <span asp-validation-for="TransferType" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="SystemName" class="form-label"></label>
+                <input asp-for="SystemName" class="form-control" placeholder="例：SW-027 AMS帳戶系統" />
+                <span asp-validation-for="SystemName" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="PathName" class="form-label"></label>
+                <input asp-for="PathName" class="form-control" placeholder="例：sftp://10.231.145.46/amFUT" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">II. 外部單位拋轉機制資訊</div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label asp-for="ExternalUnit" class="form-label"></label>
+                <input asp-for="ExternalUnit" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="InternalUnit" class="form-label"></label>
+                <input asp-for="InternalUnit" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">III. 拋轉資訊</div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label asp-for="ContentDescription" class="form-label"></label>
+                <input asp-for="ContentDescription" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="SpecialData" class="form-label"></label>
+                <input asp-for="SpecialData" class="form-control" placeholder="無則填 N/A" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="SubjectCount" class="form-label"></label>
+                <input asp-for="SubjectCount" class="form-control" placeholder="例：20000、N/A" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="InternationalTransfer" class="form-label"></label>
+                <input asp-for="InternationalTransfer" class="form-control" placeholder="無則填 N/A" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Contract" class="form-label"></label>
+                <input asp-for="Contract" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">IV. 備註</div>
+        <div class="card-body">
+            <textarea asp-for="Remark" class="form-control" rows="3"
+                      placeholder="來源、SFTP 檔案名稱、排程說明等"></textarea>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

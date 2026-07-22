@@ -1,0 +1,62 @@
+@model List<PdInventory.Models.Purpose>
+@{
+    ViewData["Title"] = "附表二：法務部公告特定目的列表";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>附表二：法務部公告特定目的列表 <small class="text-muted fs-6">(共 @Model.Count 項)</small></h2>
+    <a class="btn btn-primary" asp-action="Create">＋ 新增特定目的</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="text" name="q" value="@ViewBag.Query" class="form-control"
+               placeholder="搜尋代號/名稱" style="min-width: 300px" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">搜尋</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">清除</a>
+    </div>
+</form>
+
+<div class="table-responsive col-lg-10">
+    <table class="table table-striped table-hover table-sm align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th style="width: 90px">代號</th>
+                <th>特定目的名稱</th>
+                <th style="width: 100px">使用次數</th>
+                <th style="width: 140px">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td><code>@p.Code</code></td>
+                    <td>@p.Name</td>
+                    <td>
+                        @if (p.InventoryItems.Count > 0)
+                        {
+                            <span class="badge bg-primary">@p.InventoryItems.Count</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">0</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@p.Id">編輯</a>
+                        <form method="post" asp-action="Delete" asp-route-id="@p.Id" class="d-inline"
+                              onsubmit="return confirm('確定刪除特定目的「@p.Code @p.Name」？');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    disabled="@(p.InventoryItems.Count > 0)"
+                                    title="@(p.InventoryItems.Count > 0 ? "仍被盤點項目使用，無法刪除" : "")">刪除</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

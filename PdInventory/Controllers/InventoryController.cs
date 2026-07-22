@@ -1,0 +1,125 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PdInventory.Data;
+using PdInventory.Models;
+
+namespace PdInventory.Controllers;
+
+/// <summary>Sheet1：個人資料檔案盤點表</summary>
+public class InventoryController : Controller
+{
+    private readonly AppDbContext _db;
+    public InventoryController(AppDbContext db) => _db = db;
+
+    public async Task<IActionResult> Index(string? q)
+    {
+        var query = _db.InventoryItems
+            .Include(i => i.Categories)
+            .Include(i => i.Purposes)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(i => i.DocumentName.Contains(q)
+                                  || i.SystemName.Contains(q)
+                                  || i.SeqNo.Contains(q)
+                                  || i.Remark.Contains(q));
+
+        ViewBag.Query = q;
+        return View(await query.OrderBy(i => i.SeqNo).ToListAsync());
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var item = await _db.InventoryItems
+            .Include(i => i.Categories)
+            .Include(i => i.Purposes)
+            .FirstOrDefaultAsync(i => i.Id == id);
+        if (item is null) return NotFound();
+        return View(item);
+    }
+
+    public async Task<IActionResult> Create()
+    {
+        await LoadLookupsAsync();
+        return View("Form", new InventoryItem());
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(InventoryItem item, int[] categoryIds, int[] purposeIds)
+    {
+        if (!ModelState.IsValid)
+        {
+            await LoadLookupsAsync(categoryIds, purposeIds);
+            return View("Form", item);
+        }
+
+        item.Categories = await _db.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
+        item.Purposes = await _db.Purposes.Where(p => purposeIds.Contains(p.Id)).ToListAsync();
+        _db.InventoryItems.Add(item);
+        await _db.SaveChangesAsync();
+        TempData["Message"] = $"已新增盤點項目「{item.SeqNo} {item.DocumentName}」";
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var item = await _db.InventoryItems
+            .Include(i => i.Categories)
+            .Include(i => i.Purposes)
+            .FirstOrDefaultAsync(i => i.Id == id);
+        if (item is null) return NotFound();
+
+        await LoadLookupsAsync(
+            item.Categories.Select(c => c.Id).ToArray(),
+            item.Purposes.Select(p => p.Id).ToArray());
+        return View("Form", item);
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, InventoryItem item, int[] categoryIds, int[] purposeIds)
+    {
+        if (id != item.Id) return BadRequest();
+
+        var existing = await _db.InventoryItems
+            .Include(i => i.Categories)
+            .Include(i => i.Purposes)
+            .FirstOrDefaultAsync(i => i.Id == id);
+        if (existing is null) return NotFound();
+
+        if (!ModelState.IsValid)
+        {
+            await LoadLookupsAsync(categoryIds, purposeIds);
+            return View("Form", item);
+        }
+
+        _db.Entry(existing).CurrentValues.SetValues(item);
+        existing.Categories = await _db.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
+        existing.Purposes = await _db.Purposes.Where(p => purposeIds.Contains(p.Id)).ToListAsync();
+        await _db.SaveChangesAsync();
+        TempData["Message"] = $"已更新盤點項目「{item.SeqNo} {item.DocumentName}」";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var item = await _db.InventoryItems.FindAsync(id);
+        if (item is not null)
+        {
+            _db.InventoryItems.Remove(item);
+            await _db.SaveChangesAsync();
+            TempData["Message"] = $"已刪除盤點項目「{item.SeqNo} {item.DocumentName}」";
+        }
+        return RedirectToAction(nameof(Index));
+    }
+
+    private async Task LoadLookupsAsync(int[]? selectedCategoryIds = null, int[]? selectedPurposeIds = null)
+    {
+        ViewBag.AllCategories = await _db.Categories
+            .OrderBy(c => c.Code).ToListAsync();
+        ViewBag.AllPurposes = await _db.Purposes
+            .OrderBy(p => p.Code).ToListAsync();
+        ViewBag.SelectedCategoryIds = selectedCategoryIds ?? Array.Empty<int>();
+        ViewBag.SelectedPurposeIds = selectedPurposeIds ?? Array.Empty<int>();
+    }
+}

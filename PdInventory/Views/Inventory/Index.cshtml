@@ -1,0 +1,83 @@
+@model List<PdInventory.Models.InventoryItem>
+@{
+    ViewData["Title"] = "個人資料檔案盤點表";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>個人資料檔案盤點表 <small class="text-muted fs-6">(Sheet1，共 @Model.Count 筆)</small></h2>
+    <a class="btn btn-primary" asp-action="Create">＋ 新增盤點項目</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="text" name="q" value="@ViewBag.Query" class="form-control"
+               placeholder="搜尋編號/文件名稱/系統/備註" style="min-width: 320px" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">搜尋</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">清除</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-sm align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>編號</th>
+                <th>含個人資料之文件/檔案/表單</th>
+                <th>使用資料(欄位)</th>
+                <th>特定目的</th>
+                <th>當事人類別</th>
+                <th>特種個資</th>
+                <th>使用之資訊系統</th>
+                <th>保留期限(電子)</th>
+                <th>處置方式</th>
+                <th style="min-width: 160px">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.SeqNo</td>
+                    <td>@item.DocumentName</td>
+                    <td>
+                        @foreach (var c in item.Categories.OrderBy(c => c.Code))
+                        {
+                            <span class="badge bg-info text-dark" title="@c.Name">@c.DisplayCode</span>
+                        }
+                    </td>
+                    <td>
+                        @foreach (var p in item.Purposes.OrderBy(p => p.Code))
+                        {
+                            <span class="badge bg-secondary" title="@p.Name">@p.Code</span>
+                        }
+                    </td>
+                    <td>@item.SubjectType</td>
+                    <td>
+                        @if (item.HasSpecialData)
+                        {
+                            <span class="badge bg-danger">Y</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">N</span>
+                        }
+                    </td>
+                    <td>@item.SystemName</td>
+                    <td>@item.RetentionDigital</td>
+                    <td>@item.Disposal</td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-info" asp-action="Details" asp-route-id="@item.Id">檢視</a>
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">編輯</a>
+                        <form method="post" asp-action="Delete" asp-route-id="@item.Id" class="d-inline"
+                              onsubmit="return confirm('確定刪除盤點項目「@item.SeqNo @item.DocumentName」？');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,71 @@
+@model PdInventory.Models.InfoSystem
+@{
+    ViewData["Title"] = $"系統 {Model.SeqNo}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>系統：@Model.SeqNo @Model.SystemName</h2>
+    <div>
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">編輯</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">回列表</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">I. 系統基本資訊</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SystemName)</dt>
+            <dd class="col-sm-9">@Model.SystemName</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Description)</dt>
+            <dd class="col-sm-9" style="white-space: pre-wrap">@Model.Description</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.DbName)</dt>
+            <dd class="col-sm-9" style="white-space: pre-wrap">@Model.DbName</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">II. 備份</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.BackupLocation)</dt>
+            <dd class="col-sm-9" style="white-space: pre-wrap">@Model.BackupLocation</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.BackupCycle)</dt>
+            <dd class="col-sm-9">@Model.BackupCycle</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">III. 外部單位存取權限盤點</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ExternalUnitName)</dt>
+            <dd class="col-sm-9">@Model.ExternalUnitName</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.HasLog)</dt>
+            <dd class="col-sm-9">@Model.HasLog</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AccessCreate)</dt>
+            <dd class="col-sm-9">@Model.AccessCreate</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AccessDelete)</dt>
+            <dd class="col-sm-9">@Model.AccessDelete</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AccessCopy)</dt>
+            <dd class="col-sm-9">@Model.AccessCopy</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.FileDescription)</dt>
+            <dd class="col-sm-9">@Model.FileDescription</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SpecialData)</dt>
+            <dd class="col-sm-9">@Model.SpecialData</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SubjectCount)</dt>
+            <dd class="col-sm-9">@Model.SubjectCount</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RetentionPeriod)</dt>
+            <dd class="col-sm-9">@Model.RetentionPeriod</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">IV. 備註</div>
+    <div class="card-body">
+        <p class="mb-0">@Model.Remark</p>
+    </div>
+</div>

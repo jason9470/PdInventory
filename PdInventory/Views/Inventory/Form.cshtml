@@ -1,0 +1,230 @@
+@model PdInventory.Models.InventoryItem
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "新增盤點項目" : $"編輯盤點項目 {Model.SeqNo}";
+    var allCategories = (List<PdInventory.Models.PdCategory>)ViewBag.AllCategories;
+    var allPurposes = (List<PdInventory.Models.Purpose>)ViewBag.AllPurposes;
+    var selectedCategoryIds = (int[])ViewBag.SelectedCategoryIds;
+    var selectedPurposeIds = (int[])ViewBag.SelectedPurposeIds;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">Ⅰ. 盤點基本資訊</div>
+        <div class="card-body row g-3">
+            <div class="col-md-2">
+                <label asp-for="SeqNo" class="form-label"></label>
+                <input asp-for="SeqNo" class="form-control" />
+                <span asp-validation-for="SeqNo" class="text-danger"></span>
+            </div>
+            <div class="col-md-10">
+                <label asp-for="DocumentName" class="form-label"></label>
+                <input asp-for="DocumentName" class="form-control" />
+                <span asp-validation-for="DocumentName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">II. 個人資料檔案內容元素</div>
+        <div class="card-body row g-3">
+            <div class="col-md-3">
+                <label asp-for="SubjectCount" class="form-label"></label>
+                <input asp-for="SubjectCount" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="SubjectType" class="form-label"></label>
+                <input asp-for="SubjectType" class="form-control" placeholder="例：客戶、員工" />
+            </div>
+            <div class="col-md-3">
+                <div class="form-check mt-4 pt-2">
+                    <input asp-for="HasSpecialData" class="form-check-input" />
+                    <label asp-for="HasSpecialData" class="form-check-label"></label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-check mt-4 pt-2">
+                    <input asp-for="MinFieldCompliant" class="form-check-input" />
+                    <label asp-for="MinFieldCompliant" class="form-check-label"></label>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <label asp-for="SpecialDataLegalBasis" class="form-label"></label>
+                <input asp-for="SpecialDataLegalBasis" class="form-control" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-bold">使用資料(欄位) — 附表一個人資料類別</label>
+                <input type="text" class="form-control form-control-sm mb-1" placeholder="輸入關鍵字篩選…"
+                       oninput="filterChecks(this, 'categoryList')" />
+                <div id="categoryList" class="border rounded p-2" style="max-height: 280px; overflow-y: auto;">
+                    @foreach (var group in allCategories.GroupBy(c => c.GroupName))
+                    {
+                        <div class="fw-bold text-primary small mt-1 filter-group">@group.Key</div>
+                        @foreach (var c in group)
+                        {
+                            <div class="form-check filter-item" data-text="@c.Code @c.DisplayCode @c.Name">
+                                <input class="form-check-input" type="checkbox" name="categoryIds" value="@c.Id"
+                                       id="cat-@c.Id" checked="@selectedCategoryIds.Contains(c.Id)" />
+                                <label class="form-check-label" for="cat-@c.Id" title="@c.Example">
+                                    @c.DisplayCode @c.Name
+                                </label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">特定目的 — 附表二特定目的列表</label>
+                <input type="text" class="form-control form-control-sm mb-1" placeholder="輸入關鍵字篩選…"
+                       oninput="filterChecks(this, 'purposeList')" />
+                <div id="purposeList" class="border rounded p-2" style="max-height: 280px; overflow-y: auto;">
+                    @foreach (var p in allPurposes)
+                    {
+                        <div class="form-check filter-item" data-text="@p.Code @p.Name">
+                            <input class="form-check-input" type="checkbox" name="purposeIds" value="@p.Id"
+                                   id="pur-@p.Id" checked="@selectedPurposeIds.Contains(p.Id)" />
+                            <label class="form-check-label" for="pur-@p.Id">@p.Code @p.Name</label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="SystemName" class="form-label"></label>
+                <input asp-for="SystemName" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="SourceName" class="form-label"></label>
+                <input asp-for="SourceName" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="CompanyRole" class="form-label"></label>
+                <input asp-for="CompanyRole" class="form-control" placeholder="例：資料控制者" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">III. 個人資料生命循環 — 蒐集</div>
+        <div class="card-body row g-3">
+            <div class="col-md-4">
+                <label asp-for="CollectProcedure" class="form-label"></label>
+                <textarea asp-for="CollectProcedure" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="CollectStatement" class="form-label"></label>
+                <textarea asp-for="CollectStatement" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="CollectConsent" class="form-label"></label>
+                <textarea asp-for="CollectConsent" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">III. 個人資料生命循環 — 處理</div>
+        <div class="card-body row g-3">
+            <div class="col-md-4">
+                <label asp-for="ProcessProcedure" class="form-label"></label>
+                <textarea asp-for="ProcessProcedure" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-2">
+                <label asp-for="ProcessDept" class="form-label"></label>
+                <input asp-for="ProcessDept" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="ProcessStatement" class="form-label"></label>
+                <textarea asp-for="ProcessStatement" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="ProcessConsent" class="form-label"></label>
+                <textarea asp-for="ProcessConsent" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">III. 個人資料生命循環 — 傳輸</div>
+        <div class="card-body row g-3">
+            <div class="col-md-3">
+                <label asp-for="TransferTarget" class="form-label"></label>
+                <input asp-for="TransferTarget" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="TransferContract" class="form-label"></label>
+                <input asp-for="TransferContract" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="TransferMethod" class="form-label"></label>
+                <input asp-for="TransferMethod" class="form-control" placeholder="例：SFTP加密檔案" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="TransferCountry" class="form-label"></label>
+                <input asp-for="TransferCountry" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">III. 個人資料生命循環 — 保存 / 處置</div>
+        <div class="card-body row g-3">
+            <div class="col-md-3">
+                <label asp-for="RetentionPaper" class="form-label"></label>
+                <input asp-for="RetentionPaper" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="RetentionDigital" class="form-label"></label>
+                <input asp-for="RetentionDigital" class="form-control" placeholder="例：6年、10天" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Disposal" class="form-label"></label>
+                <input asp-for="Disposal" class="form-control" placeholder="例：資料抹除、永久保存" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="LocationPaper" class="form-label"></label>
+                <textarea asp-for="LocationPaper" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="LocationDigital" class="form-label"></label>
+                <textarea asp-for="LocationDigital" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">IⅤ. 備註</div>
+        <div class="card-body">
+            <label asp-for="Remark" class="form-label"></label>
+            <textarea asp-for="Remark" class="form-control" rows="2"
+                      placeholder="個資使用項目明細，例：客戶帳號、客戶統一編號、客戶姓名"></textarea>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function filterChecks(input, listId) {
+            const keyword = input.value.trim().toLowerCase();
+            const list = document.getElementById(listId);
+            list.querySelectorAll('.filter-item').forEach(el => {
+                el.style.display = !keyword || el.dataset.text.toLowerCase().includes(keyword) ? '' : 'none';
+            });
+            list.querySelectorAll('.filter-group').forEach(el => {
+                el.style.display = keyword ? 'none' : '';
+            });
+        }
+    </script>
+}
