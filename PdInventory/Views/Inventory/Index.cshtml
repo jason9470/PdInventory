@@ -1,10 +1,10 @@
 @model List<PdInventory.Models.InventoryItem>
 @{
-    ViewData["Title"] = "個人資料檔案盤點表";
+    ViewData["Title"] = "個人資料檔案盤點表-人為產出";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>個人資料檔案盤點表 <small class="text-muted fs-6">(Sheet1，共 @Model.Count 筆)</small></h2>
+    <h2>個人資料檔案盤點表-人為產出 <small class="text-muted fs-6">(共 @Model.Count 筆)</small></h2>
     <a class="btn btn-primary" asp-action="Create">＋ 新增盤點項目</a>
 </div>
 
@@ -29,6 +29,7 @@
                 <th>特定目的</th>
                 <th>當事人類別</th>
                 <th>特種個資</th>
+                <th>系統代碼</th>
                 <th>使用之資訊系統</th>
                 <th>保留期限(電子)</th>
                 <th>處置方式</th>
@@ -64,6 +65,7 @@
                             <span class="badge bg-success">N</span>
                         }
                     </td>
+                    <td>@item.SystemCode</td>
                     <td>@item.SystemName</td>
                     <td>@item.RetentionDigital</td>
                     <td>@item.Disposal</td>

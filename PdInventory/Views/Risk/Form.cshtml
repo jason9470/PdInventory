@@ -1,0 +1,193 @@
+@model PdInventory.Models.InventoryItem
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate
+        ? "新增風險自評"
+        : $"風險自評 {Model.SystemCode} {Model.DocumentName}";
+    var impactLevels = (List<string>)ViewBag.ImpactLevels;
+    var likelihoodLevels = (List<string>)ViewBag.LikelihoodLevels;
+    var effectivenessLevels = (List<string>)ViewBag.EffectivenessLevels;
+    var categoryNames = (List<string>)ViewBag.CategoryNames;
+    var riskCategoryOptions = (IEnumerable<dynamic>)ViewBag.RiskCategoryOptions;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-action="@(isCreate ? "Create" : "Edit")" asp-route-id="@Model.Id">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">盤點基本資訊（來自個人資料檔案盤點表）</div>
+        <div class="card-body row g-3">
+            <div class="col-md-2">
+                <label asp-for="SeqNo" class="form-label">編號</label>
+                <input asp-for="SeqNo" class="form-control" readonly="@(!isCreate)" />
+                <span asp-validation-for="SeqNo" class="text-danger"></span>
+            </div>
+            <div class="col-md-2">
+                <label asp-for="SystemCode" class="form-label">資產編號</label>
+                <input asp-for="SystemCode" class="form-control" readonly="@(!isCreate)" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="SystemName" class="form-label">資產名稱</label>
+                <input asp-for="SystemName" class="form-control" readonly="@(!isCreate)" />
+            </div>
+            <div class="col-md-5">
+                <label asp-for="DocumentName" class="form-label">個資文件/檔案名稱</label>
+                <input asp-for="DocumentName" class="form-control" readonly="@(!isCreate)" />
+                <span asp-validation-for="DocumentName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold bg-primary text-white">潛在風險事件項目</div>
+        <div class="card-body row g-3">
+            <div class="col-md-3">
+                <label asp-for="RiskDataSeqNo" class="form-label">資料序號</label>
+                <input asp-for="RiskDataSeqNo" class="form-control" placeholder="例：SW-021-001" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="RiskCategoryCode" class="form-label">風險分類編號</label>
+                <select asp-for="RiskCategoryCode" class="form-select" id="riskCategoryCode">
+                    <option value="">-- 請選擇 --</option>
+                    @foreach (var opt in riskCategoryOptions)
+                    {
+                        <option value="@opt.Code" data-name="@opt.CategoryName">@opt.Code（@opt.CategoryName）</option>
+                    }
+                </select>
+                <div class="form-text">來源：3-1 風險分類編號維護檔</div>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="RiskCategoryName" class="form-label">風險描述分類</label>
+                <select asp-for="RiskCategoryName" class="form-select" id="riskCategoryName">
+                    <option value="">-- 請選擇 --</option>
+                    @foreach (var c in categoryNames)
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </select>
+            </div>
+            <div class="col-12">
+                <label asp-for="RiskEvent" class="form-label">潛在風險事件</label>
+                <textarea asp-for="RiskEvent" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold bg-primary text-white">風險評估</div>
+        <div class="card-body row g-3">
+            <div class="col-md-4">
+                <label asp-for="RiskImpactLevel" class="form-label">影響程度評估</label>
+                <select asp-for="RiskImpactLevel" class="form-select risk-level">
+                    <option value="">-- 請選擇 --</option>
+                    @foreach (var l in impactLevels)
+                    {
+                        <option value="@l">@l</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="RiskLikelihoodLevel" class="form-label">發生可能性評估</label>
+                <select asp-for="RiskLikelihoodLevel" class="form-select risk-level">
+                    <option value="">-- 請選擇 --</option>
+                    @foreach (var l in likelihoodLevels)
+                    {
+                        <option value="@l">@l</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="RiskEffectivenessLevel" class="form-label">控制有效性等級</label>
+                <select asp-for="RiskEffectivenessLevel" class="form-select risk-level">
+                    <option value="">-- 請選擇 --</option>
+                    @foreach (var l in effectivenessLevels)
+                    {
+                        <option value="@l">@l</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-8">
+                <label asp-for="RiskRelatedRegulation" class="form-label">相關規範(程序規章)</label>
+                <input asp-for="RiskRelatedRegulation" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">風險值（影響 × 可能性 × 有效性，自動計算）</label>
+                <div class="input-group">
+                    <input id="riskValueDisplay" class="form-control fw-bold" value="@Model.RiskValue" readonly />
+                    <input type="hidden" asp-for="RiskValue" id="riskValueHidden" />
+                </div>
+            </div>
+            <div class="col-12">
+                <label asp-for="RiskControlDescription" class="form-label">現有控制點說明</label>
+                <textarea asp-for="RiskControlDescription" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">改善與確認</div>
+        <div class="card-body row g-3">
+            <div class="col-12">
+                <label asp-for="RiskImprovementPlan" class="form-label">改善措施或方案</label>
+                <textarea asp-for="RiskImprovementPlan" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-12">
+                <label asp-for="RiskUnitConfirm" class="form-label">風險管理單位確認說明</label>
+                <textarea asp-for="RiskUnitConfirm" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-12">
+                <label asp-for="RiskRemark" class="form-label">備註</label>
+                <textarea asp-for="RiskRemark" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <button type="submit" class="btn btn-primary">儲存</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            function leading(value) {
+                var m = (value || "").trim().match(/^(\d)/);
+                return m ? parseInt(m[1], 10) : 0;
+            }
+            function recalc() {
+                var levels = document.querySelectorAll(".risk-level");
+                var product = 1, hasAll = true;
+                levels.forEach(function (el) {
+                    var n = leading(el.value);
+                    if (n === 0) { hasAll = false; }
+                    product *= n;
+                });
+                var value = hasAll ? String(product) : "";
+                document.getElementById("riskValueDisplay").value = value;
+                document.getElementById("riskValueHidden").value = value;
+            }
+            document.querySelectorAll(".risk-level").forEach(function (el) {
+                el.addEventListener("change", recalc);
+            });
+            recalc();
+
+            var codeSel = document.getElementById("riskCategoryCode");
+            var nameSel = document.getElementById("riskCategoryName");
+            if (codeSel && nameSel) {
+                codeSel.addEventListener("change", function () {
+                    var opt = codeSel.options[codeSel.selectedIndex];
+                    var name = opt ? opt.getAttribute("data-name") : "";
+                    if (name) {
+                        var exists = Array.prototype.some.call(nameSel.options, function (o) { return o.value === name; });
+                        if (exists) { nameSel.value = name; }
+                    }
+                });
+            }
+        })();
+    </script>
+}

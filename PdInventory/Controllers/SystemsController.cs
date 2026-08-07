@@ -56,7 +56,11 @@ public class SystemsController : Controller
     {
         if (id != system.Id) return BadRequest();
         if (!ModelState.IsValid) return View("Form", system);
-        _db.Update(system);
+
+        var existing = await _db.InfoSystems.FindAsync(id);
+        if (existing is null) return NotFound();
+
+        ApplySystemFields(existing, system);
         await _db.SaveChangesAsync();
         TempData["Message"] = $"已更新系統「{system.SeqNo} {system.SystemName}」";
         return RedirectToAction(nameof(Index));
@@ -73,5 +77,30 @@ public class SystemsController : Controller
             TempData["Message"] = $"已刪除系統「{system.SeqNo} {system.SystemName}」";
         }
         return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>只複製系統基本欄位與 Sheet3 欄位，保留既有 SW 與 DA 資料。</summary>
+    private static void ApplySystemFields(InfoSystem t, InfoSystem s)
+    {
+        t.SeqNo = s.SeqNo;
+        t.SystemCode = s.SystemCode;
+        t.SystemName = s.SystemName;
+        t.Description = s.Description;
+        t.DbName = s.DbName;
+
+        t.BackupLocation = s.BackupLocation;
+        t.BackupCycle = s.BackupCycle;
+
+        t.ExternalUnitName = s.ExternalUnitName;
+        t.HasLog = s.HasLog;
+        t.AccessCreate = s.AccessCreate;
+        t.AccessDelete = s.AccessDelete;
+        t.AccessCopy = s.AccessCopy;
+        t.FileDescription = s.FileDescription;
+        t.SpecialData = s.SpecialData;
+        t.SubjectCount = s.SubjectCount;
+        t.RetentionPeriod = s.RetentionPeriod;
+
+        t.Remark = s.Remark;
     }
 }

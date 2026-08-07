@@ -4,7 +4,7 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>系統：@Model.SeqNo @Model.SystemName</h2>
+    <h2>系統：@Model.SeqNo @Model.SystemCode @Model.SystemName</h2>
     <div>
         <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">編輯</a>
         <a class="btn btn-outline-secondary" asp-action="Index">回列表</a>
@@ -12,9 +12,110 @@
 </div>
 
 <div class="card mb-3">
+    <div class="card-header fw-bold bg-primary text-white">資訊資產清單－軟體(SW)</div>
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwStatus)</dt><dd class="col-sm-7 mb-0">@Model.SwStatus</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwAssetType)</dt><dd class="col-sm-7 mb-0">@Model.SwAssetType</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwSystemCategory)</dt><dd class="col-sm-7 mb-0">@Model.SwSystemCategory</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwAdIntegration)</dt><dd class="col-sm-7 mb-0">@Model.SwAdIntegration</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwOsVersion)</dt><dd class="col-sm-7 mb-0">@Model.SwOsVersion</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwDbToolVersion)</dt><dd class="col-sm-7 mb-0">@Model.SwDbToolVersion</dd></dl></div>
+            <div class="col-12"><dl class="row mb-0"><dt class="col-sm-2 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwThirdPartyComponents)</dt><dd class="col-sm-10 mb-0" style="white-space: pre-wrap">@Model.SwThirdPartyComponents</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwUserAccountGrant)</dt><dd class="col-sm-7 mb-0">@Model.SwUserAccountGrant</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwProvidesAccountReport)</dt><dd class="col-sm-7 mb-0">@Model.SwProvidesAccountReport</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRiskOwner)</dt><dd class="col-sm-7 mb-0">@Model.SwRiskOwner</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwLocation)</dt><dd class="col-sm-7 mb-0">@Model.SwLocation</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwOwnerUnit)</dt><dd class="col-sm-7 mb-0">@Model.SwOwnerUnit</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwCustodianUnit)</dt><dd class="col-sm-7 mb-0">@Model.SwCustodianUnit</dd></dl></div>
+            <div class="col-12"><dl class="row mb-0"><dt class="col-sm-2 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwUserUnit)</dt><dd class="col-sm-10 mb-0">@Model.SwUserUnit</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwConfidentiality)</dt><dd class="col-sm-7 mb-0">@Model.SwConfidentiality</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwIntegrity)</dt><dd class="col-sm-7 mb-0">@Model.SwIntegrity</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwAvailability)</dt><dd class="col-sm-7 mb-0">@Model.SwAvailability</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwAssetValue)</dt><dd class="col-sm-7 mb-0">@Model.SwAssetValue</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwBusinessContact)</dt><dd class="col-sm-7 mb-0">@Model.SwBusinessContact</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwAppManager)</dt><dd class="col-sm-7 mb-0">@Model.SwAppManager</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwAppMaintainer)</dt><dd class="col-sm-7 mb-0">@Model.SwAppMaintainer</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwAppMaintainerDeputy)</dt><dd class="col-sm-7 mb-0">@Model.SwAppMaintainerDeputy</dd></dl></div>
+            <div class="col-12"><dl class="row mb-0"><dt class="col-sm-2 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwOperator)</dt><dd class="col-sm-10 mb-0">@Model.SwOperator</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwDevMode)</dt><dd class="col-sm-7 mb-0">@Model.SwDevMode</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwMaintMode)</dt><dd class="col-sm-7 mb-0">@Model.SwMaintMode</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwVendor)</dt><dd class="col-sm-7 mb-0">@Model.SwVendor</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwLanguage)</dt><dd class="col-sm-7 mb-0">@Model.SwLanguage</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwVersionControl)</dt><dd class="col-sm-7 mb-0">@Model.SwVersionControl</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwApRepoPath)</dt><dd class="col-sm-7 mb-0">@Model.SwApRepoPath</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwDeployMethod)</dt><dd class="col-sm-7 mb-0">@Model.SwDeployMethod</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwOpRepoPath)</dt><dd class="col-sm-7 mb-0">@Model.SwOpRepoPath</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwCodeAccess)</dt><dd class="col-sm-7 mb-0">@Model.SwCodeAccess</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwDeveloper)</dt><dd class="col-sm-7 mb-0">@Model.SwDeveloper</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwDeployer)</dt><dd class="col-sm-7 mb-0">@Model.SwDeployer</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRpo)</dt><dd class="col-sm-7 mb-0">@Model.SwRpo</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwLocalBackup)</dt><dd class="col-sm-7 mb-0">@Model.SwLocalBackup</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwLocalBackupType)</dt><dd class="col-sm-7 mb-0">@Model.SwLocalBackupType</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwLocalBackupFreq)</dt><dd class="col-sm-7 mb-0">@Model.SwLocalBackupFreq</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRemoteBackup)</dt><dd class="col-sm-7 mb-0">@Model.SwRemoteBackup</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRemoteBackupType)</dt><dd class="col-sm-7 mb-0">@Model.SwRemoteBackupType</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRemoteBackupFreq)</dt><dd class="col-sm-7 mb-0">@Model.SwRemoteBackupFreq</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwLocalHa)</dt><dd class="col-sm-7 mb-0">@Model.SwLocalHa</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwLocalHaArch)</dt><dd class="col-sm-7 mb-0">@Model.SwLocalHaArch</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRemoteHa)</dt><dd class="col-sm-7 mb-0">@Model.SwRemoteHa</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRemoteHaArch)</dt><dd class="col-sm-7 mb-0">@Model.SwRemoteHaArch</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRto)</dt><dd class="col-sm-7 mb-0">@Model.SwRto</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwHasRecoveryPlan)</dt><dd class="col-sm-7 mb-0">@Model.SwHasRecoveryPlan</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwHasDrDrill)</dt><dd class="col-sm-7 mb-0">@Model.SwHasDrDrill</dd></dl></div>
+            <div class="col-12"><dl class="row mb-0"><dt class="col-sm-2 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRelatedSystems)</dt><dd class="col-sm-10 mb-0" style="white-space: pre-wrap">@Model.SwRelatedSystems</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwHandlesPersonalData)</dt><dd class="col-sm-7 mb-0">@Model.SwHandlesPersonalData</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwHasUiAuth)</dt><dd class="col-sm-7 mb-0">@Model.SwHasUiAuth</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwKeepsPdTrail)</dt><dd class="col-sm-7 mb-0">@Model.SwKeepsPdTrail</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwProvidesApi)</dt><dd class="col-sm-7 mb-0">@Model.SwProvidesApi</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwTrailLocation)</dt><dd class="col-sm-7 mb-0">@Model.SwTrailLocation</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwTrailStorage)</dt><dd class="col-sm-7 mb-0">@Model.SwTrailStorage</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwBusinessOwnerUnit)</dt><dd class="col-sm-7 mb-0">@Model.SwBusinessOwnerUnit</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwIsCoreSystem)</dt><dd class="col-sm-7 mb-0">@Model.SwIsCoreSystem</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwReviewer)</dt><dd class="col-sm-7 mb-0">@Model.SwReviewer</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwModifiedBy)</dt><dd class="col-sm-7 mb-0">@Model.SwModifiedBy</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwModifiedTime)</dt><dd class="col-sm-7 mb-0">@Model.SwModifiedTime</dd></dl></div>
+            <div class="col-12"><dl class="row mb-0"><dt class="col-sm-2 text-muted fw-normal">@Html.DisplayNameFor(m => m.SwRemark)</dt><dd class="col-sm-10 mb-0" style="white-space: pre-wrap">@Model.SwRemark</dd></dl></div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold bg-success text-white">資訊資產清單－資料(DA)</div>
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaAssetCode)</dt><dd class="col-sm-7 mb-0">@Model.DaAssetCode</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaAssetType)</dt><dd class="col-sm-7 mb-0">@Model.DaAssetType</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaStatus)</dt><dd class="col-sm-7 mb-0">@Model.DaStatus</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaAssetName)</dt><dd class="col-sm-7 mb-0">@Model.DaAssetName</dd></dl></div>
+            <div class="col-12"><dl class="row mb-0"><dt class="col-sm-2 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaDescription)</dt><dd class="col-sm-10 mb-0" style="white-space: pre-wrap">@Model.DaDescription</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaBackupMethod)</dt><dd class="col-sm-7 mb-0">@Model.DaBackupMethod</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaRetentionPeriod)</dt><dd class="col-sm-7 mb-0">@Model.DaRetentionPeriod</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaHasSensitiveData)</dt><dd class="col-sm-7 mb-0">@Model.DaHasSensitiveData</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaRiskOwner)</dt><dd class="col-sm-7 mb-0">@Model.DaRiskOwner</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaLocation)</dt><dd class="col-sm-7 mb-0">@Model.DaLocation</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaOwnerUnit)</dt><dd class="col-sm-7 mb-0">@Model.DaOwnerUnit</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaCustodianUnit)</dt><dd class="col-sm-7 mb-0">@Model.DaCustodianUnit</dd></dl></div>
+            <div class="col-12"><dl class="row mb-0"><dt class="col-sm-2 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaUserUnit)</dt><dd class="col-sm-10 mb-0">@Model.DaUserUnit</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaConfidentiality)</dt><dd class="col-sm-7 mb-0">@Model.DaConfidentiality</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaIntegrity)</dt><dd class="col-sm-7 mb-0">@Model.DaIntegrity</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaAvailability)</dt><dd class="col-sm-7 mb-0">@Model.DaAvailability</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaAssetValue)</dt><dd class="col-sm-7 mb-0">@Model.DaAssetValue</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">關連SW編號</dt><dd class="col-sm-7 mb-0">@Model.SystemCode</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaBackupConfirm)</dt><dd class="col-sm-7 mb-0">@Model.DaBackupConfirm</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaReviewer)</dt><dd class="col-sm-7 mb-0">@Model.DaReviewer</dd></dl></div>
+            <div class="col-md-6"><dl class="row mb-0"><dt class="col-sm-5 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaModifiedTime)</dt><dd class="col-sm-7 mb-0">@Model.DaModifiedTime</dd></dl></div>
+            <div class="col-12"><dl class="row mb-0"><dt class="col-sm-2 text-muted fw-normal">@Html.DisplayNameFor(m => m.DaRemark)</dt><dd class="col-sm-10 mb-0" style="white-space: pre-wrap">@Model.DaRemark</dd></dl></div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
     <div class="card-header fw-bold">I. 系統基本資訊</div>
     <div class="card-body">
         <dl class="row mb-0">
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SystemCode)</dt>
+            <dd class="col-sm-9">@Model.SystemCode</dd>
             <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SystemName)</dt>
             <dd class="col-sm-9">@Model.SystemName</dd>
             <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Description)</dt>

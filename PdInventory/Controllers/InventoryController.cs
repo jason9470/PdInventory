@@ -92,6 +92,21 @@ public class InventoryController : Controller
             return View("Form", item);
         }
 
+        // 本表單不維護風險自評欄位，先帶回既有值，避免 SetValues 以空值覆寫。
+        item.RiskDataSeqNo = existing.RiskDataSeqNo;
+        item.RiskCategoryCode = existing.RiskCategoryCode;
+        item.RiskCategoryName = existing.RiskCategoryName;
+        item.RiskEvent = existing.RiskEvent;
+        item.RiskImpactLevel = existing.RiskImpactLevel;
+        item.RiskLikelihoodLevel = existing.RiskLikelihoodLevel;
+        item.RiskRelatedRegulation = existing.RiskRelatedRegulation;
+        item.RiskControlDescription = existing.RiskControlDescription;
+        item.RiskEffectivenessLevel = existing.RiskEffectivenessLevel;
+        item.RiskValue = existing.RiskValue;
+        item.RiskImprovementPlan = existing.RiskImprovementPlan;
+        item.RiskUnitConfirm = existing.RiskUnitConfirm;
+        item.RiskRemark = existing.RiskRemark;
+
         _db.Entry(existing).CurrentValues.SetValues(item);
         existing.Categories = await _db.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
         existing.Purposes = await _db.Purposes.Where(p => purposeIds.Contains(p.Id)).ToListAsync();

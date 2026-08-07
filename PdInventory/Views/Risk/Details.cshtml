@@ -1,0 +1,88 @@
+@model PdInventory.Models.InventoryItem
+@{
+    ViewData["Title"] = $"風險自評 {Model.SystemCode} {Model.DocumentName}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>風險自評：@Model.SystemCode @Model.DocumentName</h2>
+    <div>
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">編輯</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">回列表</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">盤點基本資訊（來自個人資料檔案盤點表）</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">編號</dt>
+            <dd class="col-sm-9">@Model.SeqNo</dd>
+            <dt class="col-sm-3">資產編號</dt>
+            <dd class="col-sm-9">@Model.SystemCode</dd>
+            <dt class="col-sm-3">資產名稱</dt>
+            <dd class="col-sm-9">@Model.SystemName</dd>
+            <dt class="col-sm-3">個資文件/檔案名稱</dt>
+            <dd class="col-sm-9">@Model.DocumentName</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold bg-primary text-white">潛在風險事件項目</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">資料序號</dt>
+            <dd class="col-sm-9">@Model.RiskDataSeqNo</dd>
+            <dt class="col-sm-3">風險分類編號</dt>
+            <dd class="col-sm-9">@Model.RiskCategoryCode</dd>
+            <dt class="col-sm-3">風險描述分類</dt>
+            <dd class="col-sm-9">@Model.RiskCategoryName</dd>
+            <dt class="col-sm-3">潛在風險事件</dt>
+            <dd class="col-sm-9" style="white-space: pre-line">@Model.RiskEvent</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold bg-primary text-white">風險評估</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">影響程度評估</dt>
+            <dd class="col-sm-9">@Model.RiskImpactLevel</dd>
+            <dt class="col-sm-3">發生可能性評估</dt>
+            <dd class="col-sm-9">@Model.RiskLikelihoodLevel</dd>
+            <dt class="col-sm-3">控制有效性等級</dt>
+            <dd class="col-sm-9">@Model.RiskEffectivenessLevel</dd>
+            <dt class="col-sm-3">相關規範(程序規章)</dt>
+            <dd class="col-sm-9">@Model.RiskRelatedRegulation</dd>
+            <dt class="col-sm-3">現有控制點說明</dt>
+            <dd class="col-sm-9" style="white-space: pre-line">@Model.RiskControlDescription</dd>
+            <dt class="col-sm-3">風險值</dt>
+            <dd class="col-sm-9">
+                @if (!string.IsNullOrWhiteSpace(Model.RiskValue))
+                {
+                    <span class="badge bg-warning text-dark fs-6">@Model.RiskValue</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">改善與確認</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">改善措施或方案</dt>
+            <dd class="col-sm-9" style="white-space: pre-line">@Model.RiskImprovementPlan</dd>
+            <dt class="col-sm-3">風險管理單位確認說明</dt>
+            <dd class="col-sm-9" style="white-space: pre-line">@Model.RiskUnitConfirm</dd>
+            <dt class="col-sm-3">備註</dt>
+            <dd class="col-sm-9" style="white-space: pre-line">@Model.RiskRemark</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="mb-4">
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">編輯</a>
+    <a class="btn btn-outline-secondary" asp-action="Index">回列表</a>
+</div>

@@ -2,7 +2,7 @@
   {
     "SeqNo": "01",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.216.4.13/HRIS/HRMDB/AMS",
     "ExternalUnit": "元大金控人資資料庫",
     "InternalUnit": "作業中心",
@@ -11,12 +11,13 @@
     "SubjectCount": "20000",
     "InternationalTransfer": "N/A",
     "Contract": "證券員工開證券期貨戶控管",
-    "Remark": "來源： SFTP檔案名稱：BDRELATEEMP2.CSV"
+    "Remark": "來源： SFTP檔案名稱：BDRELATEEMP2.CSV",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "02",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.231.145.46/amFUT",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -25,12 +26,13 @@
     "SubjectCount": "6928",
     "InternationalTransfer": "N/A",
     "Contract": "選擇期貨開戶營業員",
-    "Remark": "來源： SFTP檔案名稱： AMFUTAE_YYYYMMDD.TXT"
+    "Remark": "來源： SFTP檔案名稱： AMFUTAE_YYYYMMDD.TXT",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "03",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.231.145.46/amFUT",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -39,12 +41,13 @@
     "SubjectCount": "8137",
     "InternationalTransfer": "N/A",
     "Contract": "期貨員工開期貨戶控管",
-    "Remark": "來源： SFTP檔案名稱： AMFUTEMPLOYEE_YYYYMMDD.TXT"
+    "Remark": "來源： SFTP檔案名稱： AMFUTEMPLOYEE_YYYYMMDD.TXT",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "04",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.231.145.46/amFUT",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -53,12 +56,13 @@
     "SubjectCount": "8700",
     "InternationalTransfer": "N/A",
     "Contract": "期貨帳號狀態同步",
-    "Remark": "來源： SFTP檔案名稱： AMFUTSTATUS2_YYYYMMDD.TXT檔案名稱： AMFUTSTATUS_YYYYMMDD.TXT"
+    "Remark": "來源： SFTP檔案名稱： AMFUTSTATUS2_YYYYMMDD.TXT檔案名稱： AMFUTSTATUS_YYYYMMDD.TXT",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "05",
     "TransferType": "拋出",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.231.145.46/amFUT",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -67,12 +71,13 @@
     "SubjectCount": "100-300",
     "InternationalTransfer": "N/A",
     "Contract": "期貨業務單位需求",
-    "Remark": "來源： SFTP (COS To 期貨)檔案名稱： AMFutFatcaT_YYYYMMDD.TXT"
+    "Remark": "來源： SFTP (COS To 期貨)檔案名稱： AMFutFatcaT_YYYYMMDD.TXT",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "06",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.231.145.46/amFUT",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -81,12 +86,13 @@
     "SubjectCount": "2000",
     "InternationalTransfer": "N/A",
     "Contract": "期貨員工開證券期貨戶控管",
-    "Remark": "來源： SFTP檔案名稱:BDRELATEEMP2_FUT.CSV"
+    "Remark": "來源： SFTP檔案名稱:BDRELATEEMP2_FUT.CSV",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "07",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.216.4.13/HRIS/HRMDB/AMS",
     "ExternalUnit": "元大金控人資資料庫",
     "InternalUnit": "作業中心",
@@ -95,12 +101,13 @@
     "SubjectCount": "5000",
     "InternationalTransfer": "N/A",
     "Contract": "證券員工與開戶聯絡資訊控管",
-    "Remark": "來源:SFTP檔案名稱:,PS_PERSON_INFO.CSV"
+    "Remark": "來源:SFTP檔案名稱:,PS_PERSON_INFO.CSV",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "08",
     "TransferType": "拋出",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.231.145.46/amFUT",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -109,12 +116,13 @@
     "SubjectCount": "2000",
     "InternationalTransfer": "N/A",
     "Contract": "證券員工開期貨戶控管",
-    "Remark": "來源:SFTP檔案名稱:PSEMP.CSV"
+    "Remark": "來源:SFTP檔案名稱:PSEMP.CSV",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "09",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.216.4.13/HRIS/HRMDB/AMS",
     "ExternalUnit": "元大金控人資資料庫",
     "InternalUnit": "作業中心",
@@ -123,12 +131,13 @@
     "SubjectCount": "2000",
     "InternationalTransfer": "N/A",
     "Contract": "證券員工開期貨戶控管",
-    "Remark": "來源:SFTP檔案名稱:PSEMP.CSV"
+    "Remark": "來源:SFTP檔案名稱:PSEMP.CSV",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "10",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.216.4.13/HRIS/HRMDB/AMS",
     "ExternalUnit": "元大金控人資資料庫",
     "InternalUnit": "作業中心",
@@ -137,12 +146,13 @@
     "SubjectCount": "20000",
     "InternationalTransfer": "N/A",
     "Contract": "證券員工開證券期貨戶控管",
-    "Remark": "來源： SFTP檔案名稱：PS_PERSON_INFO.CSV"
+    "Remark": "來源： SFTP檔案名稱：PS_PERSON_INFO.CSV",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "11",
     "TransferType": "拋出",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.214.217.216",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -151,12 +161,13 @@
     "SubjectCount": "10",
     "InternationalTransfer": "N/A",
     "Contract": "開戶審件",
-    "Remark": "來源:SFTP檔案名稱:案號.zip"
+    "Remark": "來源:SFTP檔案名稱:案號.zip",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "12",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.214.217.216",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -165,12 +176,13 @@
     "SubjectCount": "10",
     "InternationalTransfer": "N/A",
     "Contract": "開戶歸檔",
-    "Remark": "來源:SFTP檔案名稱:案號_oc.zip"
+    "Remark": "來源:SFTP檔案名稱:案號_oc.zip",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "13",
     "TransferType": "拋出",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.209.9.126",
     "ExternalUnit": "元大銀行",
     "InternalUnit": "作業中心",
@@ -179,12 +191,13 @@
     "SubjectCount": "200",
     "InternationalTransfer": "N/A",
     "Contract": "開戶審件",
-    "Remark": "來源:SFTP檔案名稱:806711案號.zip"
+    "Remark": "來源:SFTP檔案名稱:806711案號.zip",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "14",
     "TransferType": "拋入",
-    "SystemName": "SW-027 AMS帳戶系統",
+    "SystemName": "AMS帳戶系統",
     "PathName": "sftp://10.231.145.46",
     "ExternalUnit": "元大銀行",
     "InternalUnit": "作業中心",
@@ -193,12 +206,13 @@
     "SubjectCount": "200",
     "InternationalTransfer": "N/A",
     "Contract": "開戶歸檔",
-    "Remark": "來源:SFTP檔案名稱:806712取用編號.zip"
+    "Remark": "來源:SFTP檔案名稱:806712取用編號.zip",
+    "SystemCode": "SW-027"
   },
   {
     "SeqNo": "15",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK99402771",
     "ExternalUnit": "高雄銀",
     "InternalUnit": "國際金融業務部",
@@ -207,12 +221,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVTDFUSAyyyyMMdd.TXT、RVIOCUSAyyyyMMdd.TXT、RVPOSUSAyyyyMMdd.TXT、RVSTQUSAyyyyMMdd.TXT、RVSTQHKGyyyyMMdd.TXT、RVTDFHKGyyyyMMdd.TXT、RVIOCHKGyyyyMMdd.TXT、RVPOSHKGyyyyMMdd.TXT"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVTDFUSAyyyyMMdd.TXT、RVIOCUSAyyyyMMdd.TXT、RVPOSUSAyyyyMMdd.TXT、RVSTQUSAyyyyMMdd.TXT、RVSTQHKGyyyyMMdd.TXT、RVTDFHKGyyyyMMdd.TXT、RVIOCHKGyyyyMMdd.TXT、RVPOSHKGyyyyMMdd.TXT",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "16",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK99041876",
     "ExternalUnit": "陽信銀",
     "InternalUnit": "國際金融業務部",
@@ -221,12 +236,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVTDFUSAyyyyMMdd.TXT、RVPOSUSAyyyyMMdd.TXT、RVIOCUSAyyyyMMdd.TXT、RVSTQUSAyyyyMMdd.TXT、RVIOCHKGyyyyMMdd.TXT、RVSTQHKGyyyyMMdd.TXT、RVPOSHKGyyyyMMdd.TXT、RVTDFHKGyyyyMMdd.TXT、RVSTQJPNyyyyMMdd.TXT、RVPOSJPNyyyyMMdd.TXT、RVTDFJPNyyyyMMdd.TXT、RVIOCJPNyyyyMMdd.TXT"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVTDFUSAyyyyMMdd.TXT、RVPOSUSAyyyyMMdd.TXT、RVIOCUSAyyyyMMdd.TXT、RVSTQUSAyyyyMMdd.TXT、RVIOCHKGyyyyMMdd.TXT、RVSTQHKGyyyyMMdd.TXT、RVPOSHKGyyyyMMdd.TXT、RVTDFHKGyyyyMMdd.TXT、RVSTQJPNyyyyMMdd.TXT、RVPOSJPNyyyyMMdd.TXT、RVTDFJPNyyyyMMdd.TXT、RVIOCJPNyyyyMMdd.TXT",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "17",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK99038008",
     "ExternalUnit": "新光銀",
     "InternalUnit": "國際金融業務部",
@@ -235,12 +251,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVIOCUSA1YYYYMMDD.TXT、RVSTQUSA1YYYYMMDD.TXT、RVTDFUSAYYYYMMDD.TXT、RVPOSUSA1YYYYMMDD.TXT、RVTDFUSA1YYYYMMDD.TXT、RVSTQUSAYYYYMMDD.TXT、RVPOSUSAYYYYMMDD.TXT、RVIOCUSAYYYYMMDD.TXT、DYM001P.TXT、DYM005.TXT、RVIOCHKGYYYYMMDD.TXT、RVSTQHKGYYYYMMDD.TXT、RVTDFHKGYYYYMMDD.TXT、RVPOSHKGYYYYMMDD.TXT、RVTDFHKSYYYYMMDD.TXT、RVSTQHKSYYYYMMDD.TXT、RVPOSHKSYYYYMMDD.TXT、RVIOCHKSYYYYMMDD.TXT"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVIOCUSA1YYYYMMDD.TXT、RVSTQUSA1YYYYMMDD.TXT、RVTDFUSAYYYYMMDD.TXT、RVPOSUSA1YYYYMMDD.TXT、RVTDFUSA1YYYYMMDD.TXT、RVSTQUSAYYYYMMDD.TXT、RVPOSUSAYYYYMMDD.TXT、RVIOCUSAYYYYMMDD.TXT、DYM001P.TXT、DYM005.TXT、RVIOCHKGYYYYMMDD.TXT、RVSTQHKGYYYYMMDD.TXT、RVTDFHKGYYYYMMDD.TXT、RVPOSHKGYYYYMMDD.TXT、RVTDFHKSYYYYMMDD.TXT、RVSTQHKSYYYYMMDD.TXT、RVPOSHKSYYYYMMDD.TXT、RVIOCHKSYYYYMMDD.TXT",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "18",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK99028178",
     "ExternalUnit": "元大銀信託部",
     "InternalUnit": "國際金融業務部",
@@ -249,12 +266,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVPOSUSAYYYYMMDD.TXT、RVSTQUSAYYYYMMDD.TXT、RVIOCUSAYYYYMMDD.TXT、RVTDFUSAYYYYMMDD.TXT、DYM001P.TXT、DYM005P.TXT、RVPOSHKGYYYYMMDD.TXT、RVSTQHKGYYYYMMDD.TXT、RVTDFHKGYYYYMMDD.TXT、RVIOCHKGYYYYMMDD.TXT、RVTDFHKSYYYYMMDD.TXT、RVPOSHKSYYYYMMDD.TXT、RVSTQHKSYYYYMMDD.TXT、RVIOCHKSYYYYMMDD.TXT、RVPOSJPNYYYYMMDD.TXT、RVTDFJPNYYYYMMDD.TXT、RVIOCJPNYYYYMMDD.TXT、RVSTQJPNYYYYMMDD.TXT"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVPOSUSAYYYYMMDD.TXT、RVSTQUSAYYYYMMDD.TXT、RVIOCUSAYYYYMMDD.TXT、RVTDFUSAYYYYMMDD.TXT、DYM001P.TXT、DYM005P.TXT、RVPOSHKGYYYYMMDD.TXT、RVSTQHKGYYYYMMDD.TXT、RVTDFHKGYYYYMMDD.TXT、RVIOCHKGYYYYMMDD.TXT、RVTDFHKSYYYYMMDD.TXT、RVPOSHKSYYYYMMDD.TXT、RVSTQHKSYYYYMMDD.TXT、RVIOCHKSYYYYMMDD.TXT、RVPOSJPNYYYYMMDD.TXT、RVTDFJPNYYYYMMDD.TXT、RVIOCJPNYYYYMMDD.TXT、RVSTQJPNYYYYMMDD.TXT",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "19",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK98773893",
     "ExternalUnit": "兆豐銀",
     "InternalUnit": "國際金融業務部",
@@ -263,12 +281,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：CGM001.TXT、DAYFIL.TXT、DYM001P.TXT、DYM002.TXT、DYM005.TXT、RVIOCHKGYYYYMMDD.TXT、RVIOCHKSYYYYMMDD.TXT、RVIOCJPNYYYYMMDD.TXT、RVIOCUSAYYYYMMDD.TXT、RVPOSHKGYYYYMMDD.TXT、RVPOSHKSYYYYMMDD.TXT、RVPOSJPNYYYYMMDD.TXT、RVPOSUSAYYYYMMDD.TXT、RVSTQHKGYYYYMMDD.TXT、RVSTQHKSYYYYMMDD.TXT、RVSTQJPNYYYYMMDD.TXT、RVSTQUSAYYYYMMDD.TXT、RVTCOMSTD.TXT、RVTDFHKGYYYYMMDD.TXT、RVTDFHKSYYYYMMDD.TXT、RVTDFJPNYYYYMMDD.TXT、RVTDFUSAYYYYMMDD.TXT、RVTPRDSTDYYYYMMDD.TXT"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：CGM001.TXT、DAYFIL.TXT、DYM001P.TXT、DYM002.TXT、DYM005.TXT、RVIOCHKGYYYYMMDD.TXT、RVIOCHKSYYYYMMDD.TXT、RVIOCJPNYYYYMMDD.TXT、RVIOCUSAYYYYMMDD.TXT、RVPOSHKGYYYYMMDD.TXT、RVPOSHKSYYYYMMDD.TXT、RVPOSJPNYYYYMMDD.TXT、RVPOSUSAYYYYMMDD.TXT、RVSTQHKGYYYYMMDD.TXT、RVSTQHKSYYYYMMDD.TXT、RVSTQJPNYYYYMMDD.TXT、RVSTQUSAYYYYMMDD.TXT、RVTCOMSTD.TXT、RVTDFHKGYYYYMMDD.TXT、RVTDFHKSYYYYMMDD.TXT、RVTDFJPNYYYYMMDD.TXT、RVTDFUSAYYYYMMDD.TXT、RVTPRDSTDYYYYMMDD.TXT",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "20",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK98768815",
     "ExternalUnit": "彰化銀",
     "InternalUnit": "國際金融業務部",
@@ -277,12 +296,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVPOSUS_YT_yyyyMMdd.TXT、RVTDFUS_YT_yyyyMMdd.TXT、RVSTQUS_YT_yyyyMMdd.TXT、RVTCOMSTD.TXT、RVTDFHK_YT_yyyyMMdd.TXT、RVSTQHK_YT_yyyyMMdd.TXT、RVPOSHK_YT_yyyyMMdd.TXT"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVPOSUS_YT_yyyyMMdd.TXT、RVTDFUS_YT_yyyyMMdd.TXT、RVSTQUS_YT_yyyyMMdd.TXT、RVTCOMSTD.TXT、RVTDFHK_YT_yyyyMMdd.TXT、RVSTQHK_YT_yyyyMMdd.TXT、RVPOSHK_YT_yyyyMMdd.TXT",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "21",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK98667936",
     "ExternalUnit": "中信銀",
     "InternalUnit": "國際金融業務部",
@@ -291,12 +311,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：CTB_yyyyMMdd_US.txt、CTB_yyyyMMdd_HK.txt"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：CTB_yyyyMMdd_US.txt、CTB_yyyyMMdd_HK.txt",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "22",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK96979407",
     "ExternalUnit": "中盈投資(超揚)",
     "InternalUnit": "國際金融業務部",
@@ -305,12 +326,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：yyyyMMdd.zip"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：yyyyMMdd.zip",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "23",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK86517096",
     "ExternalUnit": "遠東銀",
     "InternalUnit": "國際金融業務部",
@@ -319,12 +341,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVSTQGBRyyyyMMdd.TXT、RVSTQGBRyyyyMMdd.md5、RVIOCGBRyyyyMMdd.md5、RVTDFGBRyyyyMMdd.TXT、RVTDFGBRyyyyMMdd.md5、RVIOCGBRyyyyMMdd.TXT、RVPOSGBRyyyyMMdd.md5、RVPOSGBRyyyyMMdd.TXT、RVSTQUSAyyyyMMdd.md5、RVSTQUSAyyyyMMdd.TXT、RVTDFUSAyyyyMMdd.TXT、RVPOSUSAyyyyMMdd.TXT、RVIOCUSAyyyyMMdd.md5、RVTDFUSAyyyyMMdd.md5、RVPOSUSAyyyyMMdd.md5、RVIOCUSAyyyyMMdd.TXT、RVIOCHKGyyyyMMdd.md5、RVTDFHKGyyyyMMdd.TXT、RVIOCHKGyyyyMMdd.TXT、RVPOSHKGyyyyMMdd.TXT、RVSTQHKGyyyyMMdd.TXT、RVTDFHKGyyyyMMdd.md5、RVSTQHKGyyyyMMdd.md5、RVPOSHKGyyyyMMdd.md5、RVSTQJPNyyyyMMdd.TXT、RVPOSJPNyyyyMMdd.TXT、RVPOSJPNyyyyMMdd.md5、RVSTQJPNyyyyMMdd.md5、RVTDFJPNyyyyMMdd.md5、RVIOCJPNyyyyMMdd.md5、RVTDFJPNyyyyMMdd.TXT、RVIOCJPNyyyyMMdd.TXT"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：RVSTQGBRyyyyMMdd.TXT、RVSTQGBRyyyyMMdd.md5、RVIOCGBRyyyyMMdd.md5、RVTDFGBRyyyyMMdd.TXT、RVTDFGBRyyyyMMdd.md5、RVIOCGBRyyyyMMdd.TXT、RVPOSGBRyyyyMMdd.md5、RVPOSGBRyyyyMMdd.TXT、RVSTQUSAyyyyMMdd.md5、RVSTQUSAyyyyMMdd.TXT、RVTDFUSAyyyyMMdd.TXT、RVPOSUSAyyyyMMdd.TXT、RVIOCUSAyyyyMMdd.md5、RVTDFUSAyyyyMMdd.md5、RVPOSUSAyyyyMMdd.md5、RVIOCUSAyyyyMMdd.TXT、RVIOCHKGyyyyMMdd.md5、RVTDFHKGyyyyMMdd.TXT、RVIOCHKGyyyyMMdd.TXT、RVPOSHKGyyyyMMdd.TXT、RVSTQHKGyyyyMMdd.TXT、RVTDFHKGyyyyMMdd.md5、RVSTQHKGyyyyMMdd.md5、RVPOSHKGyyyyMMdd.md5、RVSTQJPNyyyyMMdd.TXT、RVPOSJPNyyyyMMdd.TXT、RVPOSJPNyyyyMMdd.md5、RVSTQJPNyyyyMMdd.md5、RVTDFJPNyyyyMMdd.md5、RVIOCJPNyyyyMMdd.md5、RVTDFJPNyyyyMMdd.TXT、RVIOCJPNyyyyMMdd.TXT",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "24",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK86384770",
     "ExternalUnit": "統一投信",
     "InternalUnit": "國際金融業務部",
@@ -333,12 +356,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：yyyyMMdd.zip"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：yyyyMMdd.zip",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "25",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK51816908",
     "ExternalUnit": "台中銀",
     "InternalUnit": "國際金融業務部",
@@ -347,12 +371,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：yyyyMMdd_US.zip、yyyyMMdd_HK.zip、yyyyMMdd_C1.zip"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：yyyyMMdd_US.zip、yyyyMMdd_HK.zip、yyyyMMdd_C1.zip",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "26",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK38632511",
     "ExternalUnit": "玉山證",
     "InternalUnit": "國際金融業務部",
@@ -361,12 +386,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：ESUN_OSU_yyyyMMdd.zip"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：ESUN_OSU_yyyyMMdd.zip",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "27",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK16096229",
     "ExternalUnit": "永豐投信",
     "InternalUnit": "國際金融業務部",
@@ -375,12 +401,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：9800_DEU_6063909_AMT_YYYYMMDD.CSV、9800_DEU_6063909_TRN_YYYYMMDD.CSV、9800_GBR_6063909_AMT_YYYYMMDD.CSV、9800_GBR_6063909_TRN_YYYYMMDD.CSV、9800_NA_6063909_AMT_YYYYMMDD.CSV、9800_NA_6063909_TRN_YYYYMMDD.CSV、9800_USA_6063909_AMT_YYYYMMDD.CSV、9800_USA_6063909_TRN_YYYYMMDD.CSV"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：9800_DEU_6063909_AMT_YYYYMMDD.CSV、9800_DEU_6063909_TRN_YYYYMMDD.CSV、9800_GBR_6063909_AMT_YYYYMMDD.CSV、9800_GBR_6063909_TRN_YYYYMMDD.CSV、9800_NA_6063909_AMT_YYYYMMDD.CSV、9800_NA_6063909_TRN_YYYYMMDD.CSV、9800_USA_6063909_AMT_YYYYMMDD.CSV、9800_USA_6063909_TRN_YYYYMMDD.CSV",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "28",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://10.231.145.46/SBK16093877",
     "ExternalUnit": "板信銀",
     "InternalUnit": "國際金融業務部",
@@ -389,12 +416,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：yyyyMMdd_US.zip、yyyyMMdd_HK.zip、yyyyMMdd_C1.zip"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：yyyyMMdd_US.zip、yyyyMMdd_HK.zip、yyyyMMdd_C1.zip",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "29",
     "TransferType": "拋出",
-    "SystemName": "SW-033複委託帳務系統",
+    "SystemName": "複委託帳務系統",
     "PathName": "sftp://sfgps.esunbank.com.tw/UPLOAD/FST/",
     "ExternalUnit": "玉山銀",
     "InternalUnit": "國際金融業務部",
@@ -403,12 +431,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：CGM001.TXT、DAYFIL.TXT、DYM001P.TXT、DYM002.TXT、DYM005.TXT、RVTCOMSTD.TXT、RVTPRDSTD.TXT、RVIOCUS.TXT、RVPOSUS.TXT、RVSTQUS.TXT、RVTDFUSYYYYMMDD.TXT、RVIOCJP.TXT、RVPOSJP.TXT、RVSTQJP.TXT、RVTDFJPYYYYMMDD.TXT、RVIOCHS.TXT、RVPOSHS.TXT、RVSTQHS.TXT、RVTDFHSYYYYMMDD.TXT、RVIOCHZ.TXT、RVPOSHZ.TXT、RVSTQHZ.TXT、RVTDFHZYYYYMMDD.TXT、RVIOCHK.TXT、RVPOSHK.TXT、RVSTQHK.TXT、RVTDFHKYYYYMMDD.TXT"
+    "Remark": "各市場收盤後透過SFTP拋轉客戶成交回報相關檔案。檔案名稱：CGM001.TXT、DAYFIL.TXT、DYM001P.TXT、DYM002.TXT、DYM005.TXT、RVTCOMSTD.TXT、RVTPRDSTD.TXT、RVIOCUS.TXT、RVPOSUS.TXT、RVSTQUS.TXT、RVTDFUSYYYYMMDD.TXT、RVIOCJP.TXT、RVPOSJP.TXT、RVSTQJP.TXT、RVTDFJPYYYYMMDD.TXT、RVIOCHS.TXT、RVPOSHS.TXT、RVSTQHS.TXT、RVTDFHSYYYYMMDD.TXT、RVIOCHZ.TXT、RVPOSHZ.TXT、RVSTQHZ.TXT、RVTDFHZYYYYMMDD.TXT、RVIOCHK.TXT、RVPOSHK.TXT、RVSTQHK.TXT、RVTDFHKYYYYMMDD.TXT",
+    "SystemCode": "SW-033"
   },
   {
     "SeqNo": "30",
     "TransferType": "拋出/拋入",
-    "SystemName": "SW-074 股務代理系統",
+    "SystemName": "股務代理系統",
     "PathName": "sftp://10.155.11.67/FHC/HRIS/Brkct",
     "ExternalUnit": "元大金控人資資料庫",
     "InternalUnit": "股務代理部",
@@ -417,12 +446,13 @@
     "SubjectCount": "330~350",
     "InternationalTransfer": "N/A",
     "Contract": "內部人申報",
-    "Remark": "每月1日透過SFTP資料交換; 檔名: st27740t.yyymm, st27750t.yyymm"
+    "Remark": "每月1日透過SFTP資料交換; 檔名: st27740t.yyymm, st27750t.yyymm",
+    "SystemCode": "SW-074"
   },
   {
     "SeqNo": "31",
     "TransferType": "拋出/拋入",
-    "SystemName": "SW-074 股務代理系統",
+    "SystemName": "股務代理系統",
     "PathName": "sftp://10.155.11.67/FHC/RELD/RelBrkct/",
     "ExternalUnit": "金控關係人系統",
     "InternalUnit": "股務代理部",
@@ -431,12 +461,13 @@
     "SubjectCount": "400-500",
     "InternationalTransfer": "N/A",
     "Contract": "金控法45條",
-    "Remark": "每月1日透過SFTP資料交換; 檔名: st27781t.yyymm, st27782t._yyymm.txt"
+    "Remark": "每月1日透過SFTP資料交換; 檔名: st27781t.yyymm, st27782t._yyymm.txt",
+    "SystemCode": "SW-074"
   },
   {
     "SeqNo": "32",
     "TransferType": "拋入",
-    "SystemName": "SW-076 借券後台系統",
+    "SystemName": "借券後台系統",
     "PathName": "sftp://10.155.11.67/brk/RLT",
     "ExternalUnit": "元大金控",
     "InternalUnit": "作業中心",
@@ -445,12 +476,13 @@
     "SubjectCount": "10000-15000",
     "InternationalTransfer": "N/A",
     "Contract": "關係人交易控管",
-    "Remark": "來源： SFTP檔案名稱： BKX.txt"
+    "Remark": "來源： SFTP檔案名稱： BKX.txt",
+    "SystemCode": "SW-076"
   },
   {
     "SeqNo": "33",
     "TransferType": "拋入",
-    "SystemName": "SW-082店頭衍生性商品_結構型商品管理",
+    "SystemName": "店頭衍生性商品_結構型商品管理",
     "PathName": "sftp://10.155.11.67/FHC/HRIS/HRMDB/H6010/",
     "ExternalUnit": "元大金控",
     "InternalUnit": "作業中心",
@@ -459,12 +491,13 @@
     "SubjectCount": "10000-20000",
     "InternationalTransfer": "N/A",
     "Contract": "關係人交易控管",
-    "Remark": "來源:SFTP檔案名稱:BKX.txt,IFRS.txt"
+    "Remark": "來源:SFTP檔案名稱:BKX.txt,IFRS.txt",
+    "SystemCode": "SW-082"
   },
   {
     "SeqNo": "34",
     "TransferType": "拋入/拋出",
-    "SystemName": "SW-104分戶存匯系統",
+    "SystemName": "分戶存匯系統",
     "PathName": "ftp://10.216.11.155、sftp://10.209.9.126/BankAuthList",
     "ExternalUnit": "元大銀",
     "InternalUnit": "作業中心",
@@ -473,12 +506,13 @@
     "SubjectCount": "10000-15000",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "拋入：透過與銀行專線電文收客戶出金約定轉帳檔案：806A00YYYYMMDDNN\n拋出：SFTP檔案名稱：002100000ddMMyyyyDEPC060466HHmmss.INP、002100000ddMMyyyyDEPC060466HHmmss.END"
+    "Remark": "拋入：透過與銀行專線電文收客戶出金約定轉帳檔案：806A00YYYYMMDDNN\n拋出：SFTP檔案名稱：002100000ddMMyyyyDEPC060466HHmmss.INP、002100000ddMMyyyyDEPC060466HHmmss.END",
+    "SystemCode": "SW-104"
   },
   {
     "SeqNo": "35",
     "TransferType": "拋入",
-    "SystemName": "SW-105 圈購配售管理平台",
+    "SystemName": "圈購配售管理平台",
     "PathName": "sftp://10.216.4.13/FTPDATA/HRIS/HRIS/HRMDB/YTBD",
     "ExternalUnit": "元大金控人資資料檔",
     "InternalUnit": "投資銀行業務部",
@@ -487,12 +521,13 @@
     "SubjectCount": "5000",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "來源： SFTP檔案名稱：PS_PERSON_DEP_INFO.CSV、PS_PERSON_EMERG_INFO.CSV、PS_PERSON_INFO.CSV"
+    "Remark": "來源： SFTP檔案名稱：PS_PERSON_DEP_INFO.CSV、PS_PERSON_EMERG_INFO.CSV、PS_PERSON_INFO.CSV",
+    "SystemCode": "SW-105"
   },
   {
     "SeqNo": "36",
     "TransferType": "拋入",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.216.4.13/hris/hrmdb/ebs",
     "ExternalUnit": "元大金控",
     "InternalUnit": "作業中心",
@@ -501,12 +536,13 @@
     "SubjectCount": "8000",
     "InternationalTransfer": "N/A",
     "Contract": "證券員工權限控管",
-    "Remark": "來源： SFTP檔案名\nebs_bdprchgpos.csv\nebs_bdworkphone.csv\nebs_psdepartment.csv\nebs_psuser.csv"
+    "Remark": "來源： SFTP檔案名\nebs_bdprchgpos.csv\nebs_bdworkphone.csv\nebs_psdepartment.csv\nebs_psuser.csv",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "37",
     "TransferType": "拋出",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.231.145.46/EBS",
     "ExternalUnit": "富邦銀行,威旭資訊,上海銀行，統一投信",
     "InternalUnit": "作業中心",
@@ -515,12 +551,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "收盤後透過SFTP拋轉客戶成交回報相關檔案,名稱[投信代號][券商代碼].txt"
+    "Remark": "收盤後透過SFTP拋轉客戶成交回報相關檔案,名稱[投信代號][券商代碼].txt",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "38",
     "TransferType": "拋出",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "ftp::/10.231.145.32/N980",
     "ExternalUnit": "中華郵政局",
     "InternalUnit": "作業中心",
@@ -529,12 +566,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "合約管理要點(行政管理部)",
-    "Remark": "收盤後透過FTP拋轉客戶成交回報相關檔案,名稱ST-yyyyMMdd-9887_0000.txt"
+    "Remark": "收盤後透過FTP拋轉客戶成交回報相關檔案,名稱ST-yyyyMMdd-9887_0000.txt",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "39",
     "TransferType": "拋出",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.155.11.67/Project/RMII/CR/BRK/",
     "ExternalUnit": "元大金控",
     "InternalUnit": "作業中心",
@@ -543,12 +581,13 @@
     "SubjectCount": "500000",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "每天(每月)排程固定時間透過SFTP拋轉"
+    "Remark": "每天(每月)排程固定時間透過SFTP拋轉",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "40",
     "TransferType": "拋出",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.231.145.46/RM/bis",
     "ExternalUnit": "元大金控",
     "InternalUnit": "作業中心",
@@ -557,12 +596,13 @@
     "SubjectCount": "100000",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "每天排程固定時間透過SFTP拋轉"
+    "Remark": "每天排程固定時間透過SFTP拋轉",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "41",
     "TransferType": "拋出",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.216.4.13/biaff/a18a19",
     "ExternalUnit": "元大金控",
     "InternalUnit": "作業中心",
@@ -571,12 +611,13 @@
     "SubjectCount": "500000",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "每天排程固定時間透過SFTP拋轉"
+    "Remark": "每天排程固定時間透過SFTP拋轉",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "42",
     "TransferType": "拋入",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.231.145.46/FUT",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -585,12 +626,13 @@
     "SubjectCount": "40000",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "每天排程固定轉入FUCUST.TXT."
+    "Remark": "每天排程固定轉入FUCUST.TXT.",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "43",
     "TransferType": "拋出",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.155.11.67/FHC/CAG/BRK",
     "ExternalUnit": "元大金控",
     "InternalUnit": "作業中心",
@@ -599,12 +641,13 @@
     "SubjectCount": "1000",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "每天排程固定時間透過SFTP拋轉"
+    "Remark": "每天排程固定時間透過SFTP拋轉",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "44",
     "TransferType": "拋出",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.231.145.46/EBS",
     "ExternalUnit": "聯博投信",
     "InternalUnit": "作業中心",
@@ -613,12 +656,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "HSS_ABTW_EQUITY_YUANTA_YYYYMMDD.CSV"
+    "Remark": "HSS_ABTW_EQUITY_YUANTA_YYYYMMDD.CSV",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "45",
     "TransferType": "拋出",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.216.4.13/",
     "ExternalUnit": "元大香港分公司",
     "InternalUnit": "國金部",
@@ -627,12 +671,13 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "AIXHIS_MON.TXT"
+    "Remark": "AIXHIS_MON.TXT",
+    "SystemCode": "SW-108"
   },
   {
     "SeqNo": "46",
     "TransferType": "拋出",
-    "SystemName": "SW-114 外匯管理系統",
+    "SystemName": "外匯管理系統",
     "PathName": "外匯申報主機",
     "ExternalUnit": "中央銀行",
     "InternalUnit": "作業中心",
@@ -641,7 +686,8 @@
     "SubjectCount": "5000-20000",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "與中央銀行申請專線，透過主機連線方式進行相關外匯資料申報。"
+    "Remark": "與中央銀行申請專線，透過主機連線方式進行相關外匯資料申報。",
+    "SystemCode": "SW-114"
   },
   {
     "SeqNo": "47",
@@ -655,7 +701,8 @@
     "SubjectCount": "10000-20000",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "來源： SFTP檔案名稱：BDTables.zip"
+    "Remark": "來源： SFTP檔案名稱：BDTables.zip",
+    "SystemCode": "SW-999"
   },
   {
     "SeqNo": "48",
@@ -669,7 +716,8 @@
     "SubjectCount": "依實際申請數目而定",
     "InternationalTransfer": "N/A",
     "Contract": "人事資料需求申請表",
-    "Remark": "來源： SFTP檔案名稱：PSUSER.CSV"
+    "Remark": "來源： SFTP檔案名稱：PSUSER.CSV",
+    "SystemCode": "SW-999"
   },
   {
     "SeqNo": "49",
@@ -683,7 +731,8 @@
     "SubjectCount": "依實際申請數目而定",
     "InternationalTransfer": "N/A",
     "Contract": "人事資料需求申請表",
-    "Remark": "來源： SFTP檔案名稱： FUT_BDUSER.CSV"
+    "Remark": "來源： SFTP檔案名稱： FUT_BDUSER.CSV",
+    "SystemCode": "SW-999"
   },
   {
     "SeqNo": "50",
@@ -697,12 +746,13 @@
     "SubjectCount": "1600",
     "InternationalTransfer": "N/A",
     "Contract": "元大證券名卡發行合約書/聯名卡規格書",
-    "Remark": "拋入：\nSFTP檔案名稱：\nCardInfoReqYYYYMMDD\nInvoiceSumYYYYMM\nStopCardYYYYMMDD\n拋出：\nSFTP檔案名稱：\nCardInfoRespYYYYMMDD\nVIPBonusYYYYMM"
+    "Remark": "拋入：\nSFTP檔案名稱：\nCardInfoReqYYYYMMDD\nInvoiceSumYYYYMM\nStopCardYYYYMMDD\n拋出：\nSFTP檔案名稱：\nCardInfoRespYYYYMMDD\nVIPBonusYYYYMM",
+    "SystemCode": "SW-999"
   },
   {
     "SeqNo": "51",
     "TransferType": "拋出",
-    "SystemName": "SW-108經紀帳務系統",
+    "SystemName": "經紀帳務系統",
     "PathName": "sftp://10.231.145.46/EBS",
     "ExternalUnit": "元大期貨",
     "InternalUnit": "作業中心",
@@ -711,6 +761,7 @@
     "SubjectCount": "N/A",
     "InternationalTransfer": "N/A",
     "Contract": "N/A",
-    "Remark": "YTS_MATCH_YYYYMMDD.CSV"
+    "Remark": "YTS_MATCH_YYYYMMDD.CSV",
+    "SystemCode": "SW-108"
   }
 ]

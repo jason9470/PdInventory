@@ -29,9 +29,14 @@
                 </select>
                 <span asp-validation-for="TransferType" class="text-danger"></span>
             </div>
+            <div class="col-md-2">
+                <label asp-for="SystemCode" class="form-label"></label>
+                <input asp-for="SystemCode" class="form-control" placeholder="例：SW-027" />
+                <span asp-validation-for="SystemCode" class="text-danger"></span>
+            </div>
             <div class="col-md-4">
                 <label asp-for="SystemName" class="form-label"></label>
-                <input asp-for="SystemName" class="form-control" placeholder="例：SW-027 AMS帳戶系統" />
+                <input asp-for="SystemName" class="form-control" placeholder="例：AMS帳戶系統" />
                 <span asp-validation-for="SystemName" class="text-danger"></span>
             </div>
             <div class="col-md-4">

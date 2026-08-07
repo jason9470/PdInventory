@@ -43,8 +43,12 @@
                     <span class="badge bg-secondary me-1">@p.Code @p.Name</span>
                 }
             </dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SystemCode)</dt>
+            <dd class="col-sm-9">@Model.SystemCode</dd>
             <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SystemName)</dt>
             <dd class="col-sm-9">@Model.SystemName</dd>
+            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SourceCode)</dt>
+            <dd class="col-sm-9">@Model.SourceCode</dd>
             <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SourceName)</dt>
             <dd class="col-sm-9">@Model.SourceName</dd>
             <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CompanyRole)</dt>

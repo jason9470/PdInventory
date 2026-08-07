@@ -13,8 +13,8 @@
     "PurposeCodes": [
       "061"
     ],
-    "SystemName": "SW-027 AMS 帳戶系統",
-    "SourceName": "SW-027 AMS 帳戶系統",
+    "SystemName": "AMS 帳戶系統",
+    "SourceName": "AMS 帳戶系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "證券經紀聯合徵信檔",
     "CollectStatement": "無，資料由 AMS 提供",
@@ -32,7 +32,9 @@
     "LocationPaper": "",
     "LocationDigital": "資料備份系統",
     "Disposal": "資料抹除",
-    "Remark": "身份證字號, 姓名"
+    "Remark": "身份證字號, 姓名",
+    "SystemCode": "SW-027",
+    "SourceCode": "SW-027"
   },
   {
     "SeqNo": "02",
@@ -50,8 +52,8 @@
     "PurposeCodes": [
       "068"
     ],
-    "SystemName": "SW-049 特定金錢信託",
-    "SourceName": "SW-049 特定金錢信託",
+    "SystemName": "特定金錢信託",
+    "SourceName": "特定金錢信託",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "紙本成交確認書",
     "CollectStatement": "無，資料由 信託系統 提供",
@@ -69,7 +71,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於檔案伺服器(IP：10.231.145.46;路徑：WMT/wmt/send/)",
     "Disposal": "資料抹除",
-    "Remark": "客戶姓名,交易單號,交易金額,交割金額"
+    "Remark": "客戶姓名,交易單號,交易金額,交割金額",
+    "SystemCode": "SW-049",
+    "SourceCode": "SW-049"
   },
   {
     "SeqNo": "03",
@@ -86,8 +90,8 @@
     "PurposeCodes": [
       "061"
     ],
-    "SystemName": "SW-076 借券後台系統",
-    "SourceName": "SW-076 借券後台系統",
+    "SystemName": "借券後台系統",
+    "SourceName": "借券後台系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "金控關係人檔",
     "CollectStatement": "無,資料由借券後台系統提供",
@@ -105,7 +109,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於檔案伺服器 SFTP:10.155.11.67 路徑:/brk/RLT",
     "Disposal": "資料抹除",
-    "Remark": "客戶帳號、客戶統一編號、客戶姓名"
+    "Remark": "客戶帳號、客戶統一編號、客戶姓名",
+    "SystemCode": "SW-076",
+    "SourceCode": "SW-076"
   },
   {
     "SeqNo": "04",
@@ -123,8 +129,8 @@
       "061",
       "069"
     ],
-    "SystemName": "SW-106 借貸中心",
-    "SourceName": "SW-106 借貸中心",
+    "SystemName": "借貸中心",
+    "SourceName": "借貸中心",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "不限用途借貸開戶申報",
     "CollectStatement": "不限用途借貸開戶契約",
@@ -142,7 +148,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於資料庫(YLCTPE;10.216.45.183)",
     "Disposal": "永久保存",
-    "Remark": "客戶帳號、身分證統一編號"
+    "Remark": "客戶帳號、身分證統一編號",
+    "SystemCode": "SW-106",
+    "SourceCode": "SW-106"
   },
   {
     "SeqNo": "05",
@@ -159,8 +167,8 @@
     "PurposeCodes": [
       "090"
     ],
-    "SystemName": "SW-108 經紀帳務系統",
-    "SourceName": "SW-108 經紀帳務系統",
+    "SystemName": "經紀帳務系統",
+    "SourceName": "經紀帳務系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "盤後成交回報電子檔/庫存擋/基本資料檔",
     "CollectStatement": "無,資料由經紀帳務系統提供",
@@ -178,7 +186,9 @@
     "LocationPaper": "",
     "LocationDigital": "ftp://10.231.145.32/N980",
     "Disposal": "資料抹除",
-    "Remark": "客戶帳號、客戶統一編號"
+    "Remark": "客戶帳號、客戶統一編號",
+    "SystemCode": "SW-108",
+    "SourceCode": "SW-108"
   },
   {
     "SeqNo": "06",
@@ -195,8 +205,8 @@
     "PurposeCodes": [
       "061"
     ],
-    "SystemName": "SW-108 經紀帳務系統",
-    "SourceName": "SW-108 經紀帳務系統",
+    "SystemName": "經紀帳務系統",
+    "SourceName": "經紀帳務系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "A18,A19",
     "CollectStatement": "無,資料由經紀帳務系統提供",
@@ -214,7 +224,9 @@
     "LocationPaper": "",
     "LocationDigital": "Host=10.216.4.13/BIAFF/A1819/ 檔名 A18_LOG_6010_EBS.txt  A18_LOG_6010_EBS.ok  A18_STAGE_6010_EBS.txt  A18_STAGE_6010_EBS.ok  IFRS_LOG_6010_EBS.txt  IFRS_LOG_6010_EBS.ok  IFRS_6010_EBS.txt  IFRS_6010_EBS.ok  A19_LOG_6010_EBS.txt  A19_LOG_6010_EBS.ok  A19_STA",
     "Disposal": "資料抹除",
-    "Remark": "客戶帳號、客戶統一編號"
+    "Remark": "客戶帳號、客戶統一編號",
+    "SystemCode": "SW-108",
+    "SourceCode": "SW-108"
   },
   {
     "SeqNo": "07",
@@ -231,8 +243,8 @@
     "PurposeCodes": [
       "061"
     ],
-    "SystemName": "SW-108 經紀帳務系統",
-    "SourceName": "SW-108 經紀帳務系統",
+    "SystemName": "經紀帳務系統",
+    "SourceName": "經紀帳務系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "共同行銷",
     "CollectStatement": "無,資料由經紀帳務系統提供",
@@ -250,7 +262,9 @@
     "LocationPaper": "",
     "LocationDigital": "10.155.11.67/FHC/CAG/BRK/ ISSTCTRE.D ISSTCTRE.H",
     "Disposal": "資料抹除",
-    "Remark": "客戶帳號、客戶統一編號"
+    "Remark": "客戶帳號、客戶統一編號",
+    "SystemCode": "SW-108",
+    "SourceCode": "SW-108"
   },
   {
     "SeqNo": "08",
@@ -267,8 +281,8 @@
     "PurposeCodes": [
       "061"
     ],
-    "SystemName": "SW-108 經紀帳務系統",
-    "SourceName": "SW-108 經紀帳務系統",
+    "SystemName": "經紀帳務系統",
+    "SourceName": "經紀帳務系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "大額曝險",
     "CollectStatement": "無,資料由經紀帳務系統提供",
@@ -286,7 +300,9 @@
     "LocationPaper": "",
     "LocationDigital": "10.155.11.67/Project/RMII/CR/BRK/",
     "Disposal": "資料抹除",
-    "Remark": "客戶帳號、客戶統一編號"
+    "Remark": "客戶帳號、客戶統一編號",
+    "SystemCode": "SW-108",
+    "SourceCode": "SW-108"
   },
   {
     "SeqNo": "09",
@@ -303,8 +319,8 @@
     "PurposeCodes": [
       "090"
     ],
-    "SystemName": "SW-108 經紀帳務系統",
-    "SourceName": "SW-108 經紀帳務系統",
+    "SystemName": "經紀帳務系統",
+    "SourceName": "經紀帳務系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "盤後成交回報電子檔/庫存擋/基本資料檔",
     "CollectStatement": "無,資料由經紀帳務系統提供",
@@ -322,7 +338,9 @@
     "LocationPaper": "",
     "LocationDigital": "sftp://10.231.145.46/EBS",
     "Disposal": "資料抹除",
-    "Remark": "客戶帳號、客戶統一編號"
+    "Remark": "客戶帳號、客戶統一編號",
+    "SystemCode": "SW-108",
+    "SourceCode": "SW-108"
   },
   {
     "SeqNo": "10",
@@ -340,8 +358,8 @@
     "PurposeCodes": [
       "059"
     ],
-    "SystemName": "SW-114 外匯管理系統",
-    "SourceName": "SW-114 外匯管理系統",
+    "SystemName": "外匯管理系統",
+    "SourceName": "外匯管理系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "外匯收入支出明細",
     "CollectStatement": "無,依據外匯證券商申報規則",
@@ -359,7 +377,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於資料庫(FEDB)",
     "Disposal": "永久保存",
-    "Remark": "姓名,身分證字號,出生年月日,銀行帳號,居留證資料"
+    "Remark": "姓名,身分證字號,出生年月日,銀行帳號,居留證資料",
+    "SystemCode": "SW-114",
+    "SourceCode": "SW-114"
   },
   {
     "SeqNo": "11",
@@ -378,7 +398,7 @@
       "069"
     ],
     "SystemName": "元大銀開戶系統",
-    "SourceName": "SW-027 AMS 帳戶系統",
+    "SourceName": "AMS 帳戶系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "開戶契約證件影像",
     "CollectStatement": "無，資料由AMS提供",
@@ -396,7 +416,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於檔案伺服器存放於檔案伺服器(IP:10.209.9.126 路徑：對應帳號根目錄)",
     "Disposal": "資料抹除",
-    "Remark": "姓名,身分證字號,出生年月日,住址,相片"
+    "Remark": "姓名,身分證字號,出生年月日,住址,相片",
+    "SystemCode": "SW-999",
+    "SourceCode": "SW-027"
   },
   {
     "SeqNo": "12",
@@ -415,7 +437,7 @@
       "061"
     ],
     "SystemName": "期貨開戶系統",
-    "SourceName": "SW-027 AMS 帳戶系統",
+    "SourceName": "AMS 帳戶系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "期貨帳號FATCA檔",
     "CollectStatement": "無，資料由AMS提供",
@@ -433,7 +455,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於檔案伺服器(IP:10.231.145.46 路徑：/amFUT)",
     "Disposal": "資料抹除",
-    "Remark": "姓名,身分證字號,出生年月日,住址"
+    "Remark": "姓名,身分證字號,出生年月日,住址",
+    "SystemCode": "SW-999",
+    "SourceCode": "SW-027"
   },
   {
     "SeqNo": "13",
@@ -452,7 +476,7 @@
       "069"
     ],
     "SystemName": "期貨開戶系統",
-    "SourceName": "SW-027 AMS 帳戶系統",
+    "SourceName": "AMS 帳戶系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "開戶契約證件影像",
     "CollectStatement": "無，資料由AMS提供",
@@ -470,7 +494,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於檔案伺服器(IP:10.214.217.216 路徑：對應帳號根目錄)",
     "Disposal": "資料抹除",
-    "Remark": "姓名,身分證字號,出生年月日,住址,相片,銀行帳號"
+    "Remark": "姓名,身分證字號,出生年月日,住址,相片,銀行帳號",
+    "SystemCode": "SW-999",
+    "SourceCode": "SW-027"
   },
   {
     "SeqNo": "14",
@@ -506,7 +532,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於檔案伺服器(IP：10.231.145.46;路徑：YSC/SEND)",
     "Disposal": "資料抹除",
-    "Remark": "身分證字號,信用卡號碼"
+    "Remark": "身分證字號,信用卡號碼",
+    "SystemCode": "SW-999",
+    "SourceCode": "SW-999"
   },
   {
     "SeqNo": "15",
@@ -523,8 +551,8 @@
     "PurposeCodes": [
       "090"
     ],
-    "SystemName": "SW-108 經紀帳務系統",
-    "SourceName": "SW-108 經紀帳務系統",
+    "SystemName": "經紀帳務系統",
+    "SourceName": "經紀帳務系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "信用個股到期及客戶契約到期",
     "CollectStatement": "無,資料由經紀帳務系統提供",
@@ -542,7 +570,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於檔案伺服器(IP：10.231.145.32/crdb/)",
     "Disposal": "設定排程自動清除資料",
-    "Remark": "客戶帳號、客戶統一編號、客戶姓名、地址"
+    "Remark": "客戶帳號、客戶統一編號、客戶姓名、地址",
+    "SystemCode": "SW-108",
+    "SourceCode": "SW-108"
   },
   {
     "SeqNo": "16",
@@ -559,8 +589,8 @@
     "PurposeCodes": [
       "090"
     ],
-    "SystemName": "SW-096 綜合對帳單系統",
-    "SourceName": "SW-096 綜合對帳單系統",
+    "SystemName": "綜合對帳單系統",
+    "SourceName": "綜合對帳單系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "每月紙本對帳單",
     "CollectStatement": "無,資料由相關帳務系統提供",
@@ -578,7 +608,9 @@
     "LocationPaper": "",
     "LocationDigital": "存放於檔案伺服器 IP:10.231.145.46 路徑:/one-ststement/POSTOFFICE",
     "Disposal": "資料抹除",
-    "Remark": "客戶帳號、客戶統一編號、客戶姓名"
+    "Remark": "客戶帳號、客戶統一編號、客戶姓名",
+    "SystemCode": "SW-096",
+    "SourceCode": "SW-096"
   },
   {
     "SeqNo": "17",
@@ -594,8 +626,8 @@
     "PurposeCodes": [
       "090"
     ],
-    "SystemName": "SW-108 經紀帳務系統",
-    "SourceName": "SW-108 經紀帳務系統",
+    "SystemName": "經紀帳務系統",
+    "SourceName": "經紀帳務系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "盤後成交回報電子檔",
     "CollectStatement": "無,資料由經紀帳務系統提供",
@@ -613,7 +645,9 @@
     "LocationPaper": "",
     "LocationDigital": "sftp://10.231.145.46/EBS",
     "Disposal": "資料抹除",
-    "Remark": "客戶帳號"
+    "Remark": "客戶帳號",
+    "SystemCode": "SW-108",
+    "SourceCode": "SW-108"
   },
   {
     "SeqNo": "18",
@@ -629,8 +663,8 @@
     "PurposeCodes": [
       "090"
     ],
-    "SystemName": "SW-108 經紀帳務系統",
-    "SourceName": "SW-108 經紀帳務系統",
+    "SystemName": "經紀帳務系統",
+    "SourceName": "經紀帳務系統",
     "CompanyRole": "資料控制者",
     "CollectProcedure": "盤後成交回報電子檔",
     "CollectStatement": "無,資料由經紀帳務系統提供",
@@ -648,6 +682,8 @@
     "LocationPaper": "",
     "LocationDigital": "sftp://10.216.4.13/",
     "Disposal": "資料抹除",
-    "Remark": "客戶帳號"
+    "Remark": "客戶帳號",
+    "SystemCode": "SW-108",
+    "SourceCode": "SW-108"
   }
 ]

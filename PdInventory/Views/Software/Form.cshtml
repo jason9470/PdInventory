@@ -1,0 +1,113 @@
+@model PdInventory.Models.InfoSystem
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "新增軟體資產(SW)" : $"編輯軟體資產 {Model.SystemCode} {Model.SystemName}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">系統基本資訊</div>
+        <div class="card-body row g-3">
+            <div class="col-md-2">
+                <label asp-for="SeqNo" class="form-label"></label>
+                <input asp-for="SeqNo" class="form-control" />
+                <span asp-validation-for="SeqNo" class="text-danger"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="SystemCode" class="form-label">資產編號</label>
+                <input asp-for="SystemCode" class="form-control" placeholder="例：SW-108" />
+                <span asp-validation-for="SystemCode" class="text-danger"></span>
+            </div>
+            <div class="col-md-7">
+                <label asp-for="SystemName" class="form-label">軟體資產名稱</label>
+                <input asp-for="SystemName" class="form-control" placeholder="例：經紀帳務系統" />
+                <span asp-validation-for="SystemName" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="Description" class="form-label">資產說明</label>
+                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold bg-primary text-white">軟體資產(SW)明細</div>
+        <div class="card-body row g-3">
+            <div class="col-md-3"><label asp-for="SwStatus" class="form-label"></label><input asp-for="SwStatus" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwAssetType" class="form-label"></label><input asp-for="SwAssetType" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwSystemCategory" class="form-label"></label><input asp-for="SwSystemCategory" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwAdIntegration" class="form-label"></label><input asp-for="SwAdIntegration" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwOsVersion" class="form-label"></label><input asp-for="SwOsVersion" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwDbToolVersion" class="form-label"></label><input asp-for="SwDbToolVersion" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="SwThirdPartyComponents" class="form-label"></label><input asp-for="SwThirdPartyComponents" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwUserAccountGrant" class="form-label"></label><input asp-for="SwUserAccountGrant" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwProvidesAccountReport" class="form-label"></label><input asp-for="SwProvidesAccountReport" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwRiskOwner" class="form-label"></label><input asp-for="SwRiskOwner" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwLocation" class="form-label"></label><input asp-for="SwLocation" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwOwnerUnit" class="form-label"></label><input asp-for="SwOwnerUnit" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwCustodianUnit" class="form-label"></label><input asp-for="SwCustodianUnit" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="SwUserUnit" class="form-label"></label><input asp-for="SwUserUnit" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwConfidentiality" class="form-label"></label><input asp-for="SwConfidentiality" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwIntegrity" class="form-label"></label><input asp-for="SwIntegrity" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwAvailability" class="form-label"></label><input asp-for="SwAvailability" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwAssetValue" class="form-label"></label><input asp-for="SwAssetValue" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwBusinessContact" class="form-label"></label><input asp-for="SwBusinessContact" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwAppManager" class="form-label"></label><input asp-for="SwAppManager" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwAppMaintainer" class="form-label"></label><input asp-for="SwAppMaintainer" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwAppMaintainerDeputy" class="form-label"></label><input asp-for="SwAppMaintainerDeputy" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="SwOperator" class="form-label"></label><input asp-for="SwOperator" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwDevMode" class="form-label"></label><input asp-for="SwDevMode" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwMaintMode" class="form-label"></label><input asp-for="SwMaintMode" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwVendor" class="form-label"></label><input asp-for="SwVendor" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwLanguage" class="form-label"></label><input asp-for="SwLanguage" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwVersionControl" class="form-label"></label><input asp-for="SwVersionControl" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwApRepoPath" class="form-label"></label><input asp-for="SwApRepoPath" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwDeployMethod" class="form-label"></label><input asp-for="SwDeployMethod" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwOpRepoPath" class="form-label"></label><input asp-for="SwOpRepoPath" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwCodeAccess" class="form-label"></label><input asp-for="SwCodeAccess" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwDeveloper" class="form-label"></label><input asp-for="SwDeveloper" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwDeployer" class="form-label"></label><input asp-for="SwDeployer" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwRpo" class="form-label"></label><input asp-for="SwRpo" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwLocalBackup" class="form-label"></label><input asp-for="SwLocalBackup" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwLocalBackupType" class="form-label"></label><input asp-for="SwLocalBackupType" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwLocalBackupFreq" class="form-label"></label><input asp-for="SwLocalBackupFreq" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwRemoteBackup" class="form-label"></label><input asp-for="SwRemoteBackup" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwRemoteBackupType" class="form-label"></label><input asp-for="SwRemoteBackupType" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwRemoteBackupFreq" class="form-label"></label><input asp-for="SwRemoteBackupFreq" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwLocalHa" class="form-label"></label><input asp-for="SwLocalHa" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwLocalHaArch" class="form-label"></label><input asp-for="SwLocalHaArch" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwRemoteHa" class="form-label"></label><input asp-for="SwRemoteHa" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwRemoteHaArch" class="form-label"></label><input asp-for="SwRemoteHaArch" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwRto" class="form-label"></label><input asp-for="SwRto" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwHasRecoveryPlan" class="form-label"></label><input asp-for="SwHasRecoveryPlan" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwHasDrDrill" class="form-label"></label><input asp-for="SwHasDrDrill" class="form-control" /></div>
+            <div class="col-12"><label asp-for="SwRelatedSystems" class="form-label"></label><textarea asp-for="SwRelatedSystems" class="form-control" rows="3"></textarea></div>
+            <div class="col-md-3"><label asp-for="SwHandlesPersonalData" class="form-label"></label><input asp-for="SwHandlesPersonalData" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwHasUiAuth" class="form-label"></label><input asp-for="SwHasUiAuth" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwKeepsPdTrail" class="form-label"></label><input asp-for="SwKeepsPdTrail" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwProvidesApi" class="form-label"></label><input asp-for="SwProvidesApi" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="SwTrailLocation" class="form-label"></label><input asp-for="SwTrailLocation" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwTrailStorage" class="form-label"></label><input asp-for="SwTrailStorage" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwBusinessOwnerUnit" class="form-label"></label><input asp-for="SwBusinessOwnerUnit" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwIsCoreSystem" class="form-label"></label><input asp-for="SwIsCoreSystem" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwReviewer" class="form-label"></label><input asp-for="SwReviewer" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwModifiedBy" class="form-label"></label><input asp-for="SwModifiedBy" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="SwModifiedTime" class="form-label"></label><input asp-for="SwModifiedTime" class="form-control" /></div>
+            <div class="col-12"><label asp-for="SwRemark" class="form-label"></label><textarea asp-for="SwRemark" class="form-control" rows="2"></textarea></div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

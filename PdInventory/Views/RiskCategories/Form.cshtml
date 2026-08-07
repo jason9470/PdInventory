@@ -1,0 +1,42 @@
+@model PdInventory.Models.RiskCategory
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "新增風險分類" : $"編輯風險分類 {Model.Code}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" class="col-lg-9">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label asp-for="Code" class="form-label"></label>
+            <input asp-for="Code" class="form-control" placeholder="例：R0O0002" />
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+        <div class="col-md-8">
+            <label asp-for="CategoryName" class="form-label"></label>
+            <input asp-for="CategoryName" class="form-control" placeholder="例：個人資料風險 - 委外" />
+            <span asp-validation-for="CategoryName" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="EventDescription" class="form-label"></label>
+            <textarea asp-for="EventDescription" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="col-12">
+            <label asp-for="ControlReference" class="form-label"></label>
+            <textarea asp-for="ControlReference" class="form-control" rows="4"></textarea>
+        </div>
+    </div>
+
+    <div class="my-4">
+        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

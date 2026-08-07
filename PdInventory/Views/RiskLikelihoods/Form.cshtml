@@ -1,0 +1,42 @@
+@model PdInventory.Models.RiskLikelihoodLevel
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "新增發生可能性" : $"編輯發生可能性 {Model.Label}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" class="col-lg-9">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label asp-for="Level" class="form-label"></label>
+            <input asp-for="Level" class="form-control" type="number" min="1" max="5" />
+            <span asp-validation-for="Level" class="text-danger"></span>
+        </div>
+        <div class="col-md-9">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="例：不太可能發生" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="Situation" class="form-label"></label>
+            <textarea asp-for="Situation" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="col-12">
+            <label asp-for="Frequency" class="form-label"></label>
+            <textarea asp-for="Frequency" class="form-control" rows="2"></textarea>
+        </div>
+    </div>
+
+    <div class="my-4">
+        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

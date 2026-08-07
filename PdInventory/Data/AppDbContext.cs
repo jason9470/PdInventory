@@ -12,11 +12,19 @@ public class AppDbContext : DbContext
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
     public DbSet<TransferRecord> TransferRecords => Set<TransferRecord>();
     public DbSet<InfoSystem> InfoSystems => Set<InfoSystem>();
+    public DbSet<RiskCategory> RiskCategories => Set<RiskCategory>();
+    public DbSet<RiskImpactLevel> RiskImpactLevels => Set<RiskImpactLevel>();
+    public DbSet<RiskLikelihoodLevel> RiskLikelihoodLevels => Set<RiskLikelihoodLevel>();
+    public DbSet<RiskEffectivenessLevel> RiskEffectivenessLevels => Set<RiskEffectivenessLevel>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<PdCategory>().HasIndex(c => c.Code).IsUnique();
         modelBuilder.Entity<Purpose>().HasIndex(p => p.Code).IsUnique();
+        modelBuilder.Entity<RiskCategory>().HasIndex(r => r.Code).IsUnique();
+        modelBuilder.Entity<RiskImpactLevel>().HasIndex(r => r.Level).IsUnique();
+        modelBuilder.Entity<RiskLikelihoodLevel>().HasIndex(r => r.Level).IsUnique();
+        modelBuilder.Entity<RiskEffectivenessLevel>().HasIndex(r => r.Level).IsUnique();
 
         modelBuilder.Entity<InventoryItem>()
             .HasMany(i => i.Categories)

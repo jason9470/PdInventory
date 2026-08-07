@@ -18,9 +18,14 @@
                 <input asp-for="SeqNo" class="form-control" />
                 <span asp-validation-for="SeqNo" class="text-danger"></span>
             </div>
-            <div class="col-md-10">
+            <div class="col-md-3">
+                <label asp-for="SystemCode" class="form-label"></label>
+                <input asp-for="SystemCode" class="form-control" placeholder="例：SW-108" />
+                <span asp-validation-for="SystemCode" class="text-danger"></span>
+            </div>
+            <div class="col-md-7">
                 <label asp-for="SystemName" class="form-label"></label>
-                <input asp-for="SystemName" class="form-control" placeholder="例：SW-108 經紀帳務系統" />
+                <input asp-for="SystemName" class="form-control" placeholder="例：經紀帳務系統" />
                 <span asp-validation-for="SystemName" class="text-danger"></span>
             </div>
             <div class="col-md-6">

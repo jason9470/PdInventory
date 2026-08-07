@@ -1,0 +1,145 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PdInventory.Data;
+using PdInventory.Models;
+
+namespace PdInventory.Controllers;
+
+/// <summary>資訊資產清單－軟體(SW)：管理 InfoSystems 的 SW 欄位</summary>
+public class SoftwareController : Controller
+{
+    private readonly AppDbContext _db;
+    public SoftwareController(AppDbContext db) => _db = db;
+
+    public async Task<IActionResult> Index(string? q)
+    {
+        var query = _db.InfoSystems.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(s => s.SystemCode.Contains(q)
+                                  || s.SystemName.Contains(q)
+                                  || s.SwSystemCategory.Contains(q)
+                                  || s.SwRiskOwner.Contains(q));
+
+        ViewBag.Query = q;
+        return View(await query.OrderBy(s => s.SystemCode).ToListAsync());
+    }
+
+    public IActionResult Create() => View("Form", new InfoSystem());
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(InfoSystem model)
+    {
+        if (!ModelState.IsValid) return View("Form", model);
+        _db.InfoSystems.Add(model);
+        await _db.SaveChangesAsync();
+        TempData["Message"] = $"已新增軟體資產「{model.SystemCode} {model.SystemName}」";
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var system = await _db.InfoSystems.FindAsync(id);
+        if (system is null) return NotFound();
+        return View("Form", system);
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, InfoSystem model)
+    {
+        if (id != model.Id) return BadRequest();
+        if (!ModelState.IsValid) return View("Form", model);
+
+        var existing = await _db.InfoSystems.FindAsync(id);
+        if (existing is null) return NotFound();
+
+        ApplySoftwareFields(existing, model);
+        await _db.SaveChangesAsync();
+        TempData["Message"] = $"已更新軟體資產「{existing.SystemCode} {existing.SystemName}」";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var system = await _db.InfoSystems.FindAsync(id);
+        if (system is not null)
+        {
+            _db.InfoSystems.Remove(system);
+            await _db.SaveChangesAsync();
+            TempData["Message"] = $"已刪除軟體資產「{system.SystemCode} {system.SystemName}」";
+        }
+        return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>只複製系統基本欄位與 SW 欄位，保留既有 DA 與 Sheet3 資料。</summary>
+    private static void ApplySoftwareFields(InfoSystem t, InfoSystem s)
+    {
+        t.SeqNo = s.SeqNo;
+        t.SystemCode = s.SystemCode;
+        t.SystemName = s.SystemName;
+        t.Description = s.Description;
+
+        t.SwStatus = s.SwStatus;
+        t.SwAssetType = s.SwAssetType;
+        t.SwSystemCategory = s.SwSystemCategory;
+        t.SwAdIntegration = s.SwAdIntegration;
+        t.SwOsVersion = s.SwOsVersion;
+        t.SwDbToolVersion = s.SwDbToolVersion;
+        t.SwThirdPartyComponents = s.SwThirdPartyComponents;
+        t.SwUserAccountGrant = s.SwUserAccountGrant;
+        t.SwProvidesAccountReport = s.SwProvidesAccountReport;
+        t.SwRiskOwner = s.SwRiskOwner;
+        t.SwLocation = s.SwLocation;
+        t.SwOwnerUnit = s.SwOwnerUnit;
+        t.SwCustodianUnit = s.SwCustodianUnit;
+        t.SwUserUnit = s.SwUserUnit;
+        t.SwConfidentiality = s.SwConfidentiality;
+        t.SwIntegrity = s.SwIntegrity;
+        t.SwAvailability = s.SwAvailability;
+        t.SwAssetValue = s.SwAssetValue;
+        t.SwBusinessContact = s.SwBusinessContact;
+        t.SwAppManager = s.SwAppManager;
+        t.SwAppMaintainer = s.SwAppMaintainer;
+        t.SwAppMaintainerDeputy = s.SwAppMaintainerDeputy;
+        t.SwOperator = s.SwOperator;
+        t.SwDevMode = s.SwDevMode;
+        t.SwMaintMode = s.SwMaintMode;
+        t.SwVendor = s.SwVendor;
+        t.SwLanguage = s.SwLanguage;
+        t.SwVersionControl = s.SwVersionControl;
+        t.SwApRepoPath = s.SwApRepoPath;
+        t.SwDeployMethod = s.SwDeployMethod;
+        t.SwOpRepoPath = s.SwOpRepoPath;
+        t.SwCodeAccess = s.SwCodeAccess;
+        t.SwDeveloper = s.SwDeveloper;
+        t.SwDeployer = s.SwDeployer;
+        t.SwRpo = s.SwRpo;
+        t.SwLocalBackup = s.SwLocalBackup;
+        t.SwLocalBackupType = s.SwLocalBackupType;
+        t.SwLocalBackupFreq = s.SwLocalBackupFreq;
+        t.SwRemoteBackup = s.SwRemoteBackup;
+        t.SwRemoteBackupType = s.SwRemoteBackupType;
+        t.SwRemoteBackupFreq = s.SwRemoteBackupFreq;
+        t.SwLocalHa = s.SwLocalHa;
+        t.SwLocalHaArch = s.SwLocalHaArch;
+        t.SwRemoteHa = s.SwRemoteHa;
+        t.SwRemoteHaArch = s.SwRemoteHaArch;
+        t.SwRto = s.SwRto;
+        t.SwHasRecoveryPlan = s.SwHasRecoveryPlan;
+        t.SwHasDrDrill = s.SwHasDrDrill;
+        t.SwRelatedSystems = s.SwRelatedSystems;
+        t.SwHandlesPersonalData = s.SwHandlesPersonalData;
+        t.SwHasUiAuth = s.SwHasUiAuth;
+        t.SwKeepsPdTrail = s.SwKeepsPdTrail;
+        t.SwProvidesApi = s.SwProvidesApi;
+        t.SwTrailLocation = s.SwTrailLocation;
+        t.SwTrailStorage = s.SwTrailStorage;
+        t.SwBusinessOwnerUnit = s.SwBusinessOwnerUnit;
+        t.SwIsCoreSystem = s.SwIsCoreSystem;
+        t.SwReviewer = s.SwReviewer;
+        t.SwModifiedBy = s.SwModifiedBy;
+        t.SwModifiedTime = s.SwModifiedTime;
+        t.SwRemark = s.SwRemark;
+    }
+}

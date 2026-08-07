@@ -4,8 +4,8 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>資訊系統、資料庫與檔案伺服器盤點表 <small class="text-muted fs-6">(Sheet3，共 @Model.Count 套)</small></h2>
-    <a class="btn btn-primary" asp-action="Create">＋ 新增系統</a>
+    <h2>資訊系統、資料庫與檔案伺服器盤點表 <small class="text-muted fs-6">(共 @Model.Count 套)</small></h2>
+    <a class="btn btn-primary" asp-action="Create">＋ 新增資訊資產</a>
 </div>
 
 <form method="get" class="row g-2 mb-3">
@@ -24,6 +24,7 @@
         <thead class="table-dark">
             <tr>
                 <th>編號</th>
+                <th>系統代碼</th>
                 <th>系統名稱</th>
                 <th style="max-width: 300px">系統功能描述</th>
                 <th style="max-width: 260px">資料庫/資料夾/檔案伺服器</th>
@@ -37,6 +38,7 @@
             {
                 <tr>
                     <td>@s.SeqNo</td>
+                    <td>@s.SystemCode</td>
                     <td>@s.SystemName</td>
                     <td class="text-break" style="max-width: 300px"><small>@s.Description</small></td>
                     <td class="text-break" style="max-width: 260px"><small>@s.DbName</small></td>
