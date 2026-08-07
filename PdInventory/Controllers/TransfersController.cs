@@ -16,9 +16,9 @@ public class TransfersController : Controller
         var query = _db.TransferRecords.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
-            query = query.Where(t => t.SystemName.Contains(q)
+            query = query.Where(t => t.SystemCode.Contains(q)
+                                  || t.SystemName.Contains(q)
                                   || t.ExternalUnit.Contains(q)
-                                  || t.ContentDescription.Contains(q)
                                   || t.PathName.Contains(q)
                                   || t.Remark.Contains(q));
 

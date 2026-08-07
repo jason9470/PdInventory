@@ -1,7 +1,7 @@
 @model PdInventory.Models.InfoSystem
 @{
     var isNew = Model.Id == 0;
-    ViewData["Title"] = isNew ? "新增資料資產(DA)" : $"編輯資料資產 {Model.DaAssetCode} {Model.DaAssetName}";
+    ViewData["Title"] = isNew ? "新增資料資產(DA)" : $"編輯資料資產 {Model.DaAssetCode} {Model.SystemName}";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -33,10 +33,9 @@
     <div class="card mb-3">
         <div class="card-header fw-bold bg-success text-white">資料資產(DA)明細</div>
         <div class="card-body row g-3">
-            <div class="col-md-3"><label asp-for="DaAssetCode" class="form-label"></label><input asp-for="DaAssetCode" class="form-control" placeholder="例：DA-119" /></div>
-            <div class="col-md-3"><label asp-for="DaAssetType" class="form-label"></label><input asp-for="DaAssetType" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="DaStatus" class="form-label"></label><input asp-for="DaStatus" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="DaAssetName" class="form-label"></label><input asp-for="DaAssetName" class="form-control" /></div>
+            <div class="col-md-4"><label asp-for="DaAssetCode" class="form-label"></label><input asp-for="DaAssetCode" class="form-control" placeholder="例：DA-119" /></div>
+            <div class="col-md-4"><label asp-for="DaAssetType" class="form-label"></label><input asp-for="DaAssetType" class="form-control" /></div>
+            <div class="col-md-4"><label asp-for="DaStatus" class="form-label"></label><input asp-for="DaStatus" class="form-control" /></div>
             <div class="col-12"><label asp-for="DaDescription" class="form-label"></label><textarea asp-for="DaDescription" class="form-control" rows="2"></textarea></div>
             <div class="col-md-4"><label asp-for="DaBackupMethod" class="form-label"></label><input asp-for="DaBackupMethod" class="form-control" /></div>
             <div class="col-md-4"><label asp-for="DaRetentionPeriod" class="form-label"></label><input asp-for="DaRetentionPeriod" class="form-control" /></div>

@@ -18,7 +18,6 @@ public class SoftwareController : Controller
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(s => s.SystemCode.Contains(q)
                                   || s.SystemName.Contains(q)
-                                  || s.SwSystemCategory.Contains(q)
                                   || s.SwRiskOwner.Contains(q));
 
         ViewBag.Query = q;
@@ -72,13 +71,16 @@ public class SoftwareController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>只複製系統基本欄位與 SW 欄位，保留既有 DA 與 Sheet3 資料。</summary>
+    /// <summary>
+    /// 只複製系統基本欄位與 SW 欄位，保留既有 DA 與 Sheet3 資料。
+    /// 例外：畫面上的「資產說明」取自 DaDescription，故一併寫回。
+    /// </summary>
     private static void ApplySoftwareFields(InfoSystem t, InfoSystem s)
     {
         t.SeqNo = s.SeqNo;
         t.SystemCode = s.SystemCode;
         t.SystemName = s.SystemName;
-        t.Description = s.Description;
+        t.DaDescription = s.DaDescription;
 
         t.SwStatus = s.SwStatus;
         t.SwAssetType = s.SwAssetType;

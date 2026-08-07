@@ -614,10 +614,6 @@ public class InfoSystem
     [StringLength(20)]
     public string DaStatus { get; set; } = "";
 
-    [Display(Name = "DA-資料資產名稱")]
-    [StringLength(200)]
-    public string DaAssetName { get; set; } = "";
-
     [Display(Name = "DA-資產說明")]
     public string DaDescription { get; set; } = "";
 

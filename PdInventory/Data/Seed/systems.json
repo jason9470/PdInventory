@@ -460,7 +460,6 @@
     "DaAssetCode": "DA-119",
     "DaAssetType": "資料",
     "DaStatus": "線上",
-    "DaAssetName": "經紀帳務系統",
     "DaDescription": "後台帳務處理（證券經紀業務－後台）",
     "DaBackupMethod": "日備份;#異地抄寫",
     "DaRetentionPeriod": "日備份7天,7版本",

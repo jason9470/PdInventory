@@ -13,7 +13,7 @@
 <form method="get" class="row g-2 mb-3">
     <div class="col-auto">
         <input type="text" name="q" value="@ViewBag.Query" class="form-control"
-               placeholder="搜尋資產編號/名稱/系統類別/風險擁有者" style="min-width: 320px" />
+               placeholder="搜尋資產編號/軟體資產名稱/風險擁有者" style="min-width: 320px" />
     </div>
     <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
@@ -47,7 +47,7 @@
                     <td>@s.SystemName</td>
                     <td>@s.SwSystemCategory</td>
                     <td>@s.SwIsCoreSystem</td>
-                    <td class="text-break" style="max-width: 260px"><small>@s.Description</small></td>
+                    <td class="text-break" style="max-width: 260px"><small>@s.DaDescription</small></td>
                     <td><small>@s.SwOsVersion</small></td>
                     <td><small>@s.SwDbToolVersion</small></td>
                     <td>@s.SwRiskOwner</td>

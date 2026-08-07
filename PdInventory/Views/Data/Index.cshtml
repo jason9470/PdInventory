@@ -28,7 +28,6 @@
                 <th>關連SW編號</th>
                 <th>資料資產編號</th>
                 <th>資料資產狀態</th>
-                <th>資料資產名稱</th>
                 <th style="max-width: 260px">資產說明</th>
                 <th>資料備份與保存方式</th>
                 <th>資料保留期限</th>
@@ -44,7 +43,6 @@
                     <td>@s.SystemCode</td>
                     <td>@s.DaAssetCode</td>
                     <td>@s.DaStatus</td>
-                    <td>@s.DaAssetName</td>
                     <td class="text-break" style="max-width: 260px"><small>@s.DaDescription</small></td>
                     <td><small>@s.DaBackupMethod</small></td>
                     <td><small>@s.DaRetentionPeriod</small></td>
@@ -54,7 +52,7 @@
                         <a class="btn btn-sm btn-outline-info" asp-controller="Systems" asp-action="Details" asp-route-id="@s.Id">檢視</a>
                         <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@s.Id">編輯</a>
                         <form method="post" asp-action="Delete" asp-route-id="@s.Id" class="d-inline"
-                              onsubmit="return confirm('確定刪除資料資產「@s.DaAssetCode @s.DaAssetName」？此動作會一併刪除同筆的 SW 與系統資料。');">
+                              onsubmit="return confirm('確定刪除資料資產「@s.DaAssetCode @s.SystemName」？此動作會一併刪除同筆的 SW 與系統資料。');">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
                         </form>

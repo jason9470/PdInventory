@@ -16,10 +16,9 @@ public class SystemsController : Controller
         var query = _db.InfoSystems.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
-            query = query.Where(s => s.SystemName.Contains(q)
-                                  || s.Description.Contains(q)
-                                  || s.DbName.Contains(q)
-                                  || s.Remark.Contains(q));
+            query = query.Where(s => s.SystemCode.Contains(q)
+                                  || s.SystemName.Contains(q)
+                                  || s.DbName.Contains(q));
 
         ViewBag.Query = q;
         return View(await query.OrderBy(s => s.SeqNo).ToListAsync());

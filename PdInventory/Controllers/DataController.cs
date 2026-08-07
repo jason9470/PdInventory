@@ -17,7 +17,6 @@ public class DataController : Controller
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(s => s.DaAssetCode.Contains(q)
-                                  || s.DaAssetName.Contains(q)
                                   || s.SystemCode.Contains(q)
                                   || s.DaRiskOwner.Contains(q));
 
@@ -33,7 +32,7 @@ public class DataController : Controller
         if (!ModelState.IsValid) return View("Form", model);
         _db.InfoSystems.Add(model);
         await _db.SaveChangesAsync();
-        TempData["Message"] = $"已新增資料資產「{model.DaAssetCode} {model.DaAssetName}」";
+        TempData["Message"] = $"已新增資料資產「{model.DaAssetCode} {model.SystemName}」";
         return RedirectToAction(nameof(Index));
     }
 
@@ -55,7 +54,7 @@ public class DataController : Controller
 
         ApplyDataFields(existing, model);
         await _db.SaveChangesAsync();
-        TempData["Message"] = $"已更新資料資產「{existing.DaAssetCode} {existing.DaAssetName}」";
+        TempData["Message"] = $"已更新資料資產「{existing.DaAssetCode} {existing.SystemName}」";
         return RedirectToAction(nameof(Index));
     }
 
@@ -67,7 +66,7 @@ public class DataController : Controller
         {
             _db.InfoSystems.Remove(system);
             await _db.SaveChangesAsync();
-            TempData["Message"] = $"已刪除資料資產「{system.DaAssetCode} {system.DaAssetName}」";
+            TempData["Message"] = $"已刪除資料資產「{system.DaAssetCode} {system.SystemName}」";
         }
         return RedirectToAction(nameof(Index));
     }
@@ -82,7 +81,6 @@ public class DataController : Controller
         t.DaAssetCode = s.DaAssetCode;
         t.DaAssetType = s.DaAssetType;
         t.DaStatus = s.DaStatus;
-        t.DaAssetName = s.DaAssetName;
         t.DaDescription = s.DaDescription;
         t.DaBackupMethod = s.DaBackupMethod;
         t.DaRetentionPeriod = s.DaRetentionPeriod;

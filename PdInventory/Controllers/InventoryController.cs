@@ -20,9 +20,9 @@ public class InventoryController : Controller
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(i => i.DocumentName.Contains(q)
+                                  || i.SystemCode.Contains(q)
                                   || i.SystemName.Contains(q)
-                                  || i.SeqNo.Contains(q)
-                                  || i.Remark.Contains(q));
+                                  || i.SeqNo.Contains(q));
 
         ViewBag.Query = q;
         return View(await query.OrderBy(i => i.SeqNo).ToListAsync());
