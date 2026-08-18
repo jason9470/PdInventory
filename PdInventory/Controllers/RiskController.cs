@@ -18,9 +18,7 @@ public class RiskController : Controller
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(i => i.DocumentName.Contains(q)
                                   || i.SystemCode.Contains(q)
-                                  || i.SystemName.Contains(q)
-                                  || i.RiskDataSeqNo.Contains(q)
-                                  || i.RiskCategoryCode.Contains(q));
+                                  || i.SystemName.Contains(q));
 
         ViewBag.Query = q;
         return View(await query.OrderBy(i => i.SystemCode).ThenBy(i => i.SeqNo).ToListAsync());

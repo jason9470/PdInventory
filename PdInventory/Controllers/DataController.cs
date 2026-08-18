@@ -17,8 +17,7 @@ public class DataController : Controller
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(s => s.DaAssetCode.Contains(q)
-                                  || s.SystemCode.Contains(q)
-                                  || s.DaRiskOwner.Contains(q));
+                                  || s.SystemCode.Contains(q));
 
         ViewBag.Query = q;
         return View(await query.OrderBy(s => s.SystemCode).ToListAsync());

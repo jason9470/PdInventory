@@ -13,7 +13,7 @@
 <form method="get" class="row g-2 mb-3">
     <div class="col-auto">
         <input type="text" name="q" value="@ViewBag.Query" class="form-control"
-               placeholder="搜尋資產編號/軟體資產名稱/風險擁有者" style="min-width: 320px" />
+               placeholder="搜尋資產編號/資產名稱" style="min-width: 320px" />
     </div>
     <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
@@ -25,9 +25,9 @@
     <table class="table table-striped table-hover table-sm align-middle">
         <thead class="table-dark">
             <tr>
-                <th>資產編號</th>
                 <th>資產狀態</th>
-                <th>軟體資產名稱</th>
+                <th>資產編號</th>
+                <th>資產名稱</th>
                 <th>系統類別</th>
                 <th>是否為核心系統</th>
                 <th style="max-width: 260px">資產說明</th>
@@ -42,8 +42,8 @@
             @foreach (var s in Model)
             {
                 <tr>
-                    <td>@s.SystemCode</td>
                     <td>@s.SwStatus</td>
+                    <td>@s.SystemCode</td>
                     <td>@s.SystemName</td>
                     <td>@s.SwSystemCategory</td>
                     <td>@s.SwIsCoreSystem</td>

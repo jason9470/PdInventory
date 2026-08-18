@@ -17,8 +17,7 @@ public class SoftwareController : Controller
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(s => s.SystemCode.Contains(q)
-                                  || s.SystemName.Contains(q)
-                                  || s.SwRiskOwner.Contains(q));
+                                  || s.SystemName.Contains(q));
 
         ViewBag.Query = q;
         return View(await query.OrderBy(s => s.SystemCode).ToListAsync());

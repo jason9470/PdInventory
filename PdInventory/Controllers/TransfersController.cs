@@ -17,10 +17,7 @@ public class TransfersController : Controller
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(t => t.SystemCode.Contains(q)
-                                  || t.SystemName.Contains(q)
-                                  || t.ExternalUnit.Contains(q)
-                                  || t.PathName.Contains(q)
-                                  || t.Remark.Contains(q));
+                                  || t.SystemName.Contains(q));
 
         if (!string.IsNullOrWhiteSpace(type))
             query = query.Where(t => t.TransferType.Contains(type));
