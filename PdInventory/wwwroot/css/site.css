@@ -29,3 +29,46 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+/* 左側導覽清單：長標題可換行，捲動時固定在視窗內 */
+.sidebar-nav {
+  position: sticky;
+  top: 1rem;
+}
+
+.sidebar-nav .list-group-item {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+
+/* 側邊欄收合：整欄隱藏，內容區補滿剩下的寬度 */
+.sidebar-collapsed .app-sidebar {
+  display: none !important;
+}
+
+@media (min-width: 992px) {
+  .sidebar-collapsed .app-main {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}
+
+/* 「維護資料」群組收合 */
+.maint-collapsed .sidebar-maint {
+  display: none;
+}
+
+.maint-collapsed .maint-caret {
+  transform: rotate(-90deg);
+}
+
+.maint-caret {
+  display: inline-block;
+  transition: transform .15s ease-in-out;
+}
+
+.sidebar-heading {
+  letter-spacing: .05em;
+}

@@ -8,11 +8,22 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PdInventory.styles.css" asp-append-version="true" />
+    @* 在首次繪製前套用收合狀態，避免換頁時側邊欄閃一下才收起來 *@
+    <script>
+        try {
+            var d = document.documentElement;
+            if (localStorage.getItem('pdinv.sidebarCollapsed') === '1') d.classList.add('sidebar-collapsed');
+            if (localStorage.getItem('pdinv.maintCollapsed') === '1') d.classList.add('maint-collapsed');
+        } catch (e) { }
+    </script>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
             <div class="container-fluid">
+                <button id="sidebarToggle" type="button"
+                        class="btn btn-sm btn-outline-light me-2 d-none d-lg-inline-block"
+                        aria-controls="appSidebar" aria-label="收合/展開左側清單" title="收合/展開左側清單">☰</button>
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">個資盤點管理系統</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -58,23 +69,69 @@
         </nav>
     </header>
     <div class="container-fluid px-4">
-        <main role="main" class="pb-3">
-            @if (TempData["Message"] is string message)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @message
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="關閉"></button>
-                </div>
-            }
-            @if (TempData["Error"] is string error)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @error
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="關閉"></button>
-                </div>
-            }
-            @RenderBody()
-        </main>
+        <div class="row g-4">
+            @* 左側清單：與上方 Nav 相同的連結；窄螢幕已有漢堡選單，故只在寬螢幕顯示 *@
+            <aside id="appSidebar" class="app-sidebar col-lg-3 col-xl-2 d-none d-lg-block">
+                <nav class="sidebar-nav">
+                    <div class="list-group list-group-flush small">
+                        <a class="list-group-item list-group-item-action @NavActive("Software")"
+                           asp-controller="Software" asp-action="Index">資訊資產清單-軟體(SW)</a>
+                        <a class="list-group-item list-group-item-action @NavActive("Data")"
+                           asp-controller="Data" asp-action="Index">資訊資產清單-資料(DA)</a>
+                        <a class="list-group-item list-group-item-action @NavActive("Risk")"
+                           asp-controller="Risk" asp-action="Index">個人資料風險自評表</a>
+                        <a class="list-group-item list-group-item-action @NavActive("Inventory")"
+                           asp-controller="Inventory" asp-action="Index">個人資料檔案盤點表-人為產出</a>
+                        <a class="list-group-item list-group-item-action @NavActive("Transfers")"
+                           asp-controller="Transfers" asp-action="Index">系統自動拋轉(出/入)清單-系統產出</a>
+                        <a class="list-group-item list-group-item-action @NavActive("Systems")"
+                           asp-controller="Systems" asp-action="Index">資訊系統/資料庫/伺服器盤點表</a>
+                    </div>
+
+                    <button id="maintToggle" type="button"
+                            class="sidebar-heading btn btn-link text-muted small fw-bold text-decoration-none
+                                   d-flex align-items-center justify-content-between w-100 mt-3 mb-1 px-3"
+                            aria-controls="sidebarMaint">
+                        <span>維護資料</span>
+                        <span class="maint-caret" aria-hidden="true">▾</span>
+                    </button>
+                    <div id="sidebarMaint" class="sidebar-maint list-group list-group-flush small">
+                        <a class="list-group-item list-group-item-action @NavActive("Categories")"
+                           asp-controller="Categories" asp-action="Index">附表一：個人資料類別</a>
+                        <a class="list-group-item list-group-item-action @NavActive("Purposes")"
+                           asp-controller="Purposes" asp-action="Index">附表二：特定目的列表</a>
+                        <a class="list-group-item list-group-item-action @NavActive("RiskCategories")"
+                           asp-controller="RiskCategories" asp-action="Index">3-1：風險分類編號</a>
+                        <a class="list-group-item list-group-item-action @NavActive("RiskImpacts")"
+                           asp-controller="RiskImpacts" asp-action="Index">3-2：評估影響程度</a>
+                        <a class="list-group-item list-group-item-action @NavActive("RiskLikelihoods")"
+                           asp-controller="RiskLikelihoods" asp-action="Index">3-3：評估發生可能性</a>
+                        <a class="list-group-item list-group-item-action @NavActive("RiskEffectiveness")"
+                           asp-controller="RiskEffectiveness" asp-action="Index">3-4：有效性評估</a>
+                    </div>
+                </nav>
+            </aside>
+
+            <div class="app-main col-12 col-lg-9 col-xl-10">
+                <main role="main" class="pb-3">
+                    @if (TempData["Message"] is string message)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @message
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="關閉"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] is string error)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @error
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="關閉"></button>
+                        </div>
+                    }
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
     </div>
 
     <footer class="border-top footer text-muted">
@@ -88,3 +145,12 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+@functions {
+    /// <summary>左側清單目前所在頁面的高亮。</summary>
+    string NavActive(string controller) =>
+        string.Equals(ViewContext.RouteData.Values["controller"] as string, controller,
+                      StringComparison.OrdinalIgnoreCase)
+            ? "active"
+            : "";
+}
