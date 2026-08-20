@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
@@ -14,6 +15,8 @@ public class RiskController : Controller
     public async Task<IActionResult> Index(string? q)
     {
         var query = _db.InventoryItems.AsQueryable();
+
+        q = this.ResolveSearch(q);
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(i => i.DocumentName.Contains(q)
@@ -51,6 +54,8 @@ public class RiskController : Controller
     {
         var item = await _db.InventoryItems.FindAsync(id);
         if (item is null) return NotFound();
+        // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
+        this.RememberSearch(item.SystemCode);
         return View(item);
     }
 
@@ -58,6 +63,8 @@ public class RiskController : Controller
     {
         var item = await _db.InventoryItems.FindAsync(id);
         if (item is null) return NotFound();
+        // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
+        this.RememberSearch(item.SystemCode);
         await LoadLookupsAsync();
         return View("Form", item);
     }

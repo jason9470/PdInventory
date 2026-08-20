@@ -1,4 +1,4 @@
-@model List<PdInventory.Models.InfoSystem>
+﻿@model List<PdInventory.Models.InfoSystem>
 @{
     ViewData["Title"] = "資訊資產清單-軟體(SW)";
 }
@@ -17,7 +17,7 @@
     </div>
     <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
-        <a class="btn btn-outline-secondary" asp-action="Index">清除</a>
+        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">清除</a>
     </div>
 </form>
 

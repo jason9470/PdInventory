@@ -1,4 +1,4 @@
-@model List<PdInventory.Models.TransferRecord>
+﻿@model List<PdInventory.Models.TransferRecord>
 @{
     ViewData["Title"] = "系統自動拋轉(出/入)清單-系統產出";
 }
@@ -22,7 +22,7 @@
     </div>
     <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
-        <a class="btn btn-outline-secondary" asp-action="Index">清除</a>
+        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">清除</a>
     </div>
 </form>
 

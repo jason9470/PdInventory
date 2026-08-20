@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
@@ -15,6 +16,8 @@ public class SystemsController : Controller
     {
         var query = _db.InfoSystems.AsQueryable();
 
+        q = this.ResolveSearch(q);
+
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(s => s.SystemCode.Contains(q)
                                   || s.SystemName.Contains(q));
@@ -27,6 +30,8 @@ public class SystemsController : Controller
     {
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is null) return NotFound();
+        // 記住這筆的資產編號，之後進到任一清單頁都會自動帶入搜尋欄
+        this.RememberSearch(system.SystemCode);
         return View(system);
     }
 
@@ -46,6 +51,8 @@ public class SystemsController : Controller
     {
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is null) return NotFound();
+        // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
+        this.RememberSearch(system.SystemCode);
         return View("Form", system);
     }
 

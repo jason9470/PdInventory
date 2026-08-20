@@ -1,4 +1,4 @@
-@model PdInventory.Models.TransferRecord
+﻿@model PdInventory.Models.TransferRecord
 @{
     var isNew = Model.Id == 0;
     ViewData["Title"] = isNew ? "新增拋轉紀錄" : $"編輯拋轉紀錄 {Model.SeqNo}";
@@ -96,7 +96,7 @@
 
     <div class="mb-4">
         <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
-        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">取消</a>
     </div>
 </form>
 

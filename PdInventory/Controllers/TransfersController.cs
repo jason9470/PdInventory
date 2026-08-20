@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
@@ -14,6 +15,8 @@ public class TransfersController : Controller
     public async Task<IActionResult> Index(string? q, string? type)
     {
         var query = _db.TransferRecords.AsQueryable();
+
+        q = this.ResolveSearch(q);
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(t => t.SystemCode.Contains(q)
@@ -43,6 +46,8 @@ public class TransfersController : Controller
     {
         var record = await _db.TransferRecords.FindAsync(id);
         if (record is null) return NotFound();
+        // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
+        this.RememberSearch(record.SystemCode);
         return View("Form", record);
     }
 

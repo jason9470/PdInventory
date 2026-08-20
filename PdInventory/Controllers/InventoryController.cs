@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
@@ -17,6 +18,8 @@ public class InventoryController : Controller
             .Include(i => i.Categories)
             .Include(i => i.Purposes)
             .AsQueryable();
+
+        q = this.ResolveSearch(q);
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(i => i.DocumentName.Contains(q)
@@ -34,6 +37,8 @@ public class InventoryController : Controller
             .Include(i => i.Purposes)
             .FirstOrDefaultAsync(i => i.Id == id);
         if (item is null) return NotFound();
+        // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
+        this.RememberSearch(item.SystemCode);
         return View(item);
     }
 
@@ -68,6 +73,8 @@ public class InventoryController : Controller
             .FirstOrDefaultAsync(i => i.Id == id);
         if (item is null) return NotFound();
 
+        // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
+        this.RememberSearch(item.SystemCode);
         await LoadLookupsAsync(
             item.Categories.Select(c => c.Id).ToArray(),
             item.Purposes.Select(p => p.Id).ToArray());

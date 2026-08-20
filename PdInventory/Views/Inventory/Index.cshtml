@@ -1,4 +1,4 @@
-@model List<PdInventory.Models.InventoryItem>
+﻿@model List<PdInventory.Models.InventoryItem>
 @{
     ViewData["Title"] = "個人資料檔案盤點表-人為產出";
 }
@@ -15,7 +15,7 @@
     </div>
     <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
-        <a class="btn btn-outline-secondary" asp-action="Index">清除</a>
+        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">清除</a>
     </div>
 </form>
 

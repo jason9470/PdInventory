@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 
@@ -11,6 +11,15 @@ builder.Services.AddControllersWithViews(options =>
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
     // 空白輸入綁定為空字串而非 null
     options.ModelMetadataDetailsProviders.Add(new EmptyStringBindsAsEmptyProvider());
+});
+
+// 清單頁搜尋條件的記憶（見 Helpers/SearchMemory.cs）
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 var dbDir = Path.Combine(builder.Environment.ContentRootPath, "App_Data");
@@ -38,6 +47,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseSession();
 app.UseAuthorization();
 
 app.MapStaticAssets();

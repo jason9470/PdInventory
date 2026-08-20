@@ -1,4 +1,4 @@
-@model PdInventory.Models.InventoryItem
+﻿@model PdInventory.Models.InventoryItem
 @{
     var isNew = Model.Id == 0;
     ViewData["Title"] = isNew ? "新增盤點項目" : $"編輯盤點項目 {Model.SeqNo}";
@@ -217,7 +217,7 @@
 
     <div class="mb-4">
         <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
-        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">取消</a>
     </div>
 </form>
 
