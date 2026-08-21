@@ -39,17 +39,6 @@ public class SystemsController : Controller
         return File(content, ExcelExporter.ContentType, fileName);
     }
 
-    /// <param name="from">來源清單頁，供[回列表]回到原處。</param>
-    public async Task<IActionResult> Details(int id, string? from)
-    {
-        var system = await _db.InfoSystems.FindAsync(id);
-        if (system is null) return NotFound();
-        // 記住這筆的資產編號，之後進到任一清單頁都會自動帶入搜尋欄
-        this.RememberSearch(system.SystemCode);
-        ViewBag.From = ListSource.Resolve(from);
-        return View(system);
-    }
-
     /// <param name="from">從哪張清單按的[新增]，決定[取消]與新增後回到哪裡。</param>
     public IActionResult Create(string? from)
     {

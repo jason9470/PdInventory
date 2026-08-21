@@ -48,7 +48,7 @@
                     <td class="text-break" style="max-width: 200px"><small>@s.BackupLocation</small></td>
                     <td><small>@s.BackupCycle</small></td>
                     <td>
-                        <a class="btn btn-sm btn-outline-info" asp-action="Details"
+                        <a class="btn btn-sm btn-outline-info" asp-controller="Software" asp-action="Details"
                            asp-route-id="@s.Id" asp-route-from="Systems">檢視</a>
                         <a class="btn btn-sm btn-outline-primary" asp-action="Edit"
                            asp-route-id="@s.Id" asp-route-from="Systems">編輯</a>

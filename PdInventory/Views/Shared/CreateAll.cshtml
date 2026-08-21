@@ -20,7 +20,7 @@
     <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
 </div>
 
-<form method="post" asp-controller="Systems" asp-action="Create">
+<form method="post" class="pd-form" asp-controller="Systems" asp-action="Create">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" name="from" value="@from" />
 

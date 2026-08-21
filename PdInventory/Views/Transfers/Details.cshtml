@@ -1,0 +1,84 @@
+@model PdInventory.Models.TransferRecord
+@{
+    ViewData["Title"] = $"拋轉紀錄 {Model.SeqNo}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>
+        拋轉紀錄：@Model.SeqNo @Model.SystemName
+        @if (Model.TransferType.Contains("拋入") && Model.TransferType.Contains("拋出"))
+        {
+            <span class="badge bg-warning text-dark align-middle">拋入/拋出</span>
+        }
+        else if (Model.TransferType.Contains("拋入"))
+        {
+            <span class="badge bg-primary align-middle">拋入</span>
+        }
+        else
+        {
+            <span class="badge bg-success align-middle">拋出</span>
+        }
+    </h2>
+    <div>
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">編輯</a>
+        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">回列表</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">I. 公司拋轉機制資訊</div>
+    <div class="card-body pd-body">
+        <dl class="pd-spec">
+            <dt>@Html.DisplayNameFor(m => m.SeqNo)</dt>
+            <dd>@Model.SeqNo</dd>
+            <dt>@Html.DisplayNameFor(m => m.TransferType)</dt>
+            <dd>@Model.TransferType</dd>
+            <dt>@Html.DisplayNameFor(m => m.SystemCode)</dt>
+            <dd>@Model.SystemCode</dd>
+            <dt>@Html.DisplayNameFor(m => m.SystemName)</dt>
+            <dd>@Model.SystemName</dd>
+            <dt>@Html.DisplayNameFor(m => m.PathName)</dt>
+            <dd style="white-space: pre-wrap">@Model.PathName</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">II. 外部單位拋轉機制資訊</div>
+    <div class="card-body pd-body">
+        <dl class="pd-spec">
+            <dt>@Html.DisplayNameFor(m => m.ExternalUnit)</dt>
+            <dd>@Model.ExternalUnit</dd>
+            <dt>@Html.DisplayNameFor(m => m.InternalUnit)</dt>
+            <dd>@Model.InternalUnit</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">III. 拋轉資訊</div>
+    <div class="card-body pd-body">
+        <dl class="pd-spec">
+            <dt>@Html.DisplayNameFor(m => m.ContentDescription)</dt>
+            <dd style="white-space: pre-wrap">@Model.ContentDescription</dd>
+            <dt>@Html.DisplayNameFor(m => m.SpecialData)</dt>
+            <dd>@Model.SpecialData</dd>
+            <dt>@Html.DisplayNameFor(m => m.SubjectCount)</dt>
+            <dd>@Model.SubjectCount</dd>
+            <dt>@Html.DisplayNameFor(m => m.InternationalTransfer)</dt>
+            <dd>@Model.InternationalTransfer</dd>
+            <dt>@Html.DisplayNameFor(m => m.Contract)</dt>
+            <dd style="white-space: pre-wrap">@Model.Contract</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">IV. 備註</div>
+    <div class="card-body pd-body">
+        <dl class="pd-spec">
+            <dt>@Html.DisplayNameFor(m => m.Remark)</dt>
+            <dd style="white-space: pre-wrap">@Model.Remark</dd>
+        </dl>
+    </div>
+</div>

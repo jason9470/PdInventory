@@ -39,6 +39,20 @@ public class SoftwareController : Controller
         return File(content, ExcelExporter.ContentType, fileName);
     }
 
+    /// <summary>
+    /// SW / DA / 系統盤點三張清單共用的檢視畫面。放在 Software 是因為 SW 才是主表。
+    /// </summary>
+    /// <param name="from">來源清單頁，供[回列表]回到原處。</param>
+    public async Task<IActionResult> Details(int id, string? from)
+    {
+        var system = await _db.InfoSystems.FindAsync(id);
+        if (system is null) return NotFound();
+        // 記住這筆的資產編號，之後進到任一清單頁都會自動帶入搜尋欄
+        this.RememberSearch(system.SystemCode);
+        ViewBag.From = ListSource.Resolve(from);
+        return View(system);
+    }
+
     // 新增與編輯畫面已整併到 Views/Shared 的 CreateAll / EditAll（由 SystemsController 提供），
     // 故此處只保留清單、編輯的 POST 與刪除；Edit 的 POST 仍是統一編輯畫面該區塊的送出目標。
 

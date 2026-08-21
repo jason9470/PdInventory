@@ -248,3 +248,19 @@ body {
 
 /* 規格列自行處理框線與內距，卡片不再另加 padding */
 .card-body.pd-body { padding: 0; }
+
+/* 表單頁的標籤：與檢視頁的規格列採同一種字級與對比，避免兩邊看起來像兩套系統 */
+.pd-form .form-label {
+  margin-bottom: .25rem;
+  font-size: .8125rem;
+  color: #495057;
+}
+
+/* 匯出欄位維護：沿用清單的斑馬紋與 hover */
+.export-column-list .list-group-item:nth-of-type(odd) {
+  background-color: #f8f9fa;
+}
+
+.export-column-list .list-group-item:hover {
+  background-color: #dbe9ff;
+}

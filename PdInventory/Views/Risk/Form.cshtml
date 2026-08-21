@@ -13,7 +13,7 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form method="post" asp-action="@(isCreate ? "Create" : "Edit")" asp-route-id="@Model.Id">
+<form method="post" class="pd-form" asp-action="@(isCreate ? "Create" : "Edit")" asp-route-id="@Model.Id">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
 

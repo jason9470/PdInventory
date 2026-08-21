@@ -18,7 +18,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>編輯：@Model.SeqNo @Model.SystemCode @Model.SystemName</h2>
     <div>
-        <a class="btn btn-outline-info" asp-controller="Systems" asp-action="Details"
+        <a class="btn btn-outline-info" asp-controller="Software" asp-action="Details"
            asp-route-id="@Model.Id" asp-route-from="@from">檢視</a>
         <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
     </div>
@@ -27,7 +27,7 @@
 <p class="text-muted small">三個區塊各自獨立儲存，按下區塊下方的[儲存]只會寫入該區塊的欄位。</p>
 
 @* ─────────────────────────── 資訊資產清單－軟體(SW) ─────────────────────────── *@
-<form method="post" asp-controller="Software" asp-action="Edit" asp-route-id="@Model.Id">
+<form method="post" class="pd-form" asp-controller="Software" asp-action="Edit" asp-route-id="@Model.Id">
     <input type="hidden" name="Id" value="@Model.Id" />
     <input type="hidden" name="from" value="@from" />
     <input type="hidden" name="SeqNo" value="@Model.SeqNo" />
@@ -107,7 +107,7 @@
 </form>
 
 @* ─────────────────────────── 資訊資產清單－資料(DA) ─────────────────────────── *@
-<form method="post" asp-controller="Data" asp-action="Edit" asp-route-id="@Model.Id">
+<form method="post" class="pd-form" asp-controller="Data" asp-action="Edit" asp-route-id="@Model.Id">
     <input type="hidden" name="Id" value="@Model.Id" />
     <input type="hidden" name="from" value="@from" />
     <input type="hidden" name="SeqNo" value="@Model.SeqNo" />
@@ -146,7 +146,7 @@
 </form>
 
 @* ──────────────────── 資訊系統、資料庫與檔案伺服器盤點表 ──────────────────── *@
-<form method="post" asp-controller="Systems" asp-action="Edit" asp-route-id="@Model.Id">
+<form method="post" class="pd-form" asp-controller="Systems" asp-action="Edit" asp-route-id="@Model.Id">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" name="Id" value="@Model.Id" />
     <input type="hidden" name="from" value="@from" />

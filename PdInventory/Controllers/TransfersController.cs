@@ -45,6 +45,15 @@ public class TransfersController : Controller
         return File(content, ExcelExporter.ContentType, fileName);
     }
 
+    public async Task<IActionResult> Details(int id)
+    {
+        var record = await _db.TransferRecords.FindAsync(id);
+        if (record is null) return NotFound();
+        // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
+        this.RememberSearch(record.SystemCode);
+        return View(record);
+    }
+
     public IActionResult Create() => View("Form", new TransferRecord());
 
     [HttpPost, ValidateAntiForgeryToken]
