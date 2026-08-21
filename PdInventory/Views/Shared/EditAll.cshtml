@@ -24,7 +24,7 @@
     </div>
 </div>
 
-<p class="text-muted small">三個區塊各自獨立儲存，按下區塊右上角的[儲存]只會寫入該區塊的欄位。</p>
+<p class="text-muted small">三個區塊各自獨立儲存，按下區塊下方的[儲存]只會寫入該區塊的欄位。</p>
 
 @* ─────────────────────────── 資訊資產清單－軟體(SW) ─────────────────────────── *@
 <form method="post" asp-controller="Software" asp-action="Edit" asp-route-id="@Model.Id">
@@ -35,10 +35,7 @@
     <input type="hidden" name="SystemName" value="@Model.SystemName" />
 
     <div class="card mb-3">
-        <div class="card-header fw-bold bg-primary text-white d-flex justify-content-between align-items-center">
-            <span>資訊資產清單－軟體(SW)</span>
-            <button type="submit" class="btn btn-sm btn-light">儲存 SW</button>
-        </div>
+        <div class="card-header fw-bold bg-primary text-white">資訊資產清單－軟體(SW)</div>
         <div class="card-body row g-3">
             <div class="col-md-3"><label asp-for="SwStatus" class="form-label"></label><input asp-for="SwStatus" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="SwAssetType" class="form-label"></label><input asp-for="SwAssetType" class="form-control" /></div>
@@ -103,6 +100,10 @@
             <div class="col-12"><label asp-for="SwRemark" class="form-label"></label><textarea asp-for="SwRemark" class="form-control" rows="2"></textarea></div>
         </div>
     </div>
+
+    <div class="mb-4">
+        <button type="submit" class="btn btn-primary">儲存 SW</button>
+    </div>
 </form>
 
 @* ─────────────────────────── 資訊資產清單－資料(DA) ─────────────────────────── *@
@@ -114,10 +115,7 @@
     <input type="hidden" name="SystemName" value="@Model.SystemName" />
 
     <div class="card mb-3">
-        <div class="card-header fw-bold bg-success text-white d-flex justify-content-between align-items-center">
-            <span>資訊資產清單－資料(DA)</span>
-            <button type="submit" class="btn btn-sm btn-light">儲存 DA</button>
-        </div>
+        <div class="card-header fw-bold bg-success text-white">資訊資產清單－資料(DA)</div>
         <div class="card-body row g-3">
             <div class="col-md-4"><label asp-for="DaAssetCode" class="form-label"></label><input asp-for="DaAssetCode" class="form-control" placeholder="例：DA-119" /></div>
             <div class="col-md-4"><label asp-for="DaAssetType" class="form-label"></label><input asp-for="DaAssetType" class="form-control" /></div>
@@ -141,6 +139,10 @@
             <div class="col-12"><label asp-for="DaRemark" class="form-label"></label><textarea asp-for="DaRemark" class="form-control" rows="2"></textarea></div>
         </div>
     </div>
+
+    <div class="mb-4">
+        <button type="submit" class="btn btn-success">儲存 DA</button>
+    </div>
 </form>
 
 @* ──────────────────── 資訊系統、資料庫與檔案伺服器盤點表 ──────────────────── *@
@@ -150,10 +152,7 @@
     <input type="hidden" name="from" value="@from" />
 
     <div class="card mb-3">
-        <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-            <span>資訊系統／資料庫／伺服器盤點表</span>
-            <button type="submit" class="btn btn-sm btn-primary">儲存系統盤點</button>
-        </div>
+        <div class="card-header fw-bold">資訊系統／資料庫／伺服器盤點表</div>
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-12"><h6 class="text-muted border-bottom pb-1 mb-0">I. 系統基本資訊</h6></div>
@@ -247,6 +246,11 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="mb-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">儲存</button>
+        <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
     </div>
 </form>
 

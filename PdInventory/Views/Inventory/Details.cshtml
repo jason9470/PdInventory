@@ -13,94 +13,94 @@
 
 <div class="card mb-3">
     <div class="card-header fw-bold">Ⅰ. 盤點基本資訊 / II. 個人資料檔案內容元素</div>
-    <div class="card-body">
-        <dl class="row mb-0">
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SeqNo)</dt>
-            <dd class="col-sm-9">@Model.SeqNo</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.DocumentName)</dt>
-            <dd class="col-sm-9">@Model.DocumentName</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SubjectCount)</dt>
-            <dd class="col-sm-9">@Model.SubjectCount</dd>
-            <dt class="col-sm-3">使用資料(欄位)</dt>
-            <dd class="col-sm-9">
+    <div class="card-body pd-body">
+        <dl class="pd-spec">
+            <dt>@Html.DisplayNameFor(m => m.SeqNo)</dt>
+            <dd>@Model.SeqNo</dd>
+            <dt>@Html.DisplayNameFor(m => m.DocumentName)</dt>
+            <dd>@Model.DocumentName</dd>
+            <dt>@Html.DisplayNameFor(m => m.SubjectCount)</dt>
+            <dd>@Model.SubjectCount</dd>
+            <dt>使用資料(欄位)</dt>
+            <dd>
                 @foreach (var c in Model.Categories.OrderBy(c => c.Code))
                 {
                     <span class="badge bg-info text-dark me-1" title="@c.Example">@c.DisplayCode @c.Name</span>
                 }
             </dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SubjectType)</dt>
-            <dd class="col-sm-9">@Model.SubjectType</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.HasSpecialData)</dt>
-            <dd class="col-sm-9">@(Model.HasSpecialData ? "Y" : "N")</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SpecialDataLegalBasis)</dt>
-            <dd class="col-sm-9">@Model.SpecialDataLegalBasis</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.MinFieldCompliant)</dt>
-            <dd class="col-sm-9">@(Model.MinFieldCompliant ? "Y" : "N")</dd>
-            <dt class="col-sm-3">特定目的</dt>
-            <dd class="col-sm-9">
+            <dt>@Html.DisplayNameFor(m => m.SubjectType)</dt>
+            <dd>@Model.SubjectType</dd>
+            <dt>@Html.DisplayNameFor(m => m.HasSpecialData)</dt>
+            <dd>@(Model.HasSpecialData ? "Y" : "N")</dd>
+            <dt>@Html.DisplayNameFor(m => m.SpecialDataLegalBasis)</dt>
+            <dd>@Model.SpecialDataLegalBasis</dd>
+            <dt>@Html.DisplayNameFor(m => m.MinFieldCompliant)</dt>
+            <dd>@(Model.MinFieldCompliant ? "Y" : "N")</dd>
+            <dt>特定目的</dt>
+            <dd>
                 @foreach (var p in Model.Purposes.OrderBy(p => p.Code))
                 {
                     <span class="badge bg-secondary me-1">@p.Code @p.Name</span>
                 }
             </dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SystemCode)</dt>
-            <dd class="col-sm-9">@Model.SystemCode</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SystemName)</dt>
-            <dd class="col-sm-9">@Model.SystemName</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SourceCode)</dt>
-            <dd class="col-sm-9">@Model.SourceCode</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SourceName)</dt>
-            <dd class="col-sm-9">@Model.SourceName</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CompanyRole)</dt>
-            <dd class="col-sm-9">@Model.CompanyRole</dd>
+            <dt>@Html.DisplayNameFor(m => m.SystemCode)</dt>
+            <dd>@Model.SystemCode</dd>
+            <dt>@Html.DisplayNameFor(m => m.SystemName)</dt>
+            <dd>@Model.SystemName</dd>
+            <dt>@Html.DisplayNameFor(m => m.SourceCode)</dt>
+            <dd>@Model.SourceCode</dd>
+            <dt>@Html.DisplayNameFor(m => m.SourceName)</dt>
+            <dd>@Model.SourceName</dd>
+            <dt>@Html.DisplayNameFor(m => m.CompanyRole)</dt>
+            <dd>@Model.CompanyRole</dd>
         </dl>
     </div>
 </div>
 
 <div class="card mb-3">
     <div class="card-header fw-bold">III. 個人資料生命循環 — 蒐集 / 處理</div>
-    <div class="card-body">
-        <dl class="row mb-0">
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CollectProcedure)</dt>
-            <dd class="col-sm-9">@Model.CollectProcedure</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CollectStatement)</dt>
-            <dd class="col-sm-9">@Model.CollectStatement</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CollectConsent)</dt>
-            <dd class="col-sm-9">@Model.CollectConsent</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ProcessProcedure)</dt>
-            <dd class="col-sm-9">@Model.ProcessProcedure</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ProcessDept)</dt>
-            <dd class="col-sm-9">@Model.ProcessDept</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ProcessStatement)</dt>
-            <dd class="col-sm-9">@Model.ProcessStatement</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ProcessConsent)</dt>
-            <dd class="col-sm-9">@Model.ProcessConsent</dd>
+    <div class="card-body pd-body">
+        <dl class="pd-spec">
+            <dt>@Html.DisplayNameFor(m => m.CollectProcedure)</dt>
+            <dd>@Model.CollectProcedure</dd>
+            <dt>@Html.DisplayNameFor(m => m.CollectStatement)</dt>
+            <dd>@Model.CollectStatement</dd>
+            <dt>@Html.DisplayNameFor(m => m.CollectConsent)</dt>
+            <dd>@Model.CollectConsent</dd>
+            <dt>@Html.DisplayNameFor(m => m.ProcessProcedure)</dt>
+            <dd>@Model.ProcessProcedure</dd>
+            <dt>@Html.DisplayNameFor(m => m.ProcessDept)</dt>
+            <dd>@Model.ProcessDept</dd>
+            <dt>@Html.DisplayNameFor(m => m.ProcessStatement)</dt>
+            <dd>@Model.ProcessStatement</dd>
+            <dt>@Html.DisplayNameFor(m => m.ProcessConsent)</dt>
+            <dd>@Model.ProcessConsent</dd>
         </dl>
     </div>
 </div>
 
 <div class="card mb-3">
     <div class="card-header fw-bold">III. 個人資料生命循環 — 傳輸 / 保存 / 處置</div>
-    <div class="card-body">
-        <dl class="row mb-0">
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.TransferTarget)</dt>
-            <dd class="col-sm-9">@Model.TransferTarget</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.TransferContract)</dt>
-            <dd class="col-sm-9">@Model.TransferContract</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.TransferMethod)</dt>
-            <dd class="col-sm-9">@Model.TransferMethod</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.TransferCountry)</dt>
-            <dd class="col-sm-9">@Model.TransferCountry</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RetentionPaper)</dt>
-            <dd class="col-sm-9">@Model.RetentionPaper</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RetentionDigital)</dt>
-            <dd class="col-sm-9">@Model.RetentionDigital</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.LocationPaper)</dt>
-            <dd class="col-sm-9">@Model.LocationPaper</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.LocationDigital)</dt>
-            <dd class="col-sm-9">@Model.LocationDigital</dd>
-            <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Disposal)</dt>
-            <dd class="col-sm-9">@Model.Disposal</dd>
+    <div class="card-body pd-body">
+        <dl class="pd-spec">
+            <dt>@Html.DisplayNameFor(m => m.TransferTarget)</dt>
+            <dd>@Model.TransferTarget</dd>
+            <dt>@Html.DisplayNameFor(m => m.TransferContract)</dt>
+            <dd>@Model.TransferContract</dd>
+            <dt>@Html.DisplayNameFor(m => m.TransferMethod)</dt>
+            <dd>@Model.TransferMethod</dd>
+            <dt>@Html.DisplayNameFor(m => m.TransferCountry)</dt>
+            <dd>@Model.TransferCountry</dd>
+            <dt>@Html.DisplayNameFor(m => m.RetentionPaper)</dt>
+            <dd>@Model.RetentionPaper</dd>
+            <dt>@Html.DisplayNameFor(m => m.RetentionDigital)</dt>
+            <dd>@Model.RetentionDigital</dd>
+            <dt>@Html.DisplayNameFor(m => m.LocationPaper)</dt>
+            <dd>@Model.LocationPaper</dd>
+            <dt>@Html.DisplayNameFor(m => m.LocationDigital)</dt>
+            <dd>@Model.LocationDigital</dd>
+            <dt>@Html.DisplayNameFor(m => m.Disposal)</dt>
+            <dd>@Model.Disposal</dd>
         </dl>
     </div>
 </div>

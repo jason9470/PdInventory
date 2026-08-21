@@ -75,39 +75,19 @@
     document.querySelectorAll('table.table-sortable').forEach(makeSortable);
 })();
 
-// 回到頂部：捲動超過一段距離才顯示按鈕。
+// 到最頂部／到最底部。兩顆按鈕固定顯示，不做捲動位置的顯示/隱藏判斷。
 (function () {
-    var button = document.getElementById('backToTop');
-    if (!button) return;
+    function bind(buttonId, getTarget) {
+        var button = document.getElementById(buttonId);
+        if (!button) return;
 
-    var showAfter = 300;
-
-    function sync() {
-        button.classList.toggle('is-visible', window.scrollY > showAfter);
+        button.addEventListener('click', function () {
+            var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({ top: getTarget(), behavior: reduceMotion ? 'auto' : 'smooth' });
+        });
     }
 
-    window.addEventListener('scroll', sync, { passive: true });
-    sync();
-
-    button.addEventListener('click', function () {
-        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
-    });
-})();
-
-// 側邊欄「維護匯出」群組收合（與「維護資料」相同機制）
-(function () {
-    var button = document.getElementById('exportToggle');
-    if (!button) return;
-
-    button.addEventListener('click', function () {
-        var collapsed = document.documentElement.classList.toggle('export-collapsed');
-        button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-        try {
-            localStorage.setItem('pdinv.exportCollapsed', collapsed ? '1' : '0');
-        } catch (e) { /* 無痕模式等情境：不保存，僅本頁生效 */ }
-    });
-
-    button.setAttribute('aria-expanded',
-        document.documentElement.classList.contains('export-collapsed') ? 'false' : 'true');
+    bind('backToTop', function () { return 0; });
+    // 每次點擊才取高度：表格排序或收合側邊欄都會改變頁面總高
+    bind('backToBottom', function () { return document.documentElement.scrollHeight; });
 })();

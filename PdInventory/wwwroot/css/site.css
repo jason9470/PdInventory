@@ -97,15 +97,21 @@ body {
   opacity: 1;
 }
 
-/* 回到頂部 */
-.back-to-top {
+/* 到最頂部／到最底部：固定顯示，不隨捲動位置隱藏 */
+.page-jump {
   position: fixed;
   right: 1.5rem;
   bottom: 1.5rem;
   z-index: 1030;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.page-jump > button {
   width: 3rem;
   height: 3rem;
-  display: none;              /* 由 site.js 依捲動位置切換 */
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
@@ -116,17 +122,13 @@ body {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .3);
 }
 
-.back-to-top.is-visible {
-  display: flex;
-}
-
-.back-to-top:hover,
-.back-to-top:focus-visible {
+.page-jump > button:hover,
+.page-jump > button:focus-visible {
   background-color: #3b3cc4;
 }
 
 @media print {
-  .back-to-top { display: none !important; }
+  .page-jump { display: none !important; }
 }
 
 /* 側邊欄「維護匯出」群組收合 */
@@ -157,3 +159,92 @@ body {
   font-size: 1.1em;
   line-height: 1;
 }
+
+/* ─────────────────────────────────────────────────────────────────────
+   清單與檢視的版面樣式（灰底分欄）
+
+   解決三個問題：
+   1. hover 不明顯 —— Bootstrap 預設 striped 是 rgba(…,.05)、hover 是 rgba(…,.075)，
+      兩者只差 0.025 alpha，疊在斑馬紋列上幾乎看不出來。改用兩個不同的實色。
+   2. 標籤欄寬度不一致 —— 原本混用 col-sm-2 / col-sm-3 / col-sm-5，
+      數值起始位置有三種。改為固定 190px。
+   3. 列距寬又難讀 —— row g-2 只有 8px 間隙且無分隔線，改為分隔線＋穩定內距。
+   ───────────────────────────────────────────────────────────────────── */
+
+/* 清單表格 */
+.table.pd-table {
+  --bs-table-striped-bg: #f8f9fa;
+  --bs-table-striped-color: #212529;
+  --bs-table-hover-bg: #dbe9ff;
+  --bs-table-hover-color: #212529;
+}
+
+.table.pd-table > :not(caption) > * > * {
+  padding: .5625rem .625rem;
+  vertical-align: middle;
+}
+
+/* 直向分隔線：長表格橫向掃描時不會串行 */
+.table.pd-table > :not(caption) > * > *:not(:last-child) {
+  border-right: 1px solid #f1f3f5;
+}
+
+.table.pd-table > thead > tr > *:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, .12);
+}
+
+.table.pd-table .pd-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: #0d6efd;
+  white-space: nowrap;
+}
+
+/* 檢視頁的規格列：單欄（標籤＋數值） */
+.pd-spec {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  margin-bottom: 0;
+  border-top: 1px solid #dee2e6;
+}
+
+/* 檢視頁的規格列：雙欄（標籤＋數值 ×2） */
+.pd-grid {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 190px minmax(0, 1fr);
+  margin-bottom: 0;
+  border-top: 1px solid #dee2e6;
+}
+
+.pd-spec > dt,
+.pd-grid > dt {
+  padding: .5rem .875rem;
+  font-size: .8125rem;
+  font-weight: 400;
+  color: #495057;
+  background-color: #f8f9fa;
+  border-right: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.pd-spec > dd,
+.pd-grid > dd {
+  min-width: 0;
+  margin-bottom: 0;
+  padding: .5rem .875rem;
+  font-size: .875rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* 雙欄版的中間分隔線（左欄數值的右緣） */
+.pd-grid > dd {
+  border-right: 1px solid #dee2e6;
+}
+
+/* 橫跨整列的長欄位：明確指定起始欄，避免自動排版留下空格 */
+.pd-grid > dt.pd-full { grid-column: 1; }
+.pd-grid > dd.pd-full { grid-column: 2 / -1; border-right: 0; }
+
+/* 規格列自行處理框線與內距，卡片不再另加 padding */
+.card-body.pd-body { padding: 0; }

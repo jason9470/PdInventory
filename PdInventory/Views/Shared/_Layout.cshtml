@@ -25,47 +25,8 @@
                 <button id="sidebarToggle" type="button"
                         class="btn btn-sm btn-outline-light me-2 d-none d-lg-inline-block"
                         aria-controls="appSidebar" aria-label="收合/展開左側清單" title="收合/展開左側清單">☰</button>
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">個資盤點管理系統</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Software" asp-action="Index">資訊資產清單-軟體(SW)</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Data" asp-action="Index">資訊資產清單-資料(DA)</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Risk" asp-action="Index">個人資料風險自評表</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Inventory" asp-action="Index">個人資料檔案盤點表-人為產出</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Transfers" asp-action="Index">系統自動拋轉(出/入)清單-系統產出</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Systems" asp-action="Index">資訊系統/資料庫/伺服器盤點表</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                維護資料
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Categories" asp-action="Index">附表一：個人資料類別</a></li>
-                                <li><a class="dropdown-item" asp-controller="Purposes" asp-action="Index">附表二：特定目的列表</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" asp-controller="RiskCategories" asp-action="Index">3-1：風險分類編號</a></li>
-                                <li><a class="dropdown-item" asp-controller="RiskImpacts" asp-action="Index">3-2：評估影響程度</a></li>
-                                <li><a class="dropdown-item" asp-controller="RiskLikelihoods" asp-action="Index">3-3：評估發生可能性</a></li>
-                                <li><a class="dropdown-item" asp-controller="RiskEffectiveness" asp-action="Index">3-4：有效性評估</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+                @* me-auto：navbar 的 container 是 space-between，移除選單後只剩兩個子元素會被推到兩端 *@
+                <a class="navbar-brand me-auto" asp-controller="Home" asp-action="Index">個資盤點管理系統</a>
             </div>
         </nav>
     </header>
@@ -155,12 +116,19 @@
             &copy; 2026 - 個資盤點管理系統
         </div>
     </footer>
-    @* 回到頂部：捲動一段距離後才出現，行為見 site.js *@
-    <button id="backToTop" type="button" class="back-to-top" aria-label="回到頂部" title="回到頂部">
-        <svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true" focusable="false">
-            <path d="M8 4.5 2.5 10l1.06 1.06L8 6.62l4.44 4.44L13.5 10z" fill="currentColor" />
-        </svg>
-    </button>
+    @* 到最頂部／到最底部：固定顯示，行為見 site.js *@
+    <div class="page-jump">
+        <button id="backToTop" type="button" aria-label="到最頂部" title="到最頂部">
+            <svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true" focusable="false">
+                <path d="M8 4.5 2.5 10l1.06 1.06L8 6.62l4.44 4.44L13.5 10z" fill="currentColor" />
+            </svg>
+        </button>
+        <button id="backToBottom" type="button" aria-label="到最底部" title="到最底部">
+            <svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true" focusable="false">
+                <path d="M8 11.5 13.5 6l-1.06-1.06L8 9.38 3.56 4.94 2.5 6z" fill="currentColor" />
+            </svg>
+        </button>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
