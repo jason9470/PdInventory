@@ -9,6 +9,8 @@
 <form method="post" class="pd-form" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
+    @* 並行控制：帶回載入當下的權杖 *@
+    <input type="hidden" asp-for="RowVersion" />
 
     <div class="card mb-3">
         <div class="card-header fw-bold">I. 公司拋轉機制資訊</div>

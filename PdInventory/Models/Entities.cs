@@ -2,6 +2,39 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PdInventory.Models;
 
+/// <summary>
+/// 建立／異動軌跡，由 AppDbContext 於存檔時自動寫入，使用者不需也不應手動填寫。
+/// 注意：InfoSystem 另有 SwReviewer / SwModifiedBy 等欄位，那是來源試算表的
+/// 「盤點檢視人員」欄位，屬於業務流程紀錄，與這裡的系統軌跡是兩回事，故並存。
+/// </summary>
+public interface IAuditable
+{
+    string CreatedBy { get; set; }
+    DateTime? CreatedAt { get; set; }
+    string UpdatedBy { get; set; }
+    DateTime? UpdatedAt { get; set; }
+}
+
+/// <summary>
+/// 軟刪除：刪除只是加上註記，資料仍留在資料庫。
+/// AppDbContext 以全域查詢篩選排除，因此所有清單、檢視與匯出都不會出現。
+/// </summary>
+public interface ISoftDeletable
+{
+    bool IsDeleted { get; set; }
+    DateTime? DeletedAt { get; set; }
+    string DeletedBy { get; set; }
+}
+
+/// <summary>
+/// 並行控制標記。SQLite 沒有原生 rowversion，改用 Guid 當並行權杖，
+/// 由 AppDbContext 在每次異動時換新值。
+/// </summary>
+public interface IConcurrencyAware
+{
+    Guid RowVersion { get; set; }
+}
+
 /// <summary>附表一：法務部公告個人資料類別（Sheet1「使用資料(欄位)」下拉維護資料）</summary>
 public class PdCategory
 {
@@ -50,7 +83,7 @@ public class Purpose
 }
 
 /// <summary>Sheet1：個人資料檔案盤點表</summary>
-public class InventoryItem
+public class InventoryItem : IAuditable, IConcurrencyAware
 {
     public int Id { get; set; }
 
@@ -223,10 +256,28 @@ public class InventoryItem
 
     [Display(Name = "風險-備註")]
     public string RiskRemark { get; set; } = "";
+    // ── 系統軌跡（由 AppDbContext 自動寫入）────────────────────────────
+    [Display(Name = "建立者")]
+    [StringLength(100)]
+    public string CreatedBy { get; set; } = "";
+
+    [Display(Name = "建立時間")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Display(Name = "最後修改者")]
+    [StringLength(100)]
+    public string UpdatedBy { get; set; } = "";
+
+    [Display(Name = "最後修改時間")]
+    public DateTime? UpdatedAt { get; set; }
+
+    [Display(Name = "並行控制標記")]
+    public Guid RowVersion { get; set; }
+
 }
 
 /// <summary>Sheet2：系統自動拋轉清單</summary>
-public class TransferRecord
+public class TransferRecord : IAuditable, IConcurrencyAware
 {
     public int Id { get; set; }
 
@@ -279,10 +330,28 @@ public class TransferRecord
 
     [Display(Name = "備註")]
     public string Remark { get; set; } = "";
+    // ── 系統軌跡（由 AppDbContext 自動寫入）────────────────────────────
+    [Display(Name = "建立者")]
+    [StringLength(100)]
+    public string CreatedBy { get; set; } = "";
+
+    [Display(Name = "建立時間")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Display(Name = "最後修改者")]
+    [StringLength(100)]
+    public string UpdatedBy { get; set; } = "";
+
+    [Display(Name = "最後修改時間")]
+    public DateTime? UpdatedAt { get; set; }
+
+    [Display(Name = "並行控制標記")]
+    public Guid RowVersion { get; set; }
+
 }
 
 /// <summary>Sheet3：資訊系統、資料庫與檔案伺服器盤點表</summary>
-public class InfoSystem
+public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
 {
     public int Id { get; set; }
 
@@ -679,6 +748,35 @@ public class InfoSystem
     [Display(Name = "DA-修改時間")]
     [StringLength(50)]
     public string DaModifiedTime { get; set; } = "";
+    // ── 系統軌跡（由 AppDbContext 自動寫入）────────────────────────────
+    [Display(Name = "建立者")]
+    [StringLength(100)]
+    public string CreatedBy { get; set; } = "";
+
+    [Display(Name = "建立時間")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Display(Name = "最後修改者")]
+    [StringLength(100)]
+    public string UpdatedBy { get; set; } = "";
+
+    [Display(Name = "最後修改時間")]
+    public DateTime? UpdatedAt { get; set; }
+
+    [Display(Name = "並行控制標記")]
+    public Guid RowVersion { get; set; }
+
+    // ── 軟刪除 ─────────────────────────────────────────────────────────
+    [Display(Name = "已刪除")]
+    public bool IsDeleted { get; set; }
+
+    [Display(Name = "刪除時間")]
+    public DateTime? DeletedAt { get; set; }
+
+    [Display(Name = "刪除者")]
+    [StringLength(100)]
+    public string DeletedBy { get; set; } = "";
+
 }
 
 /// <summary>3-1：風險分類編號（風險自評「風險分類編號/風險描述分類/潛在風險事件」下拉維護資料）</summary>

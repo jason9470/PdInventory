@@ -10,7 +10,13 @@ namespace PdInventory.Controllers;
 public class SoftwareController : Controller
 {
     private readonly AppDbContext _db;
-    public SoftwareController(AppDbContext db) => _db = db;
+    private readonly ICurrentUser _currentUser;
+
+    public SoftwareController(AppDbContext db, ICurrentUser currentUser)
+    {
+        _db = db;
+        _currentUser = currentUser;
+    }
 
     public async Task<IActionResult> Index(string? q)
     {
@@ -67,7 +73,18 @@ public class SoftwareController : Controller
         if (existing is null) return NotFound();
 
         ApplySoftwareFields(existing, model);
-        await _db.SaveChangesAsync();
+        // 以畫面載入當下的權杖比對：若這筆在期間內被他人存過，擋下並要求重新載入，
+        // 不做靜默覆蓋。權杖由 AppDbContext 於每次存檔換新。
+        _db.Entry(existing).Property(e => e.RowVersion).OriginalValue = model.RowVersion;
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            TempData["Error"] = "這筆資料在你編輯期間已被其他人修改，畫面已重新載入最新內容，請確認後再存一次。";
+            return RedirectToAction("Edit", "Systems", new { id, from });
+        }
         TempData["Message"] = $"已更新軟體資產「{existing.SystemCode} {existing.SystemName}」";
         // 統一編輯畫面：存完留在原畫面，方便接著編其他區塊（from 要一起帶著，[取消]才知道回哪）
         return RedirectToAction("Edit", "Systems", new { id, from });
@@ -79,80 +96,18 @@ public class SoftwareController : Controller
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is not null)
         {
-            _db.InfoSystems.Remove(system);
+            // 軟刪除：只加註記，資料仍留在資料庫，但被全域查詢篩選排除，
+            // 因此 SW／DA／系統盤點三張清單與匯出都不會再出現。
+            system.IsDeleted = true;
+            system.DeletedAt = DateTime.Now;
+            system.DeletedBy = _currentUser.Name;
             await _db.SaveChangesAsync();
             TempData["Message"] = $"已刪除軟體資產「{system.SystemCode} {system.SystemName}」";
         }
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>
-    /// 只複製 SW 欄位，保留既有 DA 與 Sheet3 資料。
-    /// 共用欄位（編號／資產編號／資產名稱）與資產說明改由統一編輯畫面的
-    /// 「系統盤點」「DA」區塊維護，此處不寫入，以免用舊值蓋掉別的區塊剛存的修改。
-    /// </summary>
-    private static void ApplySoftwareFields(InfoSystem t, InfoSystem s)
-    {
-        t.SwStatus = s.SwStatus;
-        t.SwAssetType = s.SwAssetType;
-        t.SwSystemCategory = s.SwSystemCategory;
-        t.SwAdIntegration = s.SwAdIntegration;
-        t.SwOsVersion = s.SwOsVersion;
-        t.SwDbToolVersion = s.SwDbToolVersion;
-        t.SwThirdPartyComponents = s.SwThirdPartyComponents;
-        t.SwUserAccountGrant = s.SwUserAccountGrant;
-        t.SwProvidesAccountReport = s.SwProvidesAccountReport;
-        t.SwRiskOwner = s.SwRiskOwner;
-        t.SwLocation = s.SwLocation;
-        t.SwOwnerUnit = s.SwOwnerUnit;
-        t.SwCustodianUnit = s.SwCustodianUnit;
-        t.SwUserUnit = s.SwUserUnit;
-        t.SwConfidentiality = s.SwConfidentiality;
-        t.SwIntegrity = s.SwIntegrity;
-        t.SwAvailability = s.SwAvailability;
-        t.SwAssetValue = s.SwAssetValue;
-        t.SwBusinessContact = s.SwBusinessContact;
-        t.SwAppManager = s.SwAppManager;
-        t.SwAppMaintainer = s.SwAppMaintainer;
-        t.SwAppMaintainerDeputy = s.SwAppMaintainerDeputy;
-        t.SwOperator = s.SwOperator;
-        t.SwDevMode = s.SwDevMode;
-        t.SwMaintMode = s.SwMaintMode;
-        t.SwVendor = s.SwVendor;
-        t.SwLanguage = s.SwLanguage;
-        t.SwVersionControl = s.SwVersionControl;
-        t.SwApRepoPath = s.SwApRepoPath;
-        t.SwDeployMethod = s.SwDeployMethod;
-        t.SwOpRepoPath = s.SwOpRepoPath;
-        t.SwCodeAccess = s.SwCodeAccess;
-        t.SwDeveloper = s.SwDeveloper;
-        t.SwDeployer = s.SwDeployer;
-        t.SwRpo = s.SwRpo;
-        t.SwLocalBackup = s.SwLocalBackup;
-        t.SwLocalBackupType = s.SwLocalBackupType;
-        t.SwLocalBackupFreq = s.SwLocalBackupFreq;
-        t.SwRemoteBackup = s.SwRemoteBackup;
-        t.SwRemoteBackupType = s.SwRemoteBackupType;
-        t.SwRemoteBackupFreq = s.SwRemoteBackupFreq;
-        t.SwLocalHa = s.SwLocalHa;
-        t.SwLocalHaArch = s.SwLocalHaArch;
-        t.SwRemoteHa = s.SwRemoteHa;
-        t.SwRemoteHaArch = s.SwRemoteHaArch;
-        t.SwRto = s.SwRto;
-        t.SwHasRecoveryPlan = s.SwHasRecoveryPlan;
-        t.SwHasDrDrill = s.SwHasDrDrill;
-        t.SwRelatedSystems = s.SwRelatedSystems;
-        t.SwHandlesPersonalData = s.SwHandlesPersonalData;
-        t.SwHasUiAuth = s.SwHasUiAuth;
-        t.SwKeepsPdTrail = s.SwKeepsPdTrail;
-        t.SwProvidesApi = s.SwProvidesApi;
-        t.SwTrailLocation = s.SwTrailLocation;
-        t.SwTrailStorage = s.SwTrailStorage;
-        t.SwBusinessOwnerUnit = s.SwBusinessOwnerUnit;
-        t.SwIsCoreSystem = s.SwIsCoreSystem;
-        t.SwReviewer = s.SwReviewer;
-        t.SwModifiedBy = s.SwModifiedBy;
-        t.SwModifiedTime = s.SwModifiedTime;
-        t.SwRemark = s.SwRemark;
-    }
+    /// <summary>只複製 SW 欄位，保留既有 DA 與 Sheet3 資料。</summary>
+    private static void ApplySoftwareFields(InfoSystem t, InfoSystem s) =>
+        InfoSystemBlocks.Copy(t, s, InfoSystemBlocks.Sw);
 }

@@ -10,7 +10,13 @@ namespace PdInventory.Controllers;
 public class SystemsController : Controller
 {
     private readonly AppDbContext _db;
-    public SystemsController(AppDbContext db) => _db = db;
+    private readonly ICurrentUser _currentUser;
+
+    public SystemsController(AppDbContext db, ICurrentUser currentUser)
+    {
+        _db = db;
+        _currentUser = currentUser;
+    }
 
     public async Task<IActionResult> Index(string? q)
     {
@@ -84,7 +90,18 @@ public class SystemsController : Controller
         if (existing is null) return NotFound();
 
         ApplySystemFields(existing, system);
-        await _db.SaveChangesAsync();
+        // 以畫面載入當下的權杖比對：若這筆在期間內被他人存過，擋下並要求重新載入，
+        // 不做靜默覆蓋。權杖由 AppDbContext 於每次存檔換新。
+        _db.Entry(existing).Property(e => e.RowVersion).OriginalValue = system.RowVersion;
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            TempData["Error"] = "這筆資料在你編輯期間已被其他人修改，畫面已重新載入最新內容，請確認後再存一次。";
+            return RedirectToAction("Edit", "Systems", new { id, from });
+        }
         TempData["Message"] = $"已更新系統「{system.SeqNo} {system.SystemName}」";
         // 統一編輯畫面：存完留在原畫面，方便接著編其他區塊（from 要一起帶著，[取消]才知道回哪）
         return RedirectToAction("Edit", "Systems", new { id, from });
@@ -96,37 +113,20 @@ public class SystemsController : Controller
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is not null)
         {
-            _db.InfoSystems.Remove(system);
+            // 軟刪除：只加註記，資料仍留在資料庫，但被全域查詢篩選排除，
+            // 因此 SW／DA／系統盤點三張清單與匯出都不會再出現。
+            system.IsDeleted = true;
+            system.DeletedAt = DateTime.Now;
+            system.DeletedBy = _currentUser.Name;
             await _db.SaveChangesAsync();
             TempData["Message"] = $"已刪除系統「{system.SeqNo} {system.SystemName}」";
         }
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>只複製系統基本欄位與 Sheet3 欄位，保留既有 SW 與 DA 資料。</summary>
-    private static void ApplySystemFields(InfoSystem t, InfoSystem s)
-    {
-        t.SeqNo = s.SeqNo;
-        t.SystemCode = s.SystemCode;
-        t.SystemName = s.SystemName;
-        t.Description = s.Description;
-        t.DbName = s.DbName;
-
-        t.BackupLocation = s.BackupLocation;
-        t.BackupCycle = s.BackupCycle;
-
-        t.ExternalUnitName = s.ExternalUnitName;
-        t.HasLog = s.HasLog;
-        t.AccessCreate = s.AccessCreate;
-        t.AccessDelete = s.AccessDelete;
-        t.AccessCopy = s.AccessCopy;
-        t.FileDescription = s.FileDescription;
-        t.SpecialData = s.SpecialData;
-        t.SubjectCount = s.SubjectCount;
-        t.RetentionPeriod = s.RetentionPeriod;
-
-        t.Remark = s.Remark;
-    }
+    /// <summary>只複製系統盤點（Sheet3）欄位，含編號／資產編號／資產名稱三個共用識別欄位。</summary>
+    private static void ApplySystemFields(InfoSystem t, InfoSystem s) =>
+        InfoSystemBlocks.Copy(t, s, InfoSystemBlocks.Sheet3);
 
     /// <summary>資產編號與編號在主檔須唯一（資料庫也有對應的唯一索引）。</summary>
     private async Task ValidateUniqueKeysAsync(InfoSystem system)

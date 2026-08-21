@@ -10,7 +10,13 @@ namespace PdInventory.Controllers;
 public class DataController : Controller
 {
     private readonly AppDbContext _db;
-    public DataController(AppDbContext db) => _db = db;
+    private readonly ICurrentUser _currentUser;
+
+    public DataController(AppDbContext db, ICurrentUser currentUser)
+    {
+        _db = db;
+        _currentUser = currentUser;
+    }
 
     public async Task<IActionResult> Index(string? q)
     {
@@ -53,7 +59,18 @@ public class DataController : Controller
         if (existing is null) return NotFound();
 
         ApplyDataFields(existing, model);
-        await _db.SaveChangesAsync();
+        // 以畫面載入當下的權杖比對：若這筆在期間內被他人存過，擋下並要求重新載入，
+        // 不做靜默覆蓋。權杖由 AppDbContext 於每次存檔換新。
+        _db.Entry(existing).Property(e => e.RowVersion).OriginalValue = model.RowVersion;
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            TempData["Error"] = "這筆資料在你編輯期間已被其他人修改，畫面已重新載入最新內容，請確認後再存一次。";
+            return RedirectToAction("Edit", "Systems", new { id, from });
+        }
         TempData["Message"] = $"已更新資料資產「{existing.DaAssetCode} {existing.SystemName}」";
         // 統一編輯畫面：存完留在原畫面，方便接著編其他區塊（from 要一起帶著，[取消]才知道回哪）
         return RedirectToAction("Edit", "Systems", new { id, from });
@@ -65,38 +82,18 @@ public class DataController : Controller
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is not null)
         {
-            _db.InfoSystems.Remove(system);
+            // 軟刪除：只加註記，資料仍留在資料庫，但被全域查詢篩選排除，
+            // 因此 SW／DA／系統盤點三張清單與匯出都不會再出現。
+            system.IsDeleted = true;
+            system.DeletedAt = DateTime.Now;
+            system.DeletedBy = _currentUser.Name;
             await _db.SaveChangesAsync();
             TempData["Message"] = $"已刪除資料資產「{system.DaAssetCode} {system.SystemName}」";
         }
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>
-    /// 只複製 DA 欄位，保留既有 SW 與 Sheet3 資料。
-    /// 共用欄位（編號／資產編號／資產名稱）改由統一編輯畫面的「系統盤點」區塊維護。
-    /// </summary>
-    private static void ApplyDataFields(InfoSystem t, InfoSystem s)
-    {
-        t.DaAssetCode = s.DaAssetCode;
-        t.DaAssetType = s.DaAssetType;
-        t.DaStatus = s.DaStatus;
-        t.DaDescription = s.DaDescription;
-        t.DaBackupMethod = s.DaBackupMethod;
-        t.DaRetentionPeriod = s.DaRetentionPeriod;
-        t.DaHasSensitiveData = s.DaHasSensitiveData;
-        t.DaRiskOwner = s.DaRiskOwner;
-        t.DaLocation = s.DaLocation;
-        t.DaOwnerUnit = s.DaOwnerUnit;
-        t.DaCustodianUnit = s.DaCustodianUnit;
-        t.DaUserUnit = s.DaUserUnit;
-        t.DaConfidentiality = s.DaConfidentiality;
-        t.DaIntegrity = s.DaIntegrity;
-        t.DaAvailability = s.DaAvailability;
-        t.DaAssetValue = s.DaAssetValue;
-        t.DaBackupConfirm = s.DaBackupConfirm;
-        t.DaReviewer = s.DaReviewer;
-        t.DaModifiedTime = s.DaModifiedTime;
-        t.DaRemark = s.DaRemark;
-    }
+    /// <summary>只複製 DA 欄位，保留既有 SW 與 Sheet3 資料。</summary>
+    private static void ApplyDataFields(InfoSystem t, InfoSystem s) =>
+        InfoSystemBlocks.Copy(t, s, InfoSystemBlocks.Da);
 }

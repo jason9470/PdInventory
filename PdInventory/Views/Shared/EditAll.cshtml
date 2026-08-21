@@ -30,6 +30,8 @@
 <form method="post" class="pd-form" asp-controller="Software" asp-action="Edit" asp-route-id="@Model.Id">
     <input type="hidden" name="Id" value="@Model.Id" />
     <input type="hidden" name="from" value="@from" />
+    @* 並行控制：帶回載入當下的權杖，存檔時比對是否已被他人改過 *@
+    <input type="hidden" name="RowVersion" value="@Model.RowVersion" />
     <input type="hidden" name="SeqNo" value="@Model.SeqNo" />
     <input type="hidden" name="SystemCode" value="@Model.SystemCode" />
     <input type="hidden" name="SystemName" value="@Model.SystemName" />
@@ -110,6 +112,8 @@
 <form method="post" class="pd-form" asp-controller="Data" asp-action="Edit" asp-route-id="@Model.Id">
     <input type="hidden" name="Id" value="@Model.Id" />
     <input type="hidden" name="from" value="@from" />
+    @* 並行控制：帶回載入當下的權杖，存檔時比對是否已被他人改過 *@
+    <input type="hidden" name="RowVersion" value="@Model.RowVersion" />
     <input type="hidden" name="SeqNo" value="@Model.SeqNo" />
     <input type="hidden" name="SystemCode" value="@Model.SystemCode" />
     <input type="hidden" name="SystemName" value="@Model.SystemName" />
@@ -150,6 +154,8 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" name="Id" value="@Model.Id" />
     <input type="hidden" name="from" value="@from" />
+    @* 並行控制：帶回載入當下的權杖，存檔時比對是否已被他人改過 *@
+    <input type="hidden" name="RowVersion" value="@Model.RowVersion" />
 
     <div class="card mb-3">
         <div class="card-header fw-bold">資訊系統／資料庫／伺服器盤點表</div>
