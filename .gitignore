@@ -57,3 +57,8 @@ TestResult.xml
 nunit-*.xml
 /.claude
 /PdInventory/.vs
+
+# SQLite 執行期暫存檔（WAL 模式產生，應用程式關閉後會併回主檔）
+# 資料庫本體 App_Data/pdinventory.db 仍在版控中，與 Migrations 保持同步
+*.db-shm
+*.db-wal
