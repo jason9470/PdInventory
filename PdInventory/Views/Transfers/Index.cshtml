@@ -23,6 +23,8 @@
     <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
         <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">清除</a>
+        <a class="btn btn-outline-success" asp-action="Export"
+           asp-route-q="@ViewBag.Query" asp-route-type="@ViewBag.Type">匯出 Excel</a>
     </div>
 </form>
 

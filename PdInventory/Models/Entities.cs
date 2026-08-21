@@ -82,7 +82,7 @@ public class InventoryItem
     [Display(Name = "是否符合最小欄位要求")]
     public bool MinFieldCompliant { get; set; }
 
-    [Display(Name = "系統代碼")]
+    [Display(Name = "資產編號")]
     [StringLength(10)]
     public string SystemCode { get; set; } = "";
 
@@ -238,12 +238,12 @@ public class TransferRecord
     [Required(ErrorMessage = "類別必填"), StringLength(20)]
     public string TransferType { get; set; } = "";
 
-    [Display(Name = "系統代碼")]
+    [Display(Name = "資產編號")]
     [StringLength(10)]
     public string SystemCode { get; set; } = "";
 
-    [Display(Name = "系統名稱")]
-    [Required(ErrorMessage = "系統名稱必填"), StringLength(200)]
+    [Display(Name = "資產名稱")]
+    [Required(ErrorMessage = "資產名稱必填"), StringLength(200)]
     public string SystemName { get; set; } = "";
 
     [Display(Name = "資料庫/資料夾名稱")]
@@ -291,12 +291,12 @@ public class InfoSystem
     public string SeqNo { get; set; } = "";
 
     // I. 系統基本資訊
-    [Display(Name = "系統代碼")]
+    [Display(Name = "資產編號")]
     [StringLength(10)]
     public string SystemCode { get; set; } = "";
 
-    [Display(Name = "系統名稱")]
-    [Required(ErrorMessage = "系統名稱必填"), StringLength(200)]
+    [Display(Name = "資產名稱")]
+    [Required(ErrorMessage = "資產名稱必填"), StringLength(200)]
     public string SystemName { get; set; } = "";
 
     [Display(Name = "系統功能描述")]
@@ -366,7 +366,7 @@ public class InfoSystem
     [StringLength(20)]
     public string SwAssetType { get; set; } = "";
 
-    [Display(Name = "SW-系統類別")]
+    [Display(Name = "SW-資產類別")]
     [StringLength(50)]
     public string SwSystemCategory { get; set; } = "";
 
@@ -771,4 +771,23 @@ public class RiskEffectivenessLevel
     public string CheckResult { get; set; } = "";
 
     public string Label => $"{Level}：{Name}";
+}
+
+/// <summary>匯出 Excel 的欄位順序與是否納入（每張清單一組設定）。</summary>
+public class ExportColumn
+{
+    public int Id { get; set; }
+
+    /// <summary>清單代碼：Software / Data / Systems / Inventory / Risk / Transfers。</summary>
+    [Required, StringLength(30)]
+    public string ListKey { get; set; } = "";
+
+    /// <summary>實體的屬性名稱。只存名稱不存標題，標題一律從 [Display] 取，維持單一來源。</summary>
+    [Required, StringLength(100)]
+    public string PropertyName { get; set; } = "";
+
+    public int SortOrder { get; set; }
+
+    /// <summary>是否納入匯出。</summary>
+    public bool Included { get; set; } = true;
 }

@@ -30,6 +30,21 @@ public class TransfersController : Controller
         return View(await query.OrderBy(t => t.SeqNo).ToListAsync());
     }
 
+    /// <summary>匯出目前搜尋結果（含拋入/拋出篩選）。q、type 由畫面帶入，不更動搜尋記憶。</summary>
+    public async Task<IActionResult> Export(string? q, string? type)
+    {
+        var query = _db.TransferRecords.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(t => t.SystemCode.Contains(q)
+                                  || t.SystemName.Contains(q));
+        if (!string.IsNullOrWhiteSpace(type))
+            query = query.Where(t => t.TransferType.Contains(type));
+
+        var rows = await query.OrderBy(t => t.SeqNo).ToListAsync();
+        var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Transfers", rows);
+        return File(content, ExcelExporter.ContentType, fileName);
+    }
+
     public IActionResult Create() => View("Form", new TransferRecord());
 
     [HttpPost, ValidateAntiForgeryToken]

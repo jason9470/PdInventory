@@ -26,6 +26,19 @@ public class SystemsController : Controller
         return View(await query.OrderBy(s => s.SeqNo).ToListAsync());
     }
 
+    /// <summary>匯出目前搜尋結果。q 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
+    public async Task<IActionResult> Export(string? q)
+    {
+        var query = _db.InfoSystems.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(s => s.SystemCode.Contains(q)
+                                  || s.SystemName.Contains(q));
+
+        var rows = await query.OrderBy(s => s.SeqNo).ToListAsync();
+        var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Systems", rows);
+        return File(content, ExcelExporter.ContentType, fileName);
+    }
+
     /// <param name="from">來源清單頁，供[回列表]回到原處。</param>
     public async Task<IActionResult> Details(int id, string? from)
     {

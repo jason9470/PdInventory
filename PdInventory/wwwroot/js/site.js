@@ -94,3 +94,20 @@
         window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
     });
 })();
+
+// 側邊欄「維護匯出」群組收合（與「維護資料」相同機制）
+(function () {
+    var button = document.getElementById('exportToggle');
+    if (!button) return;
+
+    button.addEventListener('click', function () {
+        var collapsed = document.documentElement.classList.toggle('export-collapsed');
+        button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        try {
+            localStorage.setItem('pdinv.exportCollapsed', collapsed ? '1' : '0');
+        } catch (e) { /* 無痕模式等情境：不保存，僅本頁生效 */ }
+    });
+
+    button.setAttribute('aria-expanded',
+        document.documentElement.classList.contains('export-collapsed') ? 'false' : 'true');
+})();

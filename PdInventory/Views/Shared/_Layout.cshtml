@@ -14,6 +14,7 @@
             var d = document.documentElement;
             if (localStorage.getItem('pdinv.sidebarCollapsed') === '1') d.classList.add('sidebar-collapsed');
             if (localStorage.getItem('pdinv.maintCollapsed') === '1') d.classList.add('maint-collapsed');
+            if (localStorage.getItem('pdinv.exportCollapsed') === '1') d.classList.add('export-collapsed');
         } catch (e) { }
     </script>
 </head>
@@ -109,6 +110,21 @@
                         <a class="list-group-item list-group-item-action @NavActive("RiskEffectiveness")"
                            asp-controller="RiskEffectiveness" asp-action="Index">3-4：有效性評估</a>
                     </div>
+
+                    <button id="exportToggle" type="button"
+                            class="sidebar-heading btn btn-link text-muted small fw-bold text-decoration-none
+                                   d-flex align-items-center justify-content-between w-100 mt-3 mb-1 px-3"
+                            aria-controls="sidebarExport">
+                        <span>維護匯出</span>
+                        <span class="export-caret" aria-hidden="true">▾</span>
+                    </button>
+                    <div id="sidebarExport" class="sidebar-export list-group list-group-flush small">
+                        @foreach (var (key, info) in PdInventory.Helpers.ExportCatalog.Lists)
+                        {
+                            <a class="list-group-item list-group-item-action @ExportActive(key)"
+                               asp-controller="ExportSettings" asp-action="Edit" asp-route-list="@key">@info.Title</a>
+                        }
+                    </div>
                 </nav>
             </aside>
 
@@ -154,6 +170,14 @@
 </html>
 
 @functions {
+    /// <summary>「維護匯出」目前所在清單的高亮。</summary>
+    string ExportActive(string listKey) =>
+        string.Equals(ViewContext.RouteData.Values["controller"] as string, "ExportSettings",
+                      StringComparison.OrdinalIgnoreCase)
+        && string.Equals(Context.Request.Query["list"], listKey, StringComparison.OrdinalIgnoreCase)
+            ? "active"
+            : "";
+
     /// <summary>左側清單目前所在頁面的高亮。</summary>
     string NavActive(string controller) =>
         string.Equals(ViewContext.RouteData.Values["controller"] as string, controller,

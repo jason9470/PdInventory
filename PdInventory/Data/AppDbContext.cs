@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<RiskImpactLevel> RiskImpactLevels => Set<RiskImpactLevel>();
     public DbSet<RiskLikelihoodLevel> RiskLikelihoodLevels => Set<RiskLikelihoodLevel>();
     public DbSet<RiskEffectivenessLevel> RiskEffectivenessLevels => Set<RiskEffectivenessLevel>();
+    public DbSet<ExportColumn> ExportColumns => Set<ExportColumn>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +26,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<RiskImpactLevel>().HasIndex(r => r.Level).IsUnique();
         modelBuilder.Entity<RiskLikelihoodLevel>().HasIndex(r => r.Level).IsUnique();
         modelBuilder.Entity<RiskEffectivenessLevel>().HasIndex(r => r.Level).IsUnique();
+        modelBuilder.Entity<ExportColumn>().HasIndex(e => new { e.ListKey, e.PropertyName }).IsUnique();
 
         modelBuilder.Entity<InventoryItem>()
             .HasMany(i => i.Categories)

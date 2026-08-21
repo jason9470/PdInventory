@@ -1,0 +1,120 @@
+@model List<PdInventory.Helpers.ExportColumnInfo>
+@{
+    var listKey = (string)ViewBag.ListKey;
+    var listTitle = (string)ViewBag.ListTitle;
+    ViewData["Title"] = $"維護匯出欄位 - {listTitle}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>維護匯出欄位：@listTitle <small class="text-muted fs-6">(共 @Model.Count 欄)</small></h2>
+    <form method="post" asp-action="Reset" asp-route-list="@listKey" class="d-inline"
+          onsubmit="return confirm('確定還原成預設欄位順序？目前的排序與勾選都會清除。');">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-secondary">還原預設順序</button>
+    </form>
+</div>
+
+<p class="text-muted small">
+    拖曳列可調整順序，未勾選的欄位不會匯出。設定會套用到此清單的「匯出 Excel」。
+</p>
+
+<form method="post" asp-action="Edit" asp-route-list="@listKey">
+    <div class="d-flex gap-2 align-items-center mb-3">
+        <button type="submit" class="btn btn-primary">儲存</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bulk="all">全選</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bulk="none">全不選</button>
+        <span class="text-muted small ms-2"><span id="includedCount"></span> 欄將匯出</span>
+    </div>
+
+    <ul id="columnList" class="list-group export-column-list">
+        @foreach (var column in Model)
+        {
+            <li class="list-group-item d-flex align-items-center gap-2" draggable="true">
+                <span class="drag-handle text-muted" aria-hidden="true" title="拖曳排序">⠿</span>
+
+                <input type="hidden" name="propertyNames" value="@column.PropertyName" />
+                <div class="form-check mb-0">
+                    <input class="form-check-input include-check" type="checkbox" name="included"
+                           value="@column.PropertyName" id="inc_@column.PropertyName"
+                           checked="@column.Included" />
+                    <label class="form-check-label" for="inc_@column.PropertyName">@column.Title</label>
+                </div>
+
+                <code class="ms-auto text-muted small">@column.PropertyName</code>
+
+                <span class="btn-group btn-group-sm ms-2">
+                    <button type="button" class="btn btn-outline-secondary" data-move="up" aria-label="上移">▲</button>
+                    <button type="button" class="btn btn-outline-secondary" data-move="down" aria-label="下移">▼</button>
+                </span>
+            </li>
+        }
+    </ul>
+
+    <div class="my-3">
+        <button type="submit" class="btn btn-primary">儲存</button>
+        <a class="btn btn-outline-secondary" asp-controller="@listKey" asp-action="Index">回清單</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // 匯出欄位排序：HTML5 拖放 + 上/下移按鈕（欄位多時用按鈕比較好操作，
+        // 拖放也不利鍵盤操作）。順序由 li 的先後決定，送出時 propertyNames 會照 DOM 順序帶。
+        (function () {
+            var list = document.getElementById('columnList');
+            if (!list) return;
+
+            var dragging = null;
+
+            list.addEventListener('dragstart', function (e) {
+                var li = e.target.closest('li');
+                if (!li) return;
+                dragging = li;
+                li.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            list.addEventListener('dragend', function () {
+                if (dragging) dragging.classList.remove('dragging');
+                dragging = null;
+            });
+
+            list.addEventListener('dragover', function (e) {
+                if (!dragging) return;
+                e.preventDefault();
+                var over = e.target.closest('li');
+                if (!over || over === dragging) return;
+
+                var rect = over.getBoundingClientRect();
+                var after = (e.clientY - rect.top) > rect.height / 2;
+                list.insertBefore(dragging, after ? over.nextSibling : over);
+            });
+
+            list.addEventListener('click', function (e) {
+                var button = e.target.closest('[data-move]');
+                if (!button) return;
+                var li = button.closest('li');
+                if (button.dataset.move === 'up' && li.previousElementSibling) {
+                    list.insertBefore(li, li.previousElementSibling);
+                } else if (button.dataset.move === 'down' && li.nextElementSibling) {
+                    list.insertBefore(li.nextElementSibling, li);
+                }
+            });
+
+            var counter = document.getElementById('includedCount');
+            function refreshCount() {
+                counter.textContent = list.querySelectorAll('.include-check:checked').length;
+            }
+            list.addEventListener('change', refreshCount);
+            refreshCount();
+
+            document.querySelectorAll('[data-bulk]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var checked = button.dataset.bulk === 'all';
+                    list.querySelectorAll('.include-check').forEach(function (c) { c.checked = checked; });
+                    refreshCount();
+                });
+            });
+        })();
+    </script>
+}

@@ -26,6 +26,19 @@ public class DataController : Controller
         return View(await query.OrderBy(s => s.SystemCode).ToListAsync());
     }
 
+    /// <summary>匯出目前搜尋結果。q 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
+    public async Task<IActionResult> Export(string? q)
+    {
+        var query = _db.InfoSystems.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(s => s.DaAssetCode.Contains(q)
+                                  || s.SystemCode.Contains(q));
+
+        var rows = await query.OrderBy(s => s.SystemCode).ToListAsync();
+        var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Data", rows);
+        return File(content, ExcelExporter.ContentType, fileName);
+    }
+
     // 新增與編輯畫面已整併到 Views/Shared 的 CreateAll / EditAll（由 SystemsController 提供），
     // 故此處只保留清單、編輯的 POST 與刪除；Edit 的 POST 仍是統一編輯畫面該區塊的送出目標。
 

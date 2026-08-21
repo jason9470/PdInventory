@@ -19,6 +19,8 @@
     <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
         <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">清除</a>
+        <a class="btn btn-outline-success" asp-action="Export"
+           asp-route-q="@ViewBag.Query">匯出 Excel</a>
     </div>
 </form>
 
@@ -29,7 +31,7 @@
                 <th>資產狀態</th>
                 <th>資產編號</th>
                 <th>資產名稱</th>
-                <th>系統類別</th>
+                <th>資產類別</th>
                 <th>是否為核心系統</th>
                 <th style="max-width: 260px">資產說明</th>
                 <th>作業系統/版本</th>

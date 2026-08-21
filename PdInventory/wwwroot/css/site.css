@@ -128,3 +128,32 @@ body {
 @media print {
   .back-to-top { display: none !important; }
 }
+
+/* 側邊欄「維護匯出」群組收合 */
+.export-collapsed .sidebar-export {
+  display: none;
+}
+
+.export-collapsed .export-caret {
+  transform: rotate(-90deg);
+}
+
+.export-caret {
+  display: inline-block;
+  transition: transform .15s ease-in-out;
+}
+
+/* 匯出欄位維護：拖曳排序清單 */
+.export-column-list .list-group-item {
+  cursor: grab;
+}
+
+.export-column-list .list-group-item.dragging {
+  opacity: .45;
+}
+
+.export-column-list .drag-handle {
+  cursor: grab;
+  font-size: 1.1em;
+  line-height: 1;
+}

@@ -27,6 +27,24 @@ public class RiskController : Controller
         return View(await query.OrderBy(i => i.SystemCode).ThenBy(i => i.SeqNo).ToListAsync());
     }
 
+    /// <summary>匯出目前搜尋結果。q 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
+    public async Task<IActionResult> Export(string? q)
+    {
+        var query = _db.InventoryItems
+            .Include(i => i.Categories)
+            .Include(i => i.Purposes)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(i => i.DocumentName.Contains(q)
+                                  || i.SystemCode.Contains(q)
+                                  || i.SystemName.Contains(q));
+
+        var rows = await query.OrderBy(i => i.SystemCode).ThenBy(i => i.SeqNo).ToListAsync();
+        var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Risk", rows);
+        return File(content, ExcelExporter.ContentType, fileName);
+    }
+
     public async Task<IActionResult> Create()
     {
         await LoadLookupsAsync();
