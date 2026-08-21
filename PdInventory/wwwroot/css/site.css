@@ -29,10 +29,15 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
-/* 左側導覽清單：長標題可換行，捲動時固定在視窗內 */
+/* 左側導覽清單：長標題可換行，捲動時固定在視窗內。
+   淺灰底面板與白色的主內容區分開，一眼看得出哪裡是導覽、哪裡是資料。 */
 .sidebar-nav {
   position: sticky;
   top: 1rem;
+  background-color: #eceff3;
+  border: 1px solid #dbe0e6;
+  border-radius: .5rem;
+  padding: .5rem .25rem;
 }
 
 .sidebar-nav .list-group-item {
@@ -41,6 +46,28 @@ body {
   line-height: 1.35;
   padding-top: .5rem;
   padding-bottom: .5rem;
+  /* list-group 預設白底會蓋掉面板底色，改成透明讓底色透出來 */
+  background-color: transparent;
+  border-color: #dbe0e6;
+}
+
+/* hover 沿用清單表格的同一個藍，全站互動回饋一致 */
+.sidebar-nav .list-group-item-action:hover,
+.sidebar-nav .list-group-item-action:focus {
+  background-color: #dbe9ff;
+  color: #0a58ca;
+}
+
+/* 目前所在頁面：實色藍底，在灰底上比 Bootstrap 預設更明顯 */
+.sidebar-nav .list-group-item.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+/* 群組標題在灰底上要壓得住，維持與清單項目的層次差 */
+.sidebar-nav .sidebar-heading {
+  color: #55606b !important;
 }
 
 /* 側邊欄收合：整欄隱藏，內容區補滿剩下的寬度 */
