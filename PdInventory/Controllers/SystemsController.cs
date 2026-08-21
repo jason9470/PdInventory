@@ -26,41 +26,55 @@ public class SystemsController : Controller
         return View(await query.OrderBy(s => s.SeqNo).ToListAsync());
     }
 
-    public async Task<IActionResult> Details(int id)
+    /// <param name="from">來源清單頁，供[回列表]回到原處。</param>
+    public async Task<IActionResult> Details(int id, string? from)
     {
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is null) return NotFound();
         // 記住這筆的資產編號，之後進到任一清單頁都會自動帶入搜尋欄
         this.RememberSearch(system.SystemCode);
+        ViewBag.From = ListSource.Resolve(from);
         return View(system);
     }
 
-    public IActionResult Create() => View("Form", new InfoSystem());
-
-    [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(InfoSystem system)
+    /// <param name="from">從哪張清單按的[新增]，決定[取消]與新增後回到哪裡。</param>
+    public IActionResult Create(string? from)
     {
-        if (!ModelState.IsValid) return View("Form", system);
-        _db.InfoSystems.Add(system);
-        await _db.SaveChangesAsync();
-        TempData["Message"] = $"已新增系統「{system.SeqNo} {system.SystemName}」";
-        return RedirectToAction(nameof(Index));
+        ViewBag.From = ListSource.Resolve(from);
+        return View("CreateAll", new InfoSystem());
     }
 
-    public async Task<IActionResult> Edit(int id)
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(InfoSystem system, string? from)
+    {
+        var source = ListSource.Resolve(from);
+        ViewBag.From = source;
+        if (!ModelState.IsValid) return View("CreateAll", system);
+
+        // 統一新增畫面一次送出 SW / DA / 系統盤點三個區塊，整筆一起建立
+        _db.InfoSystems.Add(system);
+        await _db.SaveChangesAsync();
+        TempData["Message"] = $"已新增資訊資產「{system.SystemCode} {system.SystemName}」";
+        return RedirectToAction("Index", source);
+    }
+
+    /// <param name="from">來源清單頁，供[取消]回到原處。</param>
+    public async Task<IActionResult> Edit(int id, string? from)
     {
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is null) return NotFound();
         // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
         this.RememberSearch(system.SystemCode);
-        return View("Form", system);
+        ViewBag.From = ListSource.Resolve(from);
+        return View("EditAll", system);
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, InfoSystem system)
+    public async Task<IActionResult> Edit(int id, InfoSystem system, string? from)
     {
         if (id != system.Id) return BadRequest();
-        if (!ModelState.IsValid) return View("Form", system);
+        ViewBag.From = ListSource.Resolve(from);
+        if (!ModelState.IsValid) return View("EditAll", system);
 
         var existing = await _db.InfoSystems.FindAsync(id);
         if (existing is null) return NotFound();
@@ -68,7 +82,8 @@ public class SystemsController : Controller
         ApplySystemFields(existing, system);
         await _db.SaveChangesAsync();
         TempData["Message"] = $"已更新系統「{system.SeqNo} {system.SystemName}」";
-        return RedirectToAction(nameof(Index));
+        // 統一編輯畫面：存完留在原畫面，方便接著編其他區塊（from 要一起帶著，[取消]才知道回哪）
+        return RedirectToAction("Edit", "Systems", new { id, from });
     }
 
     [HttpPost, ValidateAntiForgeryToken]

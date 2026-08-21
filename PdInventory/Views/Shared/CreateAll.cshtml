@@ -1,17 +1,31 @@
-﻿@model PdInventory.Models.InfoSystem
+@model PdInventory.Models.InfoSystem
 @{
-    var isNew = Model.Id == 0;
-    ViewData["Title"] = isNew ? "新增軟體資產(SW)" : $"編輯軟體資產 {Model.SystemCode} {Model.SystemName}";
+    ViewData["Title"] = "新增資訊資產";
+    // 從哪張清單按的[新增]，決定[取消]與新增完成後回到哪裡
+    var from = (string)(ViewBag.From ?? PdInventory.Helpers.ListSource.Default);
 }
 
-<h2>@ViewData["Title"]</h2>
+@*
+    SW / DA / 系統盤點 三個區塊的統一新增畫面。
 
-<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)">
+    與[編輯]畫面不同的是：這裡只有一個[新增]按鈕。三個區塊同屬一筆尚未存在的
+    InfoSystem，若比照編輯拆成三個各自儲存，第一次儲存會建出一筆、第二次又建一筆，
+    變成三筆殘缺資料。所以新增一律整筆一起送出。
+
+    「編號／資產編號／資產名稱」是必填的識別欄位，放在最前面先填。
+*@
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@ViewData["Title"]</h2>
+    <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
+</div>
+
+<form method="post" asp-controller="Systems" asp-action="Create">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" name="from" value="@from" />
 
     <div class="card mb-3">
-        <div class="card-header fw-bold">系統基本資訊</div>
+        <div class="card-header fw-bold">基本資訊</div>
         <div class="card-body row g-3">
             <div class="col-md-2">
                 <label asp-for="SeqNo" class="form-label"></label>
@@ -19,24 +33,20 @@
                 <span asp-validation-for="SeqNo" class="text-danger"></span>
             </div>
             <div class="col-md-3">
-                <label asp-for="SystemCode" class="form-label">資產編號</label>
+                <label asp-for="SystemCode" class="form-label"></label>
                 <input asp-for="SystemCode" class="form-control" placeholder="例：SW-108" />
                 <span asp-validation-for="SystemCode" class="text-danger"></span>
             </div>
             <div class="col-md-7">
-                <label asp-for="SystemName" class="form-label">軟體資產名稱</label>
+                <label asp-for="SystemName" class="form-label"></label>
                 <input asp-for="SystemName" class="form-control" placeholder="例：經紀帳務系統" />
                 <span asp-validation-for="SystemName" class="text-danger"></span>
-            </div>
-            <div class="col-12">
-                <label asp-for="DaDescription" class="form-label">資產說明</label>
-                <textarea asp-for="DaDescription" class="form-control" rows="2"></textarea>
             </div>
         </div>
     </div>
 
     <div class="card mb-3">
-        <div class="card-header fw-bold bg-primary text-white">軟體資產(SW)明細</div>
+        <div class="card-header fw-bold bg-primary text-white">資訊資產清單－軟體(SW)</div>
         <div class="card-body row g-3">
             <div class="col-md-3"><label asp-for="SwStatus" class="form-label"></label><input asp-for="SwStatus" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="SwAssetType" class="form-label"></label><input asp-for="SwAssetType" class="form-control" /></div>
@@ -102,9 +112,117 @@
         </div>
     </div>
 
+    <div class="card mb-3">
+        <div class="card-header fw-bold bg-success text-white">資訊資產清單－資料(DA)</div>
+        <div class="card-body row g-3">
+            <div class="col-md-4"><label asp-for="DaAssetCode" class="form-label"></label><input asp-for="DaAssetCode" class="form-control" placeholder="例：DA-119" /></div>
+            <div class="col-md-4"><label asp-for="DaAssetType" class="form-label"></label><input asp-for="DaAssetType" class="form-control" /></div>
+            <div class="col-md-4"><label asp-for="DaStatus" class="form-label"></label><input asp-for="DaStatus" class="form-control" /></div>
+            <div class="col-12"><label asp-for="DaDescription" class="form-label">資產說明</label><textarea asp-for="DaDescription" class="form-control" rows="2"></textarea></div>
+            <div class="col-md-4"><label asp-for="DaBackupMethod" class="form-label"></label><input asp-for="DaBackupMethod" class="form-control" /></div>
+            <div class="col-md-4"><label asp-for="DaRetentionPeriod" class="form-label"></label><input asp-for="DaRetentionPeriod" class="form-control" /></div>
+            <div class="col-md-4"><label asp-for="DaHasSensitiveData" class="form-label"></label><input asp-for="DaHasSensitiveData" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="DaRiskOwner" class="form-label"></label><input asp-for="DaRiskOwner" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="DaLocation" class="form-label"></label><input asp-for="DaLocation" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="DaOwnerUnit" class="form-label"></label><input asp-for="DaOwnerUnit" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="DaCustodianUnit" class="form-label"></label><input asp-for="DaCustodianUnit" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="DaUserUnit" class="form-label"></label><input asp-for="DaUserUnit" class="form-control" /></div>
+            <div class="col-md-2"><label asp-for="DaConfidentiality" class="form-label"></label><input asp-for="DaConfidentiality" class="form-control" /></div>
+            <div class="col-md-2"><label asp-for="DaIntegrity" class="form-label"></label><input asp-for="DaIntegrity" class="form-control" /></div>
+            <div class="col-md-2"><label asp-for="DaAvailability" class="form-label"></label><input asp-for="DaAvailability" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="DaAssetValue" class="form-label"></label><input asp-for="DaAssetValue" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="DaBackupConfirm" class="form-label"></label><input asp-for="DaBackupConfirm" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="DaReviewer" class="form-label"></label><input asp-for="DaReviewer" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="DaModifiedTime" class="form-label"></label><input asp-for="DaModifiedTime" class="form-control" /></div>
+            <div class="col-12"><label asp-for="DaRemark" class="form-label"></label><textarea asp-for="DaRemark" class="form-control" rows="2"></textarea></div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header fw-bold">資訊系統／資料庫／伺服器盤點表</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12"><h6 class="text-muted border-bottom pb-1 mb-0">I. 系統基本資訊</h6></div>
+                <div class="col-md-6">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="4"
+                              placeholder="使用部門、使用人員、主要功能"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DbName" class="form-label"></label>
+                    <textarea asp-for="DbName" class="form-control" rows="4"
+                              placeholder="例：Oracle DB Server：FEDB"></textarea>
+                </div>
+
+                <div class="col-12 mt-4"><h6 class="text-muted border-bottom pb-1 mb-0">II. 備份</h6></div>
+                <div class="col-md-6">
+                    <label asp-for="BackupLocation" class="form-label"></label>
+                    <textarea asp-for="BackupLocation" class="form-control" rows="2"
+                              placeholder="例：同地:信義機房 異地:板橋機房"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="BackupCycle" class="form-label"></label>
+                    <input asp-for="BackupCycle" class="form-control" placeholder="例：每天、每週" />
+                </div>
+
+                <div class="col-12 mt-4">
+                    <h6 class="text-muted border-bottom pb-1 mb-0">
+                        III. 外部單位存取權限盤點 <small>（無外部存取則填 N/A）</small>
+                    </h6>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ExternalUnitName" class="form-label"></label>
+                    <input asp-for="ExternalUnitName" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="HasLog" class="form-label"></label>
+                    <select asp-for="HasLog" class="form-select">
+                        <option value="">請選擇</option>
+                        <option>Y</option>
+                        <option>N</option>
+                        <option>N/A</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="AccessCreate" class="form-label"></label>
+                    <input asp-for="AccessCreate" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="AccessDelete" class="form-label"></label>
+                    <input asp-for="AccessDelete" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="AccessCopy" class="form-label"></label>
+                    <input asp-for="AccessCopy" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FileDescription" class="form-label"></label>
+                    <input asp-for="FileDescription" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="SpecialData" class="form-label"></label>
+                    <input asp-for="SpecialData" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="SubjectCount" class="form-label"></label>
+                    <input asp-for="SubjectCount" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="RetentionPeriod" class="form-label"></label>
+                    <input asp-for="RetentionPeriod" class="form-control" />
+                </div>
+
+                <div class="col-12 mt-4"><h6 class="text-muted border-bottom pb-1 mb-0">IV. 備註</h6></div>
+                <div class="col-12">
+                    <textarea asp-for="Remark" class="form-control" rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="mb-4">
-        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
-        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">取消</a>
+        <button type="submit" class="btn btn-primary">新增</button>
+        <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
     </div>
 </form>
 

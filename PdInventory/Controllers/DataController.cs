@@ -26,32 +26,15 @@ public class DataController : Controller
         return View(await query.OrderBy(s => s.SystemCode).ToListAsync());
     }
 
-    public IActionResult Create() => View("Form", new InfoSystem());
+    // 新增與編輯畫面已整併到 Views/Shared 的 CreateAll / EditAll（由 SystemsController 提供），
+    // 故此處只保留清單、編輯的 POST 與刪除；Edit 的 POST 仍是統一編輯畫面該區塊的送出目標。
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(InfoSystem model)
-    {
-        if (!ModelState.IsValid) return View("Form", model);
-        _db.InfoSystems.Add(model);
-        await _db.SaveChangesAsync();
-        TempData["Message"] = $"已新增資料資產「{model.DaAssetCode} {model.SystemName}」";
-        return RedirectToAction(nameof(Index));
-    }
-
-    public async Task<IActionResult> Edit(int id)
-    {
-        var system = await _db.InfoSystems.FindAsync(id);
-        if (system is null) return NotFound();
-        // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
-        this.RememberSearch(system.SystemCode);
-        return View("Form", system);
-    }
-
-    [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, InfoSystem model)
+    public async Task<IActionResult> Edit(int id, InfoSystem model, string? from)
     {
         if (id != model.Id) return BadRequest();
-        if (!ModelState.IsValid) return View("Form", model);
+        ViewBag.From = ListSource.Resolve(from);
+        if (!ModelState.IsValid) return View("EditAll", model);
 
         var existing = await _db.InfoSystems.FindAsync(id);
         if (existing is null) return NotFound();
@@ -59,7 +42,8 @@ public class DataController : Controller
         ApplyDataFields(existing, model);
         await _db.SaveChangesAsync();
         TempData["Message"] = $"已更新資料資產「{existing.DaAssetCode} {existing.SystemName}」";
-        return RedirectToAction(nameof(Index));
+        // 統一編輯畫面：存完留在原畫面，方便接著編其他區塊（from 要一起帶著，[取消]才知道回哪）
+        return RedirectToAction("Edit", "Systems", new { id, from });
     }
 
     [HttpPost, ValidateAntiForgeryToken]
@@ -75,13 +59,12 @@ public class DataController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>只複製系統基本欄位與 DA 欄位，保留既有 SW 與 Sheet3 資料。</summary>
+    /// <summary>
+    /// 只複製 DA 欄位，保留既有 SW 與 Sheet3 資料。
+    /// 共用欄位（編號／資產編號／資產名稱）改由統一編輯畫面的「系統盤點」區塊維護。
+    /// </summary>
     private static void ApplyDataFields(InfoSystem t, InfoSystem s)
     {
-        t.SeqNo = s.SeqNo;
-        t.SystemCode = s.SystemCode;
-        t.SystemName = s.SystemName;
-
         t.DaAssetCode = s.DaAssetCode;
         t.DaAssetType = s.DaAssetType;
         t.DaStatus = s.DaStatus;

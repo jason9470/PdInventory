@@ -72,3 +72,59 @@ body {
 .sidebar-heading {
   letter-spacing: .05em;
 }
+
+/* 清單表格欄位排序 */
+.table-sortable th.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.table-sortable th.sortable .sort-icon::after {
+  content: "\2195";           /* ↕ 未排序 */
+  margin-left: .35rem;
+  opacity: .45;
+  font-size: .85em;
+}
+
+.table-sortable th[data-sort-dir="asc"] .sort-icon::after {
+  content: "\25B2";           /* ▲ 升冪 */
+  opacity: 1;
+}
+
+.table-sortable th[data-sort-dir="desc"] .sort-icon::after {
+  content: "\25BC";           /* ▼ 降冪 */
+  opacity: 1;
+}
+
+/* 回到頂部 */
+.back-to-top {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 1030;
+  width: 3rem;
+  height: 3rem;
+  display: none;              /* 由 site.js 依捲動位置切換 */
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: #4c4ddc;
+  color: #fff;
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .3);
+}
+
+.back-to-top.is-visible {
+  display: flex;
+}
+
+.back-to-top:hover,
+.back-to-top:focus-visible {
+  background-color: #3b3cc4;
+}
+
+@media print {
+  .back-to-top { display: none !important; }
+}
