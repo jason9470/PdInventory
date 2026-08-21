@@ -1,0 +1,156 @@
+@model PdInventory.Models.ViewModels.PermissionsViewModel
+@using PdInventory.Helpers
+@using PdInventory.Models
+@{
+    ViewData["Title"] = "權限設定";
+    var selected = Model.Selected;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>權限設定 <small class="text-muted fs-6">(共 @Model.Users.Count 位使用者)</small></h2>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5 col-xl-4">
+        <div class="card">
+            <div class="card-header py-2 fw-bold small">使用者</div>
+            <div class="list-group list-group-flush small pd-user-list">
+                @foreach (var user in Model.Users)
+                {
+                    <a class="list-group-item list-group-item-action @(selected?.Id == user.Id ? "active" : "")"
+                       asp-action="Index" asp-route-userId="@user.Id">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>
+                                <span class="pd-code">@user.EmpNo</span>
+                                <span class="ms-2">@user.EmpName</span>
+                            </span>
+                            <span class="badge @(user.Role == UserRole.Admin ? "text-bg-danger"
+                                               : user.Role == UserRole.Manager ? "text-bg-primary"
+                                               : "text-bg-secondary")">@RoleDisplay.Name(user.Role)</span>
+                        </div>
+                        <div class="text-muted mt-1" style="font-size: .75rem">
+                            最後登入：@(user.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "尚未登入")
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+        <p class="text-muted small mt-2 mb-0">
+            使用者不在這裡新增。每個人第一次登入成功時自動建檔，預設為資產負責人且名下沒有資產。
+        </p>
+    </div>
+
+    <div class="col-lg-7 col-xl-8">
+        @if (selected is null)
+        {
+            <div class="alert alert-secondary mb-0">請從左邊點選一位使用者，以調整他的角色與負責的資產。</div>
+        }
+        else
+        {
+            <form method="post" asp-action="Save">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@selected.Id" />
+                <input type="hidden" name="rowVersion" value="@selected.RowVersion" />
+
+                <div class="card mb-3">
+                    <div class="card-header py-2 fw-bold small">
+                        @selected.Label
+                    </div>
+                    <div class="card-body pd-form">
+                        <div class="row g-3 align-items-start">
+                            <div class="col-md-4">
+                                <label class="form-label" for="role">角色</label>
+                                <select id="role" name="role" class="form-select">
+                                    @foreach (var role in RoleDisplay.All)
+                                    {
+                                        <option value="@role" selected="@(role == selected.Role)">
+                                            @RoleDisplay.Name(role)
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">這個角色可以做什麼</label>
+                                <ul class="small text-muted mb-0 ps-3">
+                                    @foreach (var role in RoleDisplay.All)
+                                    {
+                                        <li class="@(role == selected.Role ? "fw-bold text-body" : "")">
+                                            @RoleDisplay.Name(role)：@RoleDisplay.Description(role)
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold small">負責的資產
+                            <span class="text-muted fw-normal">
+                                （已勾選 <span id="pickedCount">@Model.OwnedAssetIds.Count</span> / @Model.Assets.Count 項）
+                            </span>
+                        </span>
+                        <span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-pick="all">全選</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-pick="none">全不選</button>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        @if (selected.Role != UserRole.AssetOwner)
+                        {
+                            <div class="alert alert-info small py-2">
+                                @RoleDisplay.Name(selected.Role)不受資產授權限制，六張清單全部可以操作，
+                                底下的勾選現在不會生效。勾選內容仍會保存，日後角色改回資產負責人時直接沿用。
+                            </div>
+                        }
+                        <div class="pd-asset-picker">
+                            @foreach (var asset in Model.Assets)
+                            {
+                                <label class="pd-asset-item">
+                                    <input class="form-check-input me-2" type="checkbox" name="assetIds"
+                                           value="@asset.Id" checked="@Model.IsOwned(asset.Id)" />
+                                    <span class="pd-code">@asset.SystemCode</span>
+                                    <span class="pd-asset-name">@asset.SystemName</span>
+                                </label>
+                            }
+                        </div>
+                        @if (Model.Assets.Count == 0)
+                        {
+                            <div class="text-muted small">目前沒有任何資訊資產可以指派。</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">儲存</button>
+                    <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    (function () {
+        var picker = document.querySelector('.pd-asset-picker');
+        if (!picker) return;
+        var boxes = picker.querySelectorAll('input[type=checkbox]');
+        var counter = document.getElementById('pickedCount');
+
+        function refresh() {
+            counter.textContent = picker.querySelectorAll('input[type=checkbox]:checked').length;
+        }
+        picker.addEventListener('change', refresh);
+
+        document.querySelectorAll('[data-pick]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var checked = button.dataset.pick === 'all';
+                boxes.forEach(function (box) { box.checked = checked; });
+                refresh();
+            });
+        });
+    })();
+</script>
+}

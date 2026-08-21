@@ -1,21 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Models.ViewModels;
 using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
 /// <summary>Sheet3：資訊系統、資料庫與檔案伺服器盤點表</summary>
+[Authorize(Policy = Policies.ViewAssets)]
 public class SystemsController : Controller
 {
     private readonly AppDbContext _db;
     private readonly ICurrentUser _currentUser;
+    private readonly IAssetAccess _access;
 
-    public SystemsController(AppDbContext db, ICurrentUser currentUser)
+    public SystemsController(AppDbContext db, ICurrentUser currentUser, IAssetAccess access)
     {
         _db = db;
         _currentUser = currentUser;
+        _access = access;
     }
 
     public async Task<IActionResult> Index(string? q)
@@ -46,21 +51,29 @@ public class SystemsController : Controller
     }
 
     /// <param name="from">從哪張清單按的[新增]，決定[取消]與新增後回到哪裡。</param>
+    [Authorize(Policy = Policies.ManageAssets)]
     public IActionResult Create(string? from)
     {
         ViewBag.From = ListSource.Resolve(from);
-        return View("CreateAll", new InfoSystem());
+        return View("CreateAll", new InfoSystemEditViewModel());
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(InfoSystem system, string? from)
+    [Authorize(Policy = Policies.ManageAssets)]
+    public async Task<IActionResult> Create(InfoSystemEditViewModel model, string? from)
     {
         var source = ListSource.Resolve(from);
         ViewBag.From = source;
-        await ValidateUniqueKeysAsync(system);
-        if (!ModelState.IsValid) return View("CreateAll", system);
 
         // 統一新增畫面一次送出 SW / DA / 系統盤點三個區塊，整筆一起建立
+        var system = new InfoSystem();
+        InfoSystemBlocks.CopyToEntity(system, model.Software, InfoSystemBlocks.Sw);
+        InfoSystemBlocks.CopyToEntity(system, model.Data, InfoSystemBlocks.Da);
+        InfoSystemBlocks.CopyToEntity(system, model.Sheet3, InfoSystemBlocks.Sheet3);
+
+        await ValidateUniqueKeysAsync(system);
+        if (!ModelState.IsValid) return View("CreateAll", model);
+
         _db.InfoSystems.Add(system);
         await _db.SaveChangesAsync();
         TempData["Message"] = $"已新增資訊資產「{system.SystemCode} {system.SystemName}」";
@@ -72,27 +85,44 @@ public class SystemsController : Controller
     {
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is null) return NotFound();
+
+        // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
+        if (!await _access.CanModifyAsync(system.SystemCode)) return Forbid();
+
         // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
         this.RememberSearch(system.SystemCode);
         ViewBag.From = ListSource.Resolve(from);
-        return View("EditAll", system);
+        return View("EditAll", InfoSystemBlocks.ToEditViewModel(system));
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, InfoSystem system, string? from)
+    public async Task<IActionResult> Edit(int id, [Bind(Prefix = "Sheet3")] SystemEditViewModel model, string? from)
     {
-        if (id != system.Id) return BadRequest();
+        if (id != model.Id) return BadRequest();
         ViewBag.From = ListSource.Resolve(from);
-        await ValidateUniqueKeysAsync(system);
-        if (!ModelState.IsValid) return View("EditAll", system);
 
         var existing = await _db.InfoSystems.FindAsync(id);
         if (existing is null) return NotFound();
 
-        ApplySystemFields(existing, system);
+        // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
+        if (!await _access.CanModifyAsync(existing.SystemCode)) return Forbid();
+
+        // 唯一性要用「改後的值」判斷，先套到一份暫時的實體上再檢查
+        var candidate = new InfoSystem { Id = existing.Id };
+        InfoSystemBlocks.CopyToEntity(candidate, model, InfoSystemBlocks.Sheet3);
+        await ValidateUniqueKeysAsync(candidate);
+
+        if (!ModelState.IsValid)
+        {
+            var reload = InfoSystemBlocks.ToEditViewModel(existing);
+            reload.Sheet3 = model;
+            return View("EditAll", reload);
+        }
+
+        InfoSystemBlocks.CopyToEntity(existing, model, InfoSystemBlocks.Sheet3);
         // 以畫面載入當下的權杖比對：若這筆在期間內被他人存過，擋下並要求重新載入，
         // 不做靜默覆蓋。權杖由 AppDbContext 於每次存檔換新。
-        _db.Entry(existing).Property(e => e.RowVersion).OriginalValue = system.RowVersion;
+        _db.Entry(existing).Property(e => e.RowVersion).OriginalValue = model.RowVersion;
         try
         {
             await _db.SaveChangesAsync();
@@ -102,7 +132,7 @@ public class SystemsController : Controller
             TempData["Error"] = "這筆資料在你編輯期間已被其他人修改，畫面已重新載入最新內容，請確認後再存一次。";
             return RedirectToAction("Edit", "Systems", new { id, from });
         }
-        TempData["Message"] = $"已更新系統「{system.SeqNo} {system.SystemName}」";
+        TempData["Message"] = $"已更新系統「{existing.SeqNo} {existing.SystemName}」";
         // 統一編輯畫面：存完留在原畫面，方便接著編其他區塊（from 要一起帶著，[取消]才知道回哪）
         return RedirectToAction("Edit", "Systems", new { id, from });
     }
@@ -113,6 +143,8 @@ public class SystemsController : Controller
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is not null)
         {
+            // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
+            if (!await _access.CanModifyAsync(system.SystemCode)) return Forbid();
             // 軟刪除：只加註記，資料仍留在資料庫，但被全域查詢篩選排除，
             // 因此 SW／DA／系統盤點三張清單與匯出都不會再出現。
             system.IsDeleted = true;
@@ -124,19 +156,20 @@ public class SystemsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>只複製系統盤點（Sheet3）欄位，含編號／資產編號／資產名稱三個共用識別欄位。</summary>
-    private static void ApplySystemFields(InfoSystem t, InfoSystem s) =>
-        InfoSystemBlocks.Copy(t, s, InfoSystemBlocks.Sheet3);
+    /// <summary>系統盤點區塊在表單中的欄位前綴，驗證訊息要用同一個名稱才對得上輸入框。</summary>
+    private const string Sheet3Prefix = nameof(InfoSystemEditViewModel.Sheet3);
 
     /// <summary>資產編號與編號在主檔須唯一（資料庫也有對應的唯一索引）。</summary>
     private async Task ValidateUniqueKeysAsync(InfoSystem system)
     {
         if (!string.IsNullOrWhiteSpace(system.SystemCode)
             && await _db.InfoSystems.AnyAsync(s => s.SystemCode == system.SystemCode && s.Id != system.Id))
-            ModelState.AddModelError(nameof(InfoSystem.SystemCode), $"資產編號 {system.SystemCode} 已存在");
+            ModelState.AddModelError($"{Sheet3Prefix}.{nameof(InfoSystem.SystemCode)}",
+                                     $"資產編號 {system.SystemCode} 已存在");
 
         if (!string.IsNullOrWhiteSpace(system.SeqNo)
             && await _db.InfoSystems.AnyAsync(s => s.SeqNo == system.SeqNo && s.Id != system.Id))
-            ModelState.AddModelError(nameof(InfoSystem.SeqNo), $"編號 {system.SeqNo} 已存在");
+            ModelState.AddModelError($"{Sheet3Prefix}.{nameof(InfoSystem.SeqNo)}",
+                                     $"編號 {system.SeqNo} 已存在");
     }
 }

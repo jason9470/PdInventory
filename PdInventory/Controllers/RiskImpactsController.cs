@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
 /// <summary>3-2：評估影響程度（維護檔）</summary>
+[Authorize(Policy = Policies.Admin)]
 public class RiskImpactsController : Controller
 {
     private readonly AppDbContext _db;

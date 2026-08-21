@@ -264,3 +264,60 @@ body {
 .export-column-list .list-group-item:hover {
   background-color: #dbe9ff;
 }
+
+/* ── 權限設定 ─────────────────────────────────────────── */
+
+/* 資產編號在表格以外的地方也要維持同一種樣子（表格內另有更精確的規則覆蓋） */
+.pd-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: #0d6efd;
+  white-space: nowrap;
+}
+
+/* 選中的使用者是藍底，編號的藍字會看不見 */
+.pd-user-list .list-group-item.active .pd-code,
+.pd-user-list .list-group-item.active .text-muted {
+  color: #fff !important;
+}
+
+.pd-user-list {
+  max-height: 32rem;
+  overflow-y: auto;
+}
+
+/* 資產勾選清單：兩欄排列，33 筆左右一頁看得完 */
+.pd-asset-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .25rem .75rem;
+}
+
+.pd-asset-item {
+  display: flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .3125rem .5rem;
+  border: 1px solid #dee2e6;
+  border-radius: .25rem;
+  font-size: .8125rem;
+  cursor: pointer;
+}
+
+.pd-asset-item:hover {
+  background-color: #f1f6ff;
+}
+
+/* 已授權的資產要一眼看得出來，不能只靠核取方塊那個小勾 */
+.pd-asset-item:has(input:checked) {
+  background-color: #dbe9ff;
+  border-color: #9ec5fe;
+  font-weight: 600;
+}
+
+.pd-asset-item .pd-asset-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

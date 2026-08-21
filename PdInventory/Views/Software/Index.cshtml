@@ -6,8 +6,11 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>資訊資產清單-軟體(SW) <small class="text-muted fs-6">(共 @Model.Count 套)</small></h2>
     <div>
-        <a class="btn btn-primary" asp-controller="Systems" asp-action="Create"
-       asp-route-from="Software">＋ 新增軟體資產</a>
+        @if (AssetAccess.CanCreate)
+        {
+            <a class="btn btn-primary" asp-controller="Systems" asp-action="Create"
+           asp-route-from="Software">＋ 新增軟體資產</a>
+        }
     </div>
 </div>
 
@@ -58,13 +61,17 @@
                     <td>
                         <a class="btn btn-sm btn-outline-info" asp-action="Details"
                            asp-route-id="@s.Id" asp-route-from="Software">檢視</a>
-                        <a class="btn btn-sm btn-outline-primary" asp-controller="Systems" asp-action="Edit"
-                           asp-route-id="@s.Id" asp-route-from="Software">編輯</a>
-                        <form method="post" asp-action="Delete" asp-route-id="@s.Id" class="d-inline"
-                              onsubmit="return confirm('確定刪除軟體資產「@s.SystemCode @s.SystemName」？此動作會一併刪除同筆的 DA 與系統資料。');">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
-                        </form>
+                        @* 資產負責人只在自己負責的資產上看得到這兩個按鈕 *@
+                        @if (await AssetAccess.CanModifyAsync(s.SystemCode))
+                        {
+                            <a class="btn btn-sm btn-outline-primary" asp-controller="Systems" asp-action="Edit"
+                               asp-route-id="@s.Id" asp-route-from="Software">編輯</a>
+                            <form method="post" asp-action="Delete" asp-route-id="@s.Id" class="d-inline"
+                                  onsubmit="return confirm('確定刪除軟體資產「@s.SystemCode @s.SystemName」？此動作會一併刪除同筆的 DA 與系統資料。');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }

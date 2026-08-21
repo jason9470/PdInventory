@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
 /// <summary>附表一：法務部公告個人資料類別（維護檔）</summary>
+[Authorize(Policy = Policies.Admin)]
 public class CategoriesController : Controller
 {
     private readonly AppDbContext _db;

@@ -6,8 +6,11 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>系統：@Model.SeqNo @Model.SystemCode @Model.SystemName</h2>
     <div>
-        <a class="btn btn-primary" asp-controller="Systems" asp-action="Edit"
-           asp-route-id="@Model.Id" asp-route-from="@ViewBag.From">編輯</a>
+        @if (await AssetAccess.CanModifyAsync(Model.SystemCode))
+        {
+            <a class="btn btn-primary" asp-controller="Systems" asp-action="Edit"
+               asp-route-id="@Model.Id" asp-route-from="@ViewBag.From">編輯</a>
+        }
         <a class="btn btn-outline-secondary" asp-route-clear="1"
            asp-controller="@ViewBag.From" asp-action="Index">回列表</a>
     </div>

@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Helpers;
+using PdInventory.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,9 +26,65 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// 軌跡與軟刪除需要知道「是誰做的」；尚未導入驗證前一律記為未登入
+// 軌跡、軟刪除與資產授權都需要知道「是誰在操作」
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
+builder.Services.AddScoped<IAssetAccess, AssetAccess>();
+
+// 身分來源。Simulated 供權限測試用，正式環境設為 Remote 改由公司身分服務判人。
+var employeeOptions = builder.Configuration
+    .GetSection(EmployeeDirectoryOptions.SectionName)
+    .Get<EmployeeDirectoryOptions>() ?? new EmployeeDirectoryOptions();
+builder.Services.AddSingleton(employeeOptions);
+
+if (employeeOptions.IsSimulated)
+{
+    builder.Services.AddScoped<IEmployeeDirectory, SimulatedEmployeeDirectory>();
+}
+else
+{
+    builder.Services.AddHttpClient<IEmployeeDirectory, RemoteEmployeeDirectory>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(10);
+        })
+        // 身分端點走 Windows 整合驗證，要帶著憑證才問得出人是誰
+        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            UseDefaultCredentials = true,
+            AllowAutoRedirect = true,
+        });
+}
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/Denied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
+
+// 授權原則集中在這裡定義，控制器只掛 [Authorize(Policy = ...)]，
+// 要調整某個功能開放給誰時只改這一段，不必翻遍控制器。
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.Admin, policy =>
+        policy.RequireRole(nameof(UserRole.Admin)));
+
+    options.AddPolicy(Policies.ManageAssets, policy =>
+        policy.RequireRole(nameof(UserRole.Admin), nameof(UserRole.Manager)));
+
+    options.AddPolicy(Policies.ViewAssets, policy =>
+        policy.RequireAuthenticatedUser());
+
+    // 沒掛任何屬性的動作一律要求登入，避免新增控制器時忘了保護
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 var dbDir = Path.Combine(builder.Environment.ContentRootPath, "App_Data");
 Directory.CreateDirectory(dbDir);
@@ -33,6 +92,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={Path.Combine(dbDir, "pdinventory.db")}"));
 
 var app = builder.Build();
+
+// 編輯畫面的 ViewModel 是手寫的欄位清單，與實體不同步時會安靜地存不進去。
+// 在這裡先擲出例外，讓不一致變成啟動就看得到的失敗。
+InfoSystemBlocks.AssertViewModelsCoverAllFields();
 
 // 首次啟動建立資料庫並匯入 個資清冊.xlsx 匯出的種子資料
 using (var scope = app.Services.CreateScope())
@@ -53,6 +116,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

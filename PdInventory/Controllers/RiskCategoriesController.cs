@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
 /// <summary>3-1：風險分類編號（維護檔）</summary>
+[Authorize(Policy = Policies.Admin)]
 public class RiskCategoriesController : Controller
 {
     private readonly AppDbContext _db;

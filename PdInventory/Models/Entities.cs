@@ -889,3 +889,75 @@ public class ExportColumn
     /// <summary>是否納入匯出。</summary>
     public bool Included { get; set; } = true;
 }
+
+/// <summary>
+/// 系統角色。數值由小到大代表權限由低到高，判斷時可直接比大小。
+/// 新使用者第一次登入時一律給最低的 AssetOwner，且名下沒有任何資產，
+/// 也就是「只能看、不能改」；要能改什麼由管理者在權限設定畫面指定。
+/// </summary>
+public enum UserRole
+{
+    /// <summary>資產負責人：六張清單都看得到，但只有名下資產可以修改／刪除，不能新增。</summary>
+    AssetOwner = 0,
+
+    /// <summary>主管：六張主要清單的新增／修改／刪除都可以，但不能碰維護資料、維護匯出與權限設定。</summary>
+    Manager = 1,
+
+    /// <summary>管理者：所有畫面與功能。</summary>
+    Admin = 2,
+}
+
+/// <summary>
+/// 系統使用者。帳號不自建，一律由公司員工目錄帶入（見 Helpers/IEmployeeDirectory.cs），
+/// 因此這張表只在「某人第一次登入成功」時新增，記錄他的角色與資產授權。
+/// </summary>
+public class AppUser : IAuditable, IConcurrencyAware
+{
+    public int Id { get; set; }
+
+    /// <summary>員工編號，來自員工目錄的 EmpNo，全系統唯一，也是軌跡欄位的來源。</summary>
+    [Required, StringLength(20)]
+    [Display(Name = "員工編號")]
+    public string EmpNo { get; set; } = "";
+
+    /// <summary>員工姓名，來自員工目錄的 EmpName。每次登入都會更新，姓名異動可自動跟上。</summary>
+    [StringLength(50)]
+    [Display(Name = "姓名")]
+    public string EmpName { get; set; } = "";
+
+    [Display(Name = "角色")]
+    public UserRole Role { get; set; } = UserRole.AssetOwner;
+
+    [Display(Name = "最後登入時間")]
+    public DateTime? LastLoginAt { get; set; }
+
+    /// <summary>名下負責的資產。角色是主管或管理者時不看這份清單（他們本來就全部可改）。</summary>
+    public ICollection<AssetOwner> OwnedAssets { get; set; } = new List<AssetOwner>();
+
+    public string CreatedBy { get; set; } = "";
+    public DateTime? CreatedAt { get; set; }
+    public string UpdatedBy { get; set; } = "";
+    public DateTime? UpdatedAt { get; set; }
+    public Guid RowVersion { get; set; }
+
+    /// <summary>畫面與軌跡共用的顯示字串。姓名可能重複，所以一律帶上員工編號。</summary>
+    public string Label => string.IsNullOrWhiteSpace(EmpName) ? EmpNo : $"{EmpName}({EmpNo})";
+}
+
+/// <summary>
+/// 資產授權：某位使用者負責某個資訊資產。
+///
+/// 授權單位刻意選 InfoSystem（也就是 SW 編號）而不是各張清單各自授權：
+/// SW／DA／系統盤點本來就是同一列資料的三個區塊，而個資盤點與拋轉清單的每一列
+/// 都帶著 SystemCode 指回這裡，所以一次勾選即可涵蓋六張清單，權限畫面也只要一份。
+/// </summary>
+public class AssetOwner
+{
+    public int Id { get; set; }
+
+    public int AppUserId { get; set; }
+    public AppUser? User { get; set; }
+
+    public int InfoSystemId { get; set; }
+    public InfoSystem? InfoSystem { get; set; }
+}

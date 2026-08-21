@@ -1,21 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Models.ViewModels;
 using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
 /// <summary>資訊資產清單－軟體(SW)：管理 InfoSystems 的 SW 欄位</summary>
+[Authorize(Policy = Policies.ViewAssets)]
 public class SoftwareController : Controller
 {
     private readonly AppDbContext _db;
     private readonly ICurrentUser _currentUser;
+    private readonly IAssetAccess _access;
 
-    public SoftwareController(AppDbContext db, ICurrentUser currentUser)
+    public SoftwareController(AppDbContext db, ICurrentUser currentUser, IAssetAccess access)
     {
         _db = db;
         _currentUser = currentUser;
+        _access = access;
     }
 
     public async Task<IActionResult> Index(string? q)
@@ -63,16 +68,26 @@ public class SoftwareController : Controller
     // 故此處只保留清單、編輯的 POST 與刪除；Edit 的 POST 仍是統一編輯畫面該區塊的送出目標。
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, InfoSystem model, string? from)
+    public async Task<IActionResult> Edit(int id, [Bind(Prefix = "Software")] SoftwareEditViewModel model, string? from)
     {
         if (id != model.Id) return BadRequest();
         ViewBag.From = ListSource.Resolve(from);
-        if (!ModelState.IsValid) return View("EditAll", model);
 
         var existing = await _db.InfoSystems.FindAsync(id);
         if (existing is null) return NotFound();
 
-        ApplySoftwareFields(existing, model);
+        // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
+        if (!await _access.CanModifyAsync(existing.SystemCode)) return Forbid();
+
+        if (!ModelState.IsValid)
+        {
+            // 統一編輯畫面要三個區塊都在，另外兩塊取資料庫現值，這一塊保留使用者剛才輸入的內容
+            var reload = InfoSystemBlocks.ToEditViewModel(existing);
+            reload.Software = model;
+            return View("EditAll", reload);
+        }
+
+        InfoSystemBlocks.CopyToEntity(existing, model, InfoSystemBlocks.Sw);
         // 以畫面載入當下的權杖比對：若這筆在期間內被他人存過，擋下並要求重新載入，
         // 不做靜默覆蓋。權杖由 AppDbContext 於每次存檔換新。
         _db.Entry(existing).Property(e => e.RowVersion).OriginalValue = model.RowVersion;
@@ -96,6 +111,8 @@ public class SoftwareController : Controller
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is not null)
         {
+            // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
+            if (!await _access.CanModifyAsync(system.SystemCode)) return Forbid();
             // 軟刪除：只加註記，資料仍留在資料庫，但被全域查詢篩選排除，
             // 因此 SW／DA／系統盤點三張清單與匯出都不會再出現。
             system.IsDeleted = true;
@@ -106,8 +123,4 @@ public class SoftwareController : Controller
         }
         return RedirectToAction(nameof(Index));
     }
-
-    /// <summary>只複製 SW 欄位，保留既有 DA 與 Sheet3 資料。</summary>
-    private static void ApplySoftwareFields(InfoSystem t, InfoSystem s) =>
-        InfoSystemBlocks.Copy(t, s, InfoSystemBlocks.Sw);
 }

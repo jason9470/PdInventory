@@ -100,6 +100,41 @@ public static class DbSeeder
         }
 
         SeedRiskLookups(db);
+        SeedUsers(db);
+    }
+
+    /// <summary>
+    /// 初始使用者。只在 AppUsers 完全空白時建立一次，之後的異動一律以畫面操作為準，
+    /// 重新啟動不會把管理者刪掉的測試帳號救回來。
+    ///
+    /// 正常情況下使用者是第一次登入時自動建檔的，這裡只解決兩個開機問題：
+    /// 一是要先有一個管理者，否則沒有人能進權限設定畫面；
+    /// 二是測試帳號在公司員工目錄裡並不存在，只能先建好再用模擬登入。
+    /// </summary>
+    private static void SeedUsers(AppDbContext db)
+    {
+        if (db.AppUsers.Any()) return;
+
+        db.AppUsers.Add(new AppUser
+        {
+            EmpNo = "0183253",
+            EmpName = "林子耕",
+            Role = UserRole.Admin,
+        });
+
+        // 五個測試帳號一律給最低權限，與「第一次登入自動建檔」的行為一致；
+        // 要測主管或管理者，在權限設定畫面改角色即可。
+        for (var digit = 1; digit <= 5; digit++)
+        {
+            db.AppUsers.Add(new AppUser
+            {
+                EmpNo = new string((char)('0' + digit), 7),
+                EmpName = $"測試使用者{digit}",
+                Role = UserRole.AssetOwner,
+            });
+        }
+
+        db.SaveChanges();
     }
 
     /// <summary>3-1~3-4：風險自評下拉維護資料（固定參考表，內建種子）。</summary>

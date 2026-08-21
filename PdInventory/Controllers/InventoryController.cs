@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
@@ -7,10 +8,17 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>Sheet1：個人資料檔案盤點表</summary>
+[Authorize(Policy = Policies.ViewAssets)]
 public class InventoryController : Controller
 {
     private readonly AppDbContext _db;
-    public InventoryController(AppDbContext db) => _db = db;
+    private readonly IAssetAccess _access;
+
+    public InventoryController(AppDbContext db, IAssetAccess access)
+    {
+        _db = db;
+        _access = access;
+    }
 
     public async Task<IActionResult> Index(string? q)
     {
@@ -60,6 +68,7 @@ public class InventoryController : Controller
         return View(item);
     }
 
+    [Authorize(Policy = Policies.ManageAssets)]
     public async Task<IActionResult> Create()
     {
         await LoadLookupsAsync();
@@ -67,6 +76,7 @@ public class InventoryController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    [Authorize(Policy = Policies.ManageAssets)]
     public async Task<IActionResult> Create(InventoryItem item, int[] categoryIds, int[] purposeIds)
     {
         await ValidateUniqueSeqNoAsync(item);
@@ -92,6 +102,9 @@ public class InventoryController : Controller
             .FirstOrDefaultAsync(i => i.Id == id);
         if (item is null) return NotFound();
 
+        // 資產負責人只能異動名下資產底下的資料；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
+        if (!await _access.CanModifyAsync(item.SystemCode)) return Forbid();
+
         // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
         this.RememberSearch(item.SystemCode);
         await LoadLookupsAsync(
@@ -110,6 +123,11 @@ public class InventoryController : Controller
             .Include(i => i.Purposes)
             .FirstOrDefaultAsync(i => i.Id == id);
         if (existing is null) return NotFound();
+
+        // 原資產與改後的資產都必須在權限範圍內，否則資產負責人可以把不屬於自己的資料
+        // 改成自己的資產編號、或把自己的資料丟給別人
+        if (!await _access.CanModifyAsync(existing.SystemCode)
+            || !await _access.CanModifyAsync(item.SystemCode)) return Forbid();
 
         await ValidateUniqueSeqNoAsync(item);
         if (!ModelState.IsValid)
@@ -147,6 +165,9 @@ public class InventoryController : Controller
         var item = await _db.InventoryItems.FindAsync(id);
         if (item is not null)
         {
+            // 資產負責人只能刪除名下資產底下的資料
+            if (!await _access.CanModifyAsync(item.SystemCode)) return Forbid();
+
             _db.InventoryItems.Remove(item);
             await _db.SaveChangesAsync();
             TempData["Message"] = $"已刪除盤點項目「{item.SeqNo} {item.DocumentName}」";

@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
 
 /// <summary>附表二：法務部公告特定目的列表（維護檔）</summary>
+[Authorize(Policy = Policies.Admin)]
 public class PurposesController : Controller
 {
     private readonly AppDbContext _db;

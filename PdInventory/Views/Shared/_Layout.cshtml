@@ -27,6 +27,19 @@
                         aria-controls="appSidebar" aria-label="收合/展開左側清單" title="收合/展開左側清單">☰</button>
                 @* me-auto：navbar 的 container 是 space-between，移除選單後只剩兩個子元素會被推到兩端 *@
                 <a class="navbar-brand me-auto" asp-controller="Home" asp-action="Index">個資盤點管理系統</a>
+                @if (CurrentUser.IsAuthenticated)
+                {
+                    <div class="d-flex align-items-center">
+                        <span class="navbar-text text-white small me-3">
+                            @CurrentUser.DisplayName，您好！
+                            <span class="badge text-bg-light ms-1">@RoleDisplay.Name(CurrentUser.Role ?? UserRole.AssetOwner)</span>
+                        </span>
+                        <form method="post" asp-controller="Account" asp-action="Logout">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-light">登出</button>
+                        </form>
+                    </div>
+                }
             </div>
         </nav>
     </header>
@@ -50,6 +63,9 @@
                            asp-controller="Systems" asp-action="Index">資訊系統/資料庫/伺服器盤點表</a>
                     </div>
 
+                    @* 維護資料、維護匯出與權限設定只有管理者能用，非管理者連入口都不顯示 *@
+                    @if (CurrentUser.IsAdmin)
+                    {
                     <button id="maintToggle" type="button"
                             class="sidebar-heading btn btn-link text-muted small fw-bold text-decoration-none
                                    d-flex align-items-center justify-content-between w-100 mt-3 mb-1 px-3"
@@ -86,6 +102,12 @@
                                asp-controller="ExportSettings" asp-action="Edit" asp-route-list="@key">@info.Title</a>
                         }
                     </div>
+
+                    <div class="list-group list-group-flush small mt-3">
+                        <a class="list-group-item list-group-item-action @NavActive("Permissions")"
+                           asp-controller="Permissions" asp-action="Index">權限設定</a>
+                    </div>
+                    }
                 </nav>
             </aside>
 

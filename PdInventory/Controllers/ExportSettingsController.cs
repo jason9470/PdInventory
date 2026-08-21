@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PdInventory.Data;
 using PdInventory.Helpers;
@@ -5,6 +6,7 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>維護匯出：調整各清單匯出 Excel 的欄位順序與是否納入。</summary>
+[Authorize(Policy = Policies.Admin)]
 public class ExportSettingsController : Controller
 {
     private readonly AppDbContext _db;

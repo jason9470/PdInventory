@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
@@ -7,10 +8,17 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>個人資料風險自評表：以 InventoryItem 的風險欄位維護每筆個資文件的風險評估。</summary>
+[Authorize(Policy = Policies.ViewAssets)]
 public class RiskController : Controller
 {
     private readonly AppDbContext _db;
-    public RiskController(AppDbContext db) => _db = db;
+    private readonly IAssetAccess _access;
+
+    public RiskController(AppDbContext db, IAssetAccess access)
+    {
+        _db = db;
+        _access = access;
+    }
 
     public async Task<IActionResult> Index(string? q)
     {
@@ -45,6 +53,7 @@ public class RiskController : Controller
         return File(content, ExcelExporter.ContentType, fileName);
     }
 
+    [Authorize(Policy = Policies.ManageAssets)]
     public async Task<IActionResult> Create()
     {
         await LoadLookupsAsync();
@@ -52,6 +61,7 @@ public class RiskController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    [Authorize(Policy = Policies.ManageAssets)]
     public async Task<IActionResult> Create(InventoryItem model)
     {
         if (!ModelState.IsValid)
@@ -81,6 +91,10 @@ public class RiskController : Controller
     {
         var item = await _db.InventoryItems.FindAsync(id);
         if (item is null) return NotFound();
+
+        // 資產負責人只能異動名下資產底下的資料；直接輸入網址也必須擋下
+        if (!await _access.CanModifyAsync(item.SystemCode)) return Forbid();
+
         // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
         this.RememberSearch(item.SystemCode);
         await LoadLookupsAsync();
@@ -94,6 +108,9 @@ public class RiskController : Controller
 
         var existing = await _db.InventoryItems.FindAsync(id);
         if (existing is null) return NotFound();
+
+        // 資產負責人只能異動名下資產底下的資料；直接輸入網址也必須擋下
+        if (!await _access.CanModifyAsync(existing.SystemCode)) return Forbid();
 
         if (!ModelState.IsValid)
         {
@@ -128,6 +145,9 @@ public class RiskController : Controller
         var existing = await _db.InventoryItems.FindAsync(id);
         if (existing is not null)
         {
+            // 資產負責人只能清除名下資產底下的風險自評
+            if (!await _access.CanModifyAsync(existing.SystemCode)) return Forbid();
+
             existing.RiskDataSeqNo = "";
             existing.RiskCategoryCode = "";
             existing.RiskCategoryName = "";

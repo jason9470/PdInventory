@@ -71,66 +71,70 @@
     </div>
 </div>
 
-<h5 class="border-bottom pb-2 mb-3">維護資料（各表下拉選項來源）</h5>
-<div class="row g-3">
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">附表一：法務部公告個人資料類別</h5>
-                <p class="card-text text-muted">盤點表「使用資料(欄位)」之下拉選項維護資料（Ｃ○○一～Ｃ一三四）。</p>
-                <p class="fs-3 mb-2">@ViewBag.CategoryCount <small class="fs-6 text-muted">項</small></p>
-                <a class="btn btn-outline-primary" asp-controller="Categories" asp-action="Index">進入維護</a>
+@* 維護資料只有管理者能改，其他角色連入口都不顯示（與左側清單一致） *@
+@if (CurrentUser.IsAdmin)
+{
+    <h5 class="border-bottom pb-2 mb-3">維護資料（各表下拉選項來源）</h5>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">附表一：法務部公告個人資料類別</h5>
+                    <p class="card-text text-muted">盤點表「使用資料(欄位)」之下拉選項維護資料（Ｃ○○一～Ｃ一三四）。</p>
+                    <p class="fs-3 mb-2">@ViewBag.CategoryCount <small class="fs-6 text-muted">項</small></p>
+                    <a class="btn btn-outline-primary" asp-controller="Categories" asp-action="Index">進入維護</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">附表二：法務部公告特定目的列表</h5>
+                    <p class="card-text text-muted">盤點表「特定目的」之下拉選項維護資料（001～182）。</p>
+                    <p class="fs-3 mb-2">@ViewBag.PurposeCount <small class="fs-6 text-muted">項</small></p>
+                    <a class="btn btn-outline-primary" asp-controller="Purposes" asp-action="Index">進入維護</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title">3-1：風險分類編號</h6>
+                    <p class="card-text text-muted small">風險自評「風險分類編號/風險描述分類/潛在風險事件」之下拉選項。</p>
+                    <p class="fs-4 mb-2">@ViewBag.RiskCategoryCount <small class="fs-6 text-muted">項</small></p>
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="RiskCategories" asp-action="Index">進入維護</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title">3-2：評估影響程度</h6>
+                    <p class="card-text text-muted small">風險自評「影響程度評估」之下拉選項（1～5 級）。</p>
+                    <p class="fs-4 mb-2">@ViewBag.RiskImpactCount <small class="fs-6 text-muted">級</small></p>
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="RiskImpacts" asp-action="Index">進入維護</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title">3-3：評估發生可能性</h6>
+                    <p class="card-text text-muted small">風險自評「發生可能性評估」之下拉選項（1～5 級）。</p>
+                    <p class="fs-4 mb-2">@ViewBag.RiskLikelihoodCount <small class="fs-6 text-muted">級</small></p>
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="RiskLikelihoods" asp-action="Index">進入維護</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title">3-4：有效性評估</h6>
+                    <p class="card-text text-muted small">風險自評「控制有效性等級」之下拉選項（1～5 級）。</p>
+                    <p class="fs-4 mb-2">@ViewBag.RiskEffectivenessCount <small class="fs-6 text-muted">級</small></p>
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="RiskEffectiveness" asp-action="Index">進入維護</a>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">附表二：法務部公告特定目的列表</h5>
-                <p class="card-text text-muted">盤點表「特定目的」之下拉選項維護資料（001～182）。</p>
-                <p class="fs-3 mb-2">@ViewBag.PurposeCount <small class="fs-6 text-muted">項</small></p>
-                <a class="btn btn-outline-primary" asp-controller="Purposes" asp-action="Index">進入維護</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h6 class="card-title">3-1：風險分類編號</h6>
-                <p class="card-text text-muted small">風險自評「風險分類編號/風險描述分類/潛在風險事件」之下拉選項。</p>
-                <p class="fs-4 mb-2">@ViewBag.RiskCategoryCount <small class="fs-6 text-muted">項</small></p>
-                <a class="btn btn-sm btn-outline-primary" asp-controller="RiskCategories" asp-action="Index">進入維護</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h6 class="card-title">3-2：評估影響程度</h6>
-                <p class="card-text text-muted small">風險自評「影響程度評估」之下拉選項（1～5 級）。</p>
-                <p class="fs-4 mb-2">@ViewBag.RiskImpactCount <small class="fs-6 text-muted">級</small></p>
-                <a class="btn btn-sm btn-outline-primary" asp-controller="RiskImpacts" asp-action="Index">進入維護</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h6 class="card-title">3-3：評估發生可能性</h6>
-                <p class="card-text text-muted small">風險自評「發生可能性評估」之下拉選項（1～5 級）。</p>
-                <p class="fs-4 mb-2">@ViewBag.RiskLikelihoodCount <small class="fs-6 text-muted">級</small></p>
-                <a class="btn btn-sm btn-outline-primary" asp-controller="RiskLikelihoods" asp-action="Index">進入維護</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h6 class="card-title">3-4：有效性評估</h6>
-                <p class="card-text text-muted small">風險自評「控制有效性等級」之下拉選項（1～5 級）。</p>
-                <p class="fs-4 mb-2">@ViewBag.RiskEffectivenessCount <small class="fs-6 text-muted">級</small></p>
-                <a class="btn btn-sm btn-outline-primary" asp-controller="RiskEffectiveness" asp-action="Index">進入維護</a>
-            </div>
-        </div>
-    </div>
-</div>
+}

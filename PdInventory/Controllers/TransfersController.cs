@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
@@ -7,10 +8,17 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>Sheet2：系統自動拋轉清單</summary>
+[Authorize(Policy = Policies.ViewAssets)]
 public class TransfersController : Controller
 {
     private readonly AppDbContext _db;
-    public TransfersController(AppDbContext db) => _db = db;
+    private readonly IAssetAccess _access;
+
+    public TransfersController(AppDbContext db, IAssetAccess access)
+    {
+        _db = db;
+        _access = access;
+    }
 
     public async Task<IActionResult> Index(string? q, string? type)
     {
@@ -54,9 +62,11 @@ public class TransfersController : Controller
         return View(record);
     }
 
+    [Authorize(Policy = Policies.ManageAssets)]
     public IActionResult Create() => View("Form", new TransferRecord());
 
     [HttpPost, ValidateAntiForgeryToken]
+    [Authorize(Policy = Policies.ManageAssets)]
     public async Task<IActionResult> Create(TransferRecord record)
     {
         await ValidateUniqueSeqNoAsync(record);
@@ -71,6 +81,10 @@ public class TransfersController : Controller
     {
         var record = await _db.TransferRecords.FindAsync(id);
         if (record is null) return NotFound();
+
+        // 資產負責人只能異動名下資產底下的資料；直接輸入網址也必須擋下
+        if (!await _access.CanModifyAsync(record.SystemCode)) return Forbid();
+
         // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
         this.RememberSearch(record.SystemCode);
         return View("Form", record);
@@ -80,6 +94,15 @@ public class TransfersController : Controller
     public async Task<IActionResult> Edit(int id, TransferRecord record)
     {
         if (id != record.Id) return BadRequest();
+
+        // 不追蹤讀取：後面的 _db.Update(record) 會把送進來的物件掛上追蹤器，
+        // 這裡若用追蹤查詢會與它衝突。原資產與改後的資產都必須在權限範圍內。
+        var currentCode = await _db.TransferRecords.AsNoTracking()
+            .Where(t => t.Id == id).Select(t => t.SystemCode).FirstOrDefaultAsync();
+        if (currentCode is null) return NotFound();
+        if (!await _access.CanModifyAsync(currentCode)
+            || !await _access.CanModifyAsync(record.SystemCode)) return Forbid();
+
         await ValidateUniqueSeqNoAsync(record);
         if (!ModelState.IsValid) return View("Form", record);
         _db.Update(record);
@@ -94,6 +117,9 @@ public class TransfersController : Controller
         var record = await _db.TransferRecords.FindAsync(id);
         if (record is not null)
         {
+            // 資產負責人只能刪除名下資產底下的拋轉紀錄
+            if (!await _access.CanModifyAsync(record.SystemCode)) return Forbid();
+
             _db.TransferRecords.Remove(record);
             await _db.SaveChangesAsync();
             TempData["Message"] = $"已刪除拋轉紀錄「{record.SeqNo} {record.SystemName}」";

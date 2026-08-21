@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
@@ -29,6 +30,8 @@ public class HomeController : Controller
         return View();
     }
 
+    /// <summary>錯誤頁不要求登入：登入流程本身出錯時也得顯示得出來。</summary>
+    [AllowAnonymous]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

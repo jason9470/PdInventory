@@ -1,5 +1,6 @@
 using System.Reflection;
 using PdInventory.Models;
+using PdInventory.Models.ViewModels;
 
 namespace PdInventory.Helpers;
 
@@ -9,6 +10,9 @@ namespace PdInventory.Helpers;
 ///
 /// 群組以屬性名稱前綴推導而非寫死清單：模型加減欄位會自動跟上，
 /// 不會再發生「加了欄位但忘了改 Apply 方法，導致存不進去且不報錯」的情形。
+///
+/// 畫面送進來的是各區塊的 ViewModel（見 Models/ViewModels/InfoSystemEditViewModels.cs），
+/// 實體與 ViewModel 之間以同名屬性對應，複製的範圍一律由這裡的分組決定。
 /// </summary>
 public static class InfoSystemBlocks
 {
@@ -31,6 +35,14 @@ public static class InfoSystemBlocks
 
     private static readonly Dictionary<string, PropertyInfo[]> Groups = Build();
 
+    /// <summary>每個區塊對應的 ViewModel 型別，供啟動時的一致性檢查使用。</summary>
+    private static readonly Dictionary<string, Type> ViewModelTypes = new()
+    {
+        [Sw] = typeof(SoftwareEditViewModel),
+        [Da] = typeof(DataEditViewModel),
+        [Sheet3] = typeof(SystemEditViewModel),
+    };
+
     private static Dictionary<string, PropertyInfo[]> Build()
     {
         var all = typeof(InfoSystem)
@@ -50,10 +62,78 @@ public static class InfoSystemBlocks
 
     public static IReadOnlyList<PropertyInfo> Of(string block) => Groups[block];
 
-    /// <summary>把 source 的指定欄位群組複製到 target，其餘欄位保持不動。</summary>
-    public static void Copy(InfoSystem target, InfoSystem source, string block)
+    /// <summary>把畫面送回的 ViewModel 寫入實體，只碰該區塊的欄位。</summary>
+    public static void CopyToEntity(InfoSystem target, object source, string block) =>
+        Transfer(source, target, block);
+
+    /// <summary>把實體的值填進 ViewModel，供編輯畫面呈現。</summary>
+    public static void FillViewModel(object target, InfoSystem source, string block) =>
+        Transfer(source, target, block);
+
+    /// <summary>
+    /// 以屬性名稱在兩個物件間搬移某個區塊的欄位。兩邊的型別不必相同，
+    /// 但同名屬性一定存在——啟動時的一致性檢查已經確保過了。
+    /// </summary>
+    private static void Transfer(object source, object target, string block)
     {
+        var sourceType = source.GetType();
+        var targetType = target.GetType();
+
         foreach (var property in Groups[block])
-            property.SetValue(target, property.GetValue(source));
+        {
+            var from = sourceType.GetProperty(property.Name);
+            var to = targetType.GetProperty(property.Name);
+            if (from is null || to is null || !to.CanWrite) continue;
+            to.SetValue(target, from.GetValue(source));
+        }
+    }
+
+    /// <summary>
+    /// 由實體組出統一編輯畫面的模型：三個區塊各自填好，並帶上共用的主鍵與並行權杖。
+    /// </summary>
+    public static InfoSystemEditViewModel ToEditViewModel(InfoSystem entity)
+    {
+        var model = new InfoSystemEditViewModel { Asset = entity };
+
+        FillViewModel(model.Software, entity, Sw);
+        FillViewModel(model.Data, entity, Da);
+        FillViewModel(model.Sheet3, entity, Sheet3);
+
+        foreach (var block in new IInfoSystemBlockViewModel[] { model.Software, model.Data, model.Sheet3 })
+        {
+            block.Id = entity.Id;
+            block.RowVersion = entity.RowVersion;
+        }
+
+        return model;
+    }
+
+    /// <summary>
+    /// 檢查三個 ViewModel 是否涵蓋了各自區塊的所有欄位。
+    ///
+    /// ViewModel 是手寫的屬性清單，實體加了新欄位卻忘了同步時，欄位會在畫面上消失、
+    /// 存檔時安靜地保持舊值——那種錯誤很難從畫面看出來。改成在啟動時就擲出例外，
+    /// 讓它變成一眼可見的失敗。由 Program.cs 在建好服務後呼叫。
+    /// </summary>
+    public static void AssertViewModelsCoverAllFields()
+    {
+        var missing = new List<string>();
+
+        foreach (var (block, viewModelType) in ViewModelTypes)
+        {
+            var declared = viewModelType
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Select(p => p.Name)
+                .ToHashSet();
+
+            missing.AddRange(Groups[block]
+                .Where(property => !declared.Contains(property.Name))
+                .Select(property => $"{viewModelType.Name} 缺少 {property.Name}"));
+        }
+
+        if (missing.Count > 0)
+            throw new InvalidOperationException(
+                "InfoSystem 的欄位與編輯畫面的 ViewModel 不一致：" + Environment.NewLine
+                + string.Join(Environment.NewLine, missing));
     }
 }

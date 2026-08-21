@@ -21,6 +21,8 @@ public class AppDbContext : DbContext
     public DbSet<RiskLikelihoodLevel> RiskLikelihoodLevels => Set<RiskLikelihoodLevel>();
     public DbSet<RiskEffectivenessLevel> RiskEffectivenessLevels => Set<RiskEffectivenessLevel>();
     public DbSet<ExportColumn> ExportColumns => Set<ExportColumn>();
+    public DbSet<AppUser> AppUsers => Set<AppUser>();
+    public DbSet<AssetOwner> AssetOwners => Set<AssetOwner>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +33,25 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<RiskLikelihoodLevel>().HasIndex(r => r.Level).IsUnique();
         modelBuilder.Entity<RiskEffectivenessLevel>().HasIndex(r => r.Level).IsUnique();
         modelBuilder.Entity<ExportColumn>().HasIndex(e => new { e.ListKey, e.PropertyName }).IsUnique();
+        modelBuilder.Entity<AppUser>().HasIndex(u => u.EmpNo).IsUnique();
+
+        // 同一位使用者對同一個資產只會有一筆授權；重複勾選在畫面上看不出來，但會讓
+        // 「取消授權」變成刪一筆留一筆的假象，因此由資料庫直接擋掉。
+        modelBuilder.Entity<AssetOwner>().HasIndex(a => new { a.AppUserId, a.InfoSystemId }).IsUnique();
+
+        modelBuilder.Entity<AssetOwner>()
+            .HasOne(a => a.User).WithMany(u => u.OwnedAssets)
+            .HasForeignKey(a => a.AppUserId).OnDelete(DeleteBehavior.Cascade);
+
+        // 資產被刪除時一併移除授權，避免留下指向不存在資產的孤兒列
+        modelBuilder.Entity<AssetOwner>()
+            .HasOne(a => a.InfoSystem).WithMany()
+            .HasForeignKey(a => a.InfoSystemId).OnDelete(DeleteBehavior.Cascade);
+
+        // 授權跟著資產走：資產被軟刪除後，授權也不該再出現在權限畫面或權限判斷中。
+        // 若不加這個篩選，EF 會警告「必要導覽指向帶有查詢篩選的實體」，且 Include
+        // 後的 InfoSystem 會變成 null，判斷時要到處補 null 檢查。
+        modelBuilder.Entity<AssetOwner>().HasQueryFilter(a => !a.InfoSystem!.IsDeleted);
 
         // 主檔識別欄位唯一。SystemCode 是跨表關聯的鍵（DA↔SW、盤點表與拋轉清單的弱關聯、
         // 以及清單頁的搜尋記憶），重複會讓關聯行為變得不可預期。
@@ -53,6 +74,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<InfoSystem>().Property(e => e.RowVersion).IsConcurrencyToken();
         modelBuilder.Entity<InventoryItem>().Property(e => e.RowVersion).IsConcurrencyToken();
         modelBuilder.Entity<TransferRecord>().Property(e => e.RowVersion).IsConcurrencyToken();
+        modelBuilder.Entity<AppUser>().Property(e => e.RowVersion).IsConcurrencyToken();
 
         modelBuilder.Entity<InventoryItem>()
             .HasMany(i => i.Categories)
