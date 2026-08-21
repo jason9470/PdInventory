@@ -21,23 +21,9 @@ public static class DbSeeder
 
     public static void Seed(AppDbContext db, string contentRootPath)
     {
-        db.Database.EnsureCreated();
-
-        // EnsureCreated 只在資料庫不存在時建立結構，既有資料庫不會補上後來新增的資料表，
-        // 因此這裡自行確保 ExportColumns 存在（本專案未使用 Migrations）。
-        db.Database.ExecuteSqlRaw("""
-            CREATE TABLE IF NOT EXISTS "ExportColumns" (
-                "Id" INTEGER NOT NULL CONSTRAINT "PK_ExportColumns" PRIMARY KEY AUTOINCREMENT,
-                "ListKey" TEXT NOT NULL,
-                "PropertyName" TEXT NOT NULL,
-                "SortOrder" INTEGER NOT NULL,
-                "Included" INTEGER NOT NULL
-            );
-            """);
-        db.Database.ExecuteSqlRaw("""
-            CREATE UNIQUE INDEX IF NOT EXISTS "IX_ExportColumns_ListKey_PropertyName"
-                ON "ExportColumns" ("ListKey", "PropertyName");
-            """);
+        // 以 Migrations 建立／升級結構：資料庫不存在時建出全部資料表，
+        // 既有資料庫則只套用尚未執行的 Migration。
+        db.Database.Migrate();
 
         var seedDir = Path.Combine(contentRootPath, "Data", "Seed");
         if (!Directory.Exists(seedDir)) return;

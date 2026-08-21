@@ -50,6 +50,7 @@ public class TransfersController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TransferRecord record)
     {
+        await ValidateUniqueSeqNoAsync(record);
         if (!ModelState.IsValid) return View("Form", record);
         _db.TransferRecords.Add(record);
         await _db.SaveChangesAsync();
@@ -70,6 +71,7 @@ public class TransfersController : Controller
     public async Task<IActionResult> Edit(int id, TransferRecord record)
     {
         if (id != record.Id) return BadRequest();
+        await ValidateUniqueSeqNoAsync(record);
         if (!ModelState.IsValid) return View("Form", record);
         _db.Update(record);
         await _db.SaveChangesAsync();
@@ -88,5 +90,13 @@ public class TransfersController : Controller
             TempData["Message"] = $"已刪除拋轉紀錄「{record.SeqNo} {record.SystemName}」";
         }
         return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>編號在主檔須唯一（資料庫也有對應的唯一索引）。</summary>
+    private async Task ValidateUniqueSeqNoAsync(TransferRecord record)
+    {
+        if (!string.IsNullOrWhiteSpace(record.SeqNo)
+            && await _db.TransferRecords.AnyAsync(t => t.SeqNo == record.SeqNo && t.Id != record.Id))
+            ModelState.AddModelError(nameof(TransferRecord.SeqNo), $"編號 {record.SeqNo} 已存在");
     }
 }

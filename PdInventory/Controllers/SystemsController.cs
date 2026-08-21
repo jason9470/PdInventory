@@ -62,6 +62,7 @@ public class SystemsController : Controller
     {
         var source = ListSource.Resolve(from);
         ViewBag.From = source;
+        await ValidateUniqueKeysAsync(system);
         if (!ModelState.IsValid) return View("CreateAll", system);
 
         // 統一新增畫面一次送出 SW / DA / 系統盤點三個區塊，整筆一起建立
@@ -87,6 +88,7 @@ public class SystemsController : Controller
     {
         if (id != system.Id) return BadRequest();
         ViewBag.From = ListSource.Resolve(from);
+        await ValidateUniqueKeysAsync(system);
         if (!ModelState.IsValid) return View("EditAll", system);
 
         var existing = await _db.InfoSystems.FindAsync(id);
@@ -135,5 +137,17 @@ public class SystemsController : Controller
         t.RetentionPeriod = s.RetentionPeriod;
 
         t.Remark = s.Remark;
+    }
+
+    /// <summary>資產編號與編號在主檔須唯一（資料庫也有對應的唯一索引）。</summary>
+    private async Task ValidateUniqueKeysAsync(InfoSystem system)
+    {
+        if (!string.IsNullOrWhiteSpace(system.SystemCode)
+            && await _db.InfoSystems.AnyAsync(s => s.SystemCode == system.SystemCode && s.Id != system.Id))
+            ModelState.AddModelError(nameof(InfoSystem.SystemCode), $"資產編號 {system.SystemCode} 已存在");
+
+        if (!string.IsNullOrWhiteSpace(system.SeqNo)
+            && await _db.InfoSystems.AnyAsync(s => s.SeqNo == system.SeqNo && s.Id != system.Id))
+            ModelState.AddModelError(nameof(InfoSystem.SeqNo), $"編號 {system.SeqNo} 已存在");
     }
 }

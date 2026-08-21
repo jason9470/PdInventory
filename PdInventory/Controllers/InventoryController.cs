@@ -69,6 +69,7 @@ public class InventoryController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(InventoryItem item, int[] categoryIds, int[] purposeIds)
     {
+        await ValidateUniqueSeqNoAsync(item);
         if (!ModelState.IsValid)
         {
             await LoadLookupsAsync(categoryIds, purposeIds);
@@ -110,6 +111,7 @@ public class InventoryController : Controller
             .FirstOrDefaultAsync(i => i.Id == id);
         if (existing is null) return NotFound();
 
+        await ValidateUniqueSeqNoAsync(item);
         if (!ModelState.IsValid)
         {
             await LoadLookupsAsync(categoryIds, purposeIds);
@@ -160,5 +162,13 @@ public class InventoryController : Controller
             .OrderBy(p => p.Code).ToListAsync();
         ViewBag.SelectedCategoryIds = selectedCategoryIds ?? Array.Empty<int>();
         ViewBag.SelectedPurposeIds = selectedPurposeIds ?? Array.Empty<int>();
+    }
+
+    /// <summary>編號在主檔須唯一（資料庫也有對應的唯一索引）。</summary>
+    private async Task ValidateUniqueSeqNoAsync(InventoryItem item)
+    {
+        if (!string.IsNullOrWhiteSpace(item.SeqNo)
+            && await _db.InventoryItems.AnyAsync(i => i.SeqNo == item.SeqNo && i.Id != item.Id))
+            ModelState.AddModelError(nameof(InventoryItem.SeqNo), $"編號 {item.SeqNo} 已存在");
     }
 }
