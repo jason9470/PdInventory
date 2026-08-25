@@ -32,10 +32,10 @@
     <div class="col-md-4">
         <div class="card h-100">
             <div class="card-body">
-                <h5 class="card-title">個人資料風險自評表</h5>
-                <p class="card-text text-muted">各個資文件之風險分類、影響程度、發生可能性與控制有效性評估。</p>
-                <p class="fs-3 mb-2">@ViewBag.InventoryCount <small class="fs-6 text-muted">筆</small></p>
-                <a class="btn btn-primary" asp-controller="Risk" asp-action="Index">進入維護</a>
+                <h5 class="card-title">資訊系統盤點表</h5>
+                <p class="card-text text-muted">資訊系統、資料庫與檔案伺服器之系統 layout 與備份盤點。</p>
+                <p class="fs-3 mb-2">@ViewBag.SystemCount <small class="fs-6 text-muted">套</small></p>
+                <a class="btn btn-primary" asp-controller="Systems" asp-action="Index">進入維護</a>
             </div>
         </div>
     </div>
@@ -62,10 +62,10 @@
     <div class="col-md-4">
         <div class="card h-100">
             <div class="card-body">
-                <h5 class="card-title">資訊系統盤點表</h5>
-                <p class="card-text text-muted">資訊系統、資料庫與檔案伺服器之系統 layout 與備份盤點。</p>
-                <p class="fs-3 mb-2">@ViewBag.SystemCount <small class="fs-6 text-muted">套</small></p>
-                <a class="btn btn-primary" asp-controller="Systems" asp-action="Index">進入維護</a>
+                <h5 class="card-title">個人資料風險自評表</h5>
+                <p class="card-text text-muted">各個資文件之風險分類、影響程度、發生可能性與控制有效性評估。</p>
+                <p class="fs-3 mb-2">@ViewBag.InventoryCount <small class="fs-6 text-muted">筆</small></p>
+                <a class="btn btn-primary" asp-controller="Risk" asp-action="Index">進入維護</a>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
 
 // Write your JavaScript code.
 
-// 側邊欄與「維護資料」群組的收合。
+// 側邊欄與「維護資料」「維護匯出」兩個群組的收合。
 // 本站每次導覽都是整頁重載，故狀態存 localStorage；
 // 首次繪製前的套用在 _Layout.cshtml 的 <head> inline script，這裡只處理點擊。
 (function () {
@@ -25,6 +25,7 @@
 
     bind('sidebarToggle', 'sidebar-collapsed', 'pdinv.sidebarCollapsed');
     bind('maintToggle', 'maint-collapsed', 'pdinv.maintCollapsed');
+    bind('exportToggle', 'export-collapsed', 'pdinv.exportCollapsed');
 })();
 
 // 清單表格欄位排序：點表頭切換升冪/降冪。

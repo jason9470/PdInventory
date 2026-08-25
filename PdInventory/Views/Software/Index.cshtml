@@ -35,11 +35,11 @@
                 <th>資產編號</th>
                 <th>資產名稱</th>
                 <th>資產類別</th>
-                <th>是否為核心系統</th>
                 <th style="max-width: 260px">資產說明</th>
                 <th>作業系統/版本</th>
                 <th>資料庫工具/版本</th>
-                <th>風險擁有者</th>
+                <th>權責單位</th>
+                <th>應用系統主管</th>
                 <th>是否有處理個資</th>
                 <th style="min-width: 200px" data-nosort>操作</th>
             </tr>
@@ -52,11 +52,11 @@
                     <td class="pd-code">@s.SystemCode</td>
                     <td>@s.SystemName</td>
                     <td>@s.SwSystemCategory</td>
-                    <td>@s.SwIsCoreSystem</td>
                     <td class="text-break" style="max-width: 260px"><small>@s.DaDescription</small></td>
                     <td><small>@s.SwOsVersion</small></td>
                     <td><small>@s.SwDbToolVersion</small></td>
-                    <td>@s.SwRiskOwner</td>
+                    <td>@s.SwOwnerUnit</td>
+                    <td>@s.SwAppManager</td>
                     <td>@s.SwHandlesPersonalData</td>
                     <td>
                         <a class="btn btn-sm btn-outline-info" asp-action="Details"

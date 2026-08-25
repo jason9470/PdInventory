@@ -26,10 +26,10 @@ public static class ExportCatalog
         {
             ["Software"]  = (typeof(InfoSystem),     "資訊資產清單-軟體(SW)"),
             ["Data"]      = (typeof(InfoSystem),     "資訊資產清單-資料(DA)"),
-            ["Risk"]      = (typeof(InventoryItem),  "個人資料風險自評表"),
+            ["Systems"]   = (typeof(InfoSystem),     "資訊系統、資料庫與檔案伺服器盤點表"),
             ["Inventory"] = (typeof(InventoryItem),  "個人資料檔案盤點表-人為產出"),
             ["Transfers"] = (typeof(TransferRecord), "系統自動拋轉(出入)清單-系統產出"),
-            ["Systems"]   = (typeof(InfoSystem),     "資訊系統、資料庫與檔案伺服器盤點表"),
+            ["Risk"]      = (typeof(InventoryItem),  "個人資料風險自評表"),
         };
 
     public static bool IsKnown(string? listKey) =>
