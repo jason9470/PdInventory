@@ -435,7 +435,7 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [StringLength(20)]
     public string SwAssetType { get; set; } = "";
 
-    [Display(Name = "SW-資產類別")]
+    [Display(Name = "SW-系統類別")]
     [StringLength(50)]
     public string SwSystemCategory { get; set; } = "";
 
