@@ -28,6 +28,106 @@
     bind('exportToggle', 'export-collapsed', 'pdinv.exportCollapsed');
 })();
 
+// 資產價值＝機密性＋完整性＋可用性，選單一改就立刻重算。
+// 伺服器端存檔時還會再算一次（AppDbContext.RecalculateAssetValues），
+// 這裡只是讓使用者當下看得到結果，不是唯一的把關。
+//
+// 達到門檻（含）代表這是核心系統：先以提示提醒，送出時若系統類別仍不是核心系統就擋下來。
+(function () {
+    var CORE_CATEGORY = '核心系統';
+    var CORE_THRESHOLD = 10;   // 達到這個值就算核心系統，不是超過
+
+    function setup(form) {
+        var value = form.querySelector('.sw-asset-value');
+        if (!value) return;
+
+        var levels = form.querySelectorAll('.sw-cia');
+        var category = form.querySelector('.sw-system-category');
+        var hint = form.querySelector('.sw-core-hint');
+
+        // 任何一個等級不是數字（例如外購軟體填 N/A）就不計算，維持原值不動
+        function total() {
+            var sum = 0;
+            for (var i = 0; i < levels.length; i++) {
+                var n = parseInt(levels[i].value, 10);
+                if (isNaN(n)) return null;
+                sum += n;
+            }
+            return sum;
+        }
+
+        function refresh() {
+            var sum = total();
+            if (sum !== null) value.value = String(sum);
+
+            var reachedThreshold = sum !== null && sum >= CORE_THRESHOLD;
+            if (!hint) return;
+            hint.hidden = !reachedThreshold;
+            if (reachedThreshold) {
+                hint.textContent = '資產價值 ' + sum + ' 已達 ' + CORE_THRESHOLD
+                    + '，系統類別應為「' + CORE_CATEGORY + '」。';
+            }
+        }
+
+        levels.forEach(function (el) { el.addEventListener('change', refresh); });
+        if (category) category.addEventListener('change', refresh);
+        refresh();
+
+        form.addEventListener('submit', function (e) {
+            var sum = total();
+            if (sum === null || sum < CORE_THRESHOLD) return;
+            if (!category || category.value === CORE_CATEGORY) return;
+
+            e.preventDefault();
+            block(sum, category);
+        });
+    }
+
+    // 阻擋視窗。直接用 JS 建出來，兩個共用畫面就不必各放一份 modal 的 HTML。
+    function block(sum, category) {
+        var modal = document.getElementById('swCoreBlockModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'swCoreBlockModal';
+            modal.className = 'modal fade';
+            modal.tabIndex = -1;
+            modal.innerHTML =
+                '<div class="modal-dialog modal-dialog-centered">'
+              +   '<div class="modal-content">'
+              +     '<div class="modal-header bg-danger text-white">'
+              +       '<h5 class="modal-title">無法儲存</h5>'
+              +     '</div>'
+              +     '<div class="modal-body"><p class="mb-0 sw-block-message"></p></div>'
+              +     '<div class="modal-footer">'
+              +       '<button type="button" class="btn btn-primary sw-block-fix">改為核心系統</button>'
+              +       '<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">返回修改</button>'
+              +     '</div>'
+              +   '</div>'
+              + '</div>';
+            document.body.appendChild(modal);
+        }
+
+        modal.querySelector('.sw-block-message').textContent =
+            '資產價值 ' + sum + ' 已達 ' + CORE_THRESHOLD + '，系統類別必須是「'
+            + CORE_CATEGORY + '」，目前是「' + (category.value || '未選擇') + '」。';
+
+        var instance = bootstrap.Modal.getOrCreateInstance(modal);
+        var fix = modal.querySelector('.sw-block-fix');
+        // 每次都換一顆新的按鈕，避免重複掛上事件
+        var fresh = fix.cloneNode(true);
+        fix.parentNode.replaceChild(fresh, fix);
+        fresh.addEventListener('click', function () {
+            category.value = CORE_CATEGORY;
+            category.dispatchEvent(new Event('change'));
+            instance.hide();
+        });
+
+        instance.show();
+    }
+
+    document.querySelectorAll('form.pd-form').forEach(setup);
+})();
+
 // 資產編號下拉：選了編號就把資產名稱帶出來。
 // 個資盤點、風險自評、拋轉清單三個表單共用，故放在這裡而不是各自的畫面。
 // 名稱欄位是唯讀的，真正的值仍由伺服器端依編號查出後寫入，這裡只是即時回饋。

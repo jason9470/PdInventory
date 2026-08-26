@@ -56,7 +56,7 @@
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwAssetType), Model.Software.SwAssetType)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwSystemCategory" class="form-label"></label><select asp-for="Software.SwSystemCategory" class="form-select"
+            <div class="col-md-3"><label asp-for="Software.SwSystemCategory" class="form-label"></label><select asp-for="Software.SwSystemCategory" class="form-select sw-system-category"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwSystemCategory), Model.Software.SwSystemCategory)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
@@ -80,19 +80,21 @@
             <div class="col-md-3"><label asp-for="Software.SwOwnerUnit" class="form-label"></label><input asp-for="Software.SwOwnerUnit" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwCustodianUnit" class="form-label"></label><input asp-for="Software.SwCustodianUnit" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Software.SwUserUnit" class="form-label"></label><input asp-for="Software.SwUserUnit" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwConfidentiality" class="form-label"></label><select asp-for="Software.SwConfidentiality" class="form-select"
+            <div class="col-md-3"><label asp-for="Software.SwConfidentiality" class="form-label"></label><select asp-for="Software.SwConfidentiality" class="form-select sw-cia"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwConfidentiality), Model.Software.SwConfidentiality)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwIntegrity" class="form-label"></label><select asp-for="Software.SwIntegrity" class="form-select"
+            <div class="col-md-3"><label asp-for="Software.SwIntegrity" class="form-label"></label><select asp-for="Software.SwIntegrity" class="form-select sw-cia"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwIntegrity), Model.Software.SwIntegrity)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwAvailability" class="form-label"></label><select asp-for="Software.SwAvailability" class="form-select"
+            <div class="col-md-3"><label asp-for="Software.SwAvailability" class="form-label"></label><select asp-for="Software.SwAvailability" class="form-select sw-cia"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwAvailability), Model.Software.SwAvailability)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwAssetValue" class="form-label"></label><input asp-for="Software.SwAssetValue" class="form-control" readonly title="機密性＋完整性＋可用性，存檔時自動計算" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwAssetValue" class="form-label"></label><input asp-for="Software.SwAssetValue" class="form-control sw-asset-value" readonly
+                       title="機密性＋完整性＋可用性，變更時自動計算" />
+                <div class="form-text text-danger fw-bold sw-core-hint" hidden></div></div>
             <div class="col-md-3"><label asp-for="Software.SwBusinessContact" class="form-label"></label><input asp-for="Software.SwBusinessContact" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppManager" class="form-label"></label><input asp-for="Software.SwAppManager" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainer" class="form-label"></label><input asp-for="Software.SwAppMaintainer" class="form-control" /></div>
@@ -154,7 +156,10 @@
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-12"><label asp-for="Software.SwRelatedSystems" class="form-label"></label><textarea asp-for="Software.SwRelatedSystems" class="form-control" rows="3"></textarea></div>
-            <div class="col-md-3"><label asp-for="Software.SwHandlesPersonalData" class="form-label"></label><input asp-for="Software.SwHandlesPersonalData" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwHandlesPersonalData" class="form-label"></label><select asp-for="Software.SwHandlesPersonalData" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwHandlesPersonalData), Model.Software.SwHandlesPersonalData)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwHasUiAuth" class="form-label"></label><select asp-for="Software.SwHasUiAuth" class="form-select"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwHasUiAuth), Model.Software.SwHasUiAuth)">
                 <option value="">-- 請選擇 --</option>

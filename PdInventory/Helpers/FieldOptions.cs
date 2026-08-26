@@ -17,7 +17,7 @@ public static class FieldOptions
     private static readonly string[] YesNo = ["是", "否"];
     private static readonly string[] YesNoNa = ["是", "否", "N/A"];
     private static readonly string[] HasNoneNa = ["有", "無", "N/A"];
-    private static readonly string[] Levels = ["1", "2", "3", "4", "5"];
+    private static readonly string[] Levels = ["1", "2", "3", "4"];
 
     private static readonly Dictionary<string, string[]> Map = new()
     {
@@ -28,6 +28,8 @@ public static class FieldOptions
         [nameof(InfoSystem.SwHasUiAuth)] = YesNo,
         [nameof(InfoSystem.SwKeepsPdTrail)] = YesNo,
         [nameof(InfoSystem.SwProvidesApi)] = YesNo,
+        // 原始資料用的是「是／無處理個資」，已統一為是／否
+        [nameof(InfoSystem.SwHandlesPersonalData)] = YesNo,
         [nameof(InfoSystem.SwProvidesAccountReport)] = YesNoNa,
         [nameof(InfoSystem.SwLocalBackup)] = YesNoNa,
         [nameof(InfoSystem.SwHasRecoveryPlan)] = HasNoneNa,
