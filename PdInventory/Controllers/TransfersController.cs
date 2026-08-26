@@ -63,14 +63,25 @@ public class TransfersController : Controller
     }
 
     [Authorize(Policy = Policies.ManageAssets)]
-    public IActionResult Create() => View("Form", new TransferRecord());
+    public async Task<IActionResult> Create()
+    {
+        await LoadLookupsAsync();
+        return View("Form", new TransferRecord());
+    }
 
     [HttpPost, ValidateAntiForgeryToken]
     [Authorize(Policy = Policies.ManageAssets)]
     public async Task<IActionResult> Create(TransferRecord record)
     {
         await ValidateUniqueSeqNoAsync(record);
-        if (!ModelState.IsValid) return View("Form", record);
+        if (!ModelState.IsValid)
+        {
+            await LoadLookupsAsync();
+            return View("Form", record);
+        }
+
+        // 名稱一律依編號查出，不採信畫面送回來的值
+        record.SystemName = await AssetPicker.ResolveNameAsync(_db, record.SystemCode) ?? record.SystemName;
         _db.TransferRecords.Add(record);
         await _db.SaveChangesAsync();
         TempData["Message"] = $"已新增拋轉紀錄「{record.SeqNo} {record.SystemName}」";
@@ -87,6 +98,7 @@ public class TransfersController : Controller
 
         // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
         this.RememberSearch(record.SystemCode);
+        await LoadLookupsAsync();
         return View("Form", record);
     }
 
@@ -104,7 +116,13 @@ public class TransfersController : Controller
             || !await _access.CanModifyAsync(record.SystemCode)) return Forbid();
 
         await ValidateUniqueSeqNoAsync(record);
-        if (!ModelState.IsValid) return View("Form", record);
+        if (!ModelState.IsValid)
+        {
+            await LoadLookupsAsync();
+            return View("Form", record);
+        }
+
+        record.SystemName = await AssetPicker.ResolveNameAsync(_db, record.SystemCode) ?? record.SystemName;
         _db.Update(record);
         await _db.SaveChangesAsync();
         TempData["Message"] = $"已更新拋轉紀錄「{record.SeqNo} {record.SystemName}」";
@@ -126,6 +144,10 @@ public class TransfersController : Controller
         }
         return RedirectToAction(nameof(Index));
     }
+
+    /// <summary>資產編號下拉的選項。</summary>
+    private async Task LoadLookupsAsync() =>
+        ViewBag.AssetOptions = await AssetPicker.LoadAsync(_db);
 
     /// <summary>編號在主檔須唯一（資料庫也有對應的唯一索引）。</summary>
     private async Task ValidateUniqueSeqNoAsync(TransferRecord record)

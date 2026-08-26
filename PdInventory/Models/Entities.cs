@@ -119,7 +119,7 @@ public class InventoryItem : IAuditable, IConcurrencyAware
     [StringLength(10)]
     public string SystemCode { get; set; } = "";
 
-    [Display(Name = "使用之資訊系統名稱")]
+    [Display(Name = "資產名稱")]
     [StringLength(200)]
     public string SystemName { get; set; } = "";
 
@@ -425,7 +425,11 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
 
     // ───────────────────────────────────────────────────────────────
     // 資訊資產清單－軟體(SW)　以資產編號(SW-xxx) = SystemCode 關聯本表
-    // 資產編號=SystemCode、軟體資產名稱=SystemName、資產說明=Description（沿用既有欄位）
+    // 資產編號=SystemCode、軟體資產名稱=SystemName。
+    //
+    // 注意：SW 的「資產說明」沒有自己的欄位，它同時寫進 DaDescription（全部 33 筆）與
+    // Description（僅第 6 表沒涵蓋到的 7 筆）。因此重新匯入 DA 表會蓋掉 SW 的資產說明，
+    // 反之亦然——匯入前務必確認這一欄要以哪張表為準。詳見 docs/架構文件.md 的 5.3。
     // ───────────────────────────────────────────────────────────────
     [Display(Name = "SW-資產狀態")]
     [StringLength(20)]
@@ -494,8 +498,13 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [StringLength(10)]
     public string SwAvailability { get; set; } = "";
 
+    /// <summary>
+    /// 機密性＋完整性＋可用性的總和，由 AppDbContext 於存檔時自動計算，畫面上唯讀。
+    /// 三個等級不是數字時（例如 N/A）維持原值不動。
+    /// </summary>
     [Display(Name = "SW-資產價值")]
     [StringLength(10)]
+    [Editable(false)]
     public string SwAssetValue { get; set; } = "";
 
     [Display(Name = "SW-業務單位窗口")]
@@ -670,6 +679,14 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
 
     // ───────────────────────────────────────────────────────────────
     // 資訊資產清單－資料(DA)　以「關連SW編號」= SystemCode 關聯本表
+    //
+    // 下列 9 個欄位原本 SW 與 DA 各有一份，但記錄的是同一個資產的同一件事，
+    // 已合併為 SW 那一份（不一致時以 SW 為準）：
+    //   資產狀態、機密性、完整性、可用性、權責單位、保管單位、風險擁有者、位置、資產價值
+    // 因此本區塊看不到它們，要修改請到 SW 區塊。
+    //
+    // 重新匯入 DA 來源檔時要注意：那份檔案仍然有這 9 欄，匯入程式必須略過，
+    // 否則會把 SW 的值蓋掉。
     // ───────────────────────────────────────────────────────────────
     [Display(Name = "DA-資產編號")]
     [StringLength(20)]
@@ -679,9 +696,6 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [StringLength(20)]
     public string DaAssetType { get; set; } = "";
 
-    [Display(Name = "DA-資產狀態")]
-    [StringLength(20)]
-    public string DaStatus { get; set; } = "";
 
     [Display(Name = "DA-資產說明")]
     public string DaDescription { get; set; } = "";
@@ -698,41 +712,17 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [StringLength(200)]
     public string DaHasSensitiveData { get; set; } = "";
 
-    [Display(Name = "DA-風險擁有者")]
-    [StringLength(100)]
-    public string DaRiskOwner { get; set; } = "";
 
-    [Display(Name = "DA-位置")]
-    [StringLength(200)]
-    public string DaLocation { get; set; } = "";
 
-    [Display(Name = "DA-權責單位")]
-    [StringLength(100)]
-    public string DaOwnerUnit { get; set; } = "";
 
-    [Display(Name = "DA-保管單位")]
-    [StringLength(100)]
-    public string DaCustodianUnit { get; set; } = "";
 
     [Display(Name = "DA-使用單位")]
     [StringLength(200)]
     public string DaUserUnit { get; set; } = "";
 
-    [Display(Name = "DA-機密性")]
-    [StringLength(10)]
-    public string DaConfidentiality { get; set; } = "";
 
-    [Display(Name = "DA-完整性")]
-    [StringLength(10)]
-    public string DaIntegrity { get; set; } = "";
 
-    [Display(Name = "DA-可用性")]
-    [StringLength(10)]
-    public string DaAvailability { get; set; } = "";
 
-    [Display(Name = "DA-資產價值")]
-    [StringLength(10)]
-    public string DaAssetValue { get; set; } = "";
 
     [Display(Name = "DA-備註")]
     public string DaRemark { get; set; } = "";

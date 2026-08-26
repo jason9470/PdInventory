@@ -9,6 +9,7 @@
     var effectivenessLevels = (List<string>)ViewBag.EffectivenessLevels;
     var categoryNames = (List<string>)ViewBag.CategoryNames;
     var riskCategoryOptions = (IEnumerable<dynamic>)ViewBag.RiskCategoryOptions;
+    var assetOptions = (List<PdInventory.Helpers.AssetPicker.Option>)ViewBag.AssetOptions;
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -29,11 +30,28 @@
             </div>
             <div class="col-md-2">
                 <label asp-for="SystemCode" class="form-label">資產編號</label>
-                <input asp-for="SystemCode" class="form-control" readonly="@(!isCreate)" />
+                <select asp-for="SystemCode" class="form-select asset-code">
+                    <option value="">-- 請選擇 --</option>
+                    @foreach (var opt in assetOptions)
+                    {
+                        <option value="@opt.Code" data-name="@opt.Name">@opt.Label</option>
+                    }
+                    @* 舊資料的編號若已不在資產清單中（例如該資產被刪除），仍要保留原值，
+                       否則一存檔就會被清成空白 *@
+                    @if (!string.IsNullOrWhiteSpace(Model.SystemCode)
+                         && assetOptions.All(o => o.Code != Model.SystemCode))
+                    {
+                        <option value="@Model.SystemCode" data-name="@Model.SystemName" selected>
+                            @Model.SystemCode（已不在資產清單中）
+                        </option>
+                    }
+                </select>
+                <div class="form-text">來源：資訊資產清單</div>
             </div>
             <div class="col-md-3">
                 <label asp-for="SystemName" class="form-label">資產名稱</label>
-                <input asp-for="SystemName" class="form-control" readonly="@(!isCreate)" />
+                <input asp-for="SystemName" class="form-control asset-name" readonly
+                       title="由資產編號自動帶出" />
             </div>
             <div class="col-md-5">
                 <label asp-for="DocumentName" class="form-label">個資文件/檔案名稱</label>

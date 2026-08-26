@@ -90,13 +90,41 @@ public class AppDbContext : DbContext
     public override int SaveChanges()
     {
         StampAuditFields();
+        RecalculateAssetValues();
         return base.SaveChanges();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         StampAuditFields();
+        RecalculateAssetValues();
         return base.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// 資產價值 = 機密性 ＋ 完整性 ＋ 可用性。
+    ///
+    /// 原本是人工填寫，但現有 63 筆資料全部剛好等於這個總和，代表它本來就是算出來的，
+    /// 讓人重填只會多一個算錯的機會。放在這裡而不是控制器，是因為新增與編輯兩條路徑
+    /// 都會寫到這三個等級，集中處理才不會有某一條忘了算。
+    ///
+    /// 三個等級只要有一個不是數字（例如外購軟體填 N/A）就維持原值不動，
+    /// 不去猜使用者的意思。
+    /// </summary>
+    private void RecalculateAssetValues()
+    {
+        foreach (var entry in ChangeTracker.Entries<InfoSystem>())
+        {
+            if (entry.State is not (EntityState.Added or EntityState.Modified)) continue;
+
+            var system = entry.Entity;
+            if (int.TryParse(system.SwConfidentiality, out var confidentiality)
+                && int.TryParse(system.SwIntegrity, out var integrity)
+                && int.TryParse(system.SwAvailability, out var availability))
+            {
+                system.SwAssetValue = (confidentiality + integrity + availability).ToString();
+            }
+        }
     }
 
     /// <summary>

@@ -20,6 +20,16 @@ public static class ExportCatalog
     /// <summary>SW / DA / 系統盤點三張清單共用 InfoSystems，這三個欄位是它們的共同識別欄位。</summary>
     private static readonly string[] InfoSystemKeyFields = ["SeqNo", "SystemCode", "SystemName"];
 
+    /// <summary>
+    /// SW 與 DA 兩張表共用的欄位。原本兩邊各有一份，內容其實是同一件事，已合併成 SW 那一份。
+    /// 來源試算表的 DA 表仍然有這些欄位，因此 DA 的匯出也要帶上，否則匯出的檔案會少一截。
+    /// </summary>
+    private static readonly string[] InfoSystemMergedFields =
+    [
+        "SwStatus", "SwConfidentiality", "SwIntegrity", "SwAvailability",
+        "SwOwnerUnit", "SwCustodianUnit", "SwRiskOwner", "SwLocation", "SwAssetValue",
+    ];
+
     /// <summary>清單代碼 → (實體型別, 畫面名稱, 匯出檔名)。</summary>
     public static readonly IReadOnlyDictionary<string, (Type Entity, string Title)> Lists =
         new Dictionary<string, (Type, string)>
@@ -49,7 +59,9 @@ public static class ExportCatalog
         return listKey switch
         {
             "Software" => all.Where(p => InfoSystemKeyFields.Contains(p.Name) || p.Name.StartsWith("Sw")).ToList(),
-            "Data"     => all.Where(p => InfoSystemKeyFields.Contains(p.Name) || p.Name.StartsWith("Da")).ToList(),
+            "Data"     => all.Where(p => InfoSystemKeyFields.Contains(p.Name)
+                                      || InfoSystemMergedFields.Contains(p.Name)
+                                      || p.Name.StartsWith("Da")).ToList(),
             // 系統盤點＝Sheet3 欄位：扣掉 SW 與 DA 兩組
             _          => all.Where(p => !p.Name.StartsWith("Sw") && !p.Name.StartsWith("Da")).ToList(),
         };

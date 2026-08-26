@@ -2,6 +2,7 @@
 @{
     var isNew = Model.Id == 0;
     ViewData["Title"] = isNew ? "新增拋轉紀錄" : $"編輯拋轉紀錄 {Model.SeqNo}";
+    var assetOptions = (List<PdInventory.Helpers.AssetPicker.Option>)ViewBag.AssetOptions;
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -33,12 +34,29 @@
             </div>
             <div class="col-md-2">
                 <label asp-for="SystemCode" class="form-label"></label>
-                <input asp-for="SystemCode" class="form-control" placeholder="例：SW-027" />
+                <select asp-for="SystemCode" class="form-select asset-code">
+                    <option value="">-- 請選擇 --</option>
+                    @foreach (var opt in assetOptions)
+                    {
+                        <option value="@opt.Code" data-name="@opt.Name">@opt.Label</option>
+                    }
+                    @* 舊資料的編號若已不在資產清單中（例如該資產被刪除），仍要保留原值，
+                       否則一存檔就會被清成空白 *@
+                    @if (!string.IsNullOrWhiteSpace(Model.SystemCode)
+                         && assetOptions.All(o => o.Code != Model.SystemCode))
+                    {
+                        <option value="@Model.SystemCode" data-name="@Model.SystemName" selected>
+                            @Model.SystemCode（已不在資產清單中）
+                        </option>
+                    }
+                </select>
+                <div class="form-text">來源：資訊資產清單</div>
                 <span asp-validation-for="SystemCode" class="text-danger"></span>
             </div>
             <div class="col-md-4">
                 <label asp-for="SystemName" class="form-label"></label>
-                <input asp-for="SystemName" class="form-control" placeholder="例：AMS帳戶系統" />
+                <input asp-for="SystemName" class="form-control asset-name" readonly
+                       title="由資產編號自動帶出" />
                 <span asp-validation-for="SystemName" class="text-danger"></span>
             </div>
             <div class="col-md-4">

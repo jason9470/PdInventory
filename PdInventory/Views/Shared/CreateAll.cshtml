@@ -65,7 +65,7 @@
             <div class="col-md-3"><label asp-for="Software.SwConfidentiality" class="form-label"></label><input asp-for="Software.SwConfidentiality" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwIntegrity" class="form-label"></label><input asp-for="Software.SwIntegrity" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAvailability" class="form-label"></label><input asp-for="Software.SwAvailability" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwAssetValue" class="form-label"></label><input asp-for="Software.SwAssetValue" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwAssetValue" class="form-label"></label><input asp-for="Software.SwAssetValue" class="form-control" readonly title="機密性＋完整性＋可用性，存檔時自動計算" /></div>
             <div class="col-md-3"><label asp-for="Software.SwBusinessContact" class="form-label"></label><input asp-for="Software.SwBusinessContact" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppManager" class="form-label"></label><input asp-for="Software.SwAppManager" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainer" class="form-label"></label><input asp-for="Software.SwAppMaintainer" class="form-control" /></div>
@@ -117,20 +117,11 @@
         <div class="card-body row g-3">
             <div class="col-md-4"><label asp-for="Data.DaAssetCode" class="form-label"></label><input asp-for="Data.DaAssetCode" class="form-control" placeholder="例：DA-119" /></div>
             <div class="col-md-4"><label asp-for="Data.DaAssetType" class="form-label"></label><input asp-for="Data.DaAssetType" class="form-control" /></div>
-            <div class="col-md-4"><label asp-for="Data.DaStatus" class="form-label"></label><input asp-for="Data.DaStatus" class="form-control" /></div>
             <div class="col-12"><label asp-for="Data.DaDescription" class="form-label">資產說明</label><textarea asp-for="Data.DaDescription" class="form-control" rows="2"></textarea></div>
             <div class="col-md-4"><label asp-for="Data.DaBackupMethod" class="form-label"></label><input asp-for="Data.DaBackupMethod" class="form-control" /></div>
             <div class="col-md-4"><label asp-for="Data.DaRetentionPeriod" class="form-label"></label><input asp-for="Data.DaRetentionPeriod" class="form-control" /></div>
             <div class="col-md-4"><label asp-for="Data.DaHasSensitiveData" class="form-label"></label><input asp-for="Data.DaHasSensitiveData" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Data.DaRiskOwner" class="form-label"></label><input asp-for="Data.DaRiskOwner" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Data.DaLocation" class="form-label"></label><input asp-for="Data.DaLocation" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Data.DaOwnerUnit" class="form-label"></label><input asp-for="Data.DaOwnerUnit" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Data.DaCustodianUnit" class="form-label"></label><input asp-for="Data.DaCustodianUnit" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Data.DaUserUnit" class="form-label"></label><input asp-for="Data.DaUserUnit" class="form-control" /></div>
-            <div class="col-md-2"><label asp-for="Data.DaConfidentiality" class="form-label"></label><input asp-for="Data.DaConfidentiality" class="form-control" /></div>
-            <div class="col-md-2"><label asp-for="Data.DaIntegrity" class="form-label"></label><input asp-for="Data.DaIntegrity" class="form-control" /></div>
-            <div class="col-md-2"><label asp-for="Data.DaAvailability" class="form-label"></label><input asp-for="Data.DaAvailability" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Data.DaAssetValue" class="form-label"></label><input asp-for="Data.DaAssetValue" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Data.DaBackupConfirm" class="form-label"></label><input asp-for="Data.DaBackupConfirm" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Data.DaReviewer" class="form-label"></label><input asp-for="Data.DaReviewer" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Data.DaModifiedTime" class="form-label"></label><input asp-for="Data.DaModifiedTime" class="form-control" /></div>

@@ -86,6 +86,9 @@ public class InventoryController : Controller
             return View("Form", item);
         }
 
+        // 名稱一律依編號查出，不採信畫面送回來的值
+        item.SystemName = await AssetPicker.ResolveNameAsync(_db, item.SystemCode) ?? item.SystemName;
+
         item.Categories = await _db.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
         item.Purposes = await _db.Purposes.Where(p => purposeIds.Contains(p.Id)).ToListAsync();
         _db.InventoryItems.Add(item);
@@ -151,6 +154,8 @@ public class InventoryController : Controller
         item.RiskUnitConfirm = existing.RiskUnitConfirm;
         item.RiskRemark = existing.RiskRemark;
 
+        item.SystemName = await AssetPicker.ResolveNameAsync(_db, item.SystemCode) ?? item.SystemName;
+
         _db.Entry(existing).CurrentValues.SetValues(item);
         existing.Categories = await _db.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
         existing.Purposes = await _db.Purposes.Where(p => purposeIds.Contains(p.Id)).ToListAsync();
@@ -181,6 +186,7 @@ public class InventoryController : Controller
             .OrderBy(c => c.Code).ToListAsync();
         ViewBag.AllPurposes = await _db.Purposes
             .OrderBy(p => p.Code).ToListAsync();
+        ViewBag.AssetOptions = await AssetPicker.LoadAsync(_db);
         ViewBag.SelectedCategoryIds = selectedCategoryIds ?? Array.Empty<int>();
         ViewBag.SelectedPurposeIds = selectedPurposeIds ?? Array.Empty<int>();
     }

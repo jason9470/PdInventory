@@ -112,20 +112,11 @@ public class DataEditViewModel : IInfoSystemBlockViewModel
 
     public string DaAssetCode { get; set; } = "";
     public string DaAssetType { get; set; } = "";
-    public string DaStatus { get; set; } = "";
     public string DaDescription { get; set; } = "";
     public string DaBackupMethod { get; set; } = "";
     public string DaRetentionPeriod { get; set; } = "";
     public string DaHasSensitiveData { get; set; } = "";
-    public string DaRiskOwner { get; set; } = "";
-    public string DaLocation { get; set; } = "";
-    public string DaOwnerUnit { get; set; } = "";
-    public string DaCustodianUnit { get; set; } = "";
     public string DaUserUnit { get; set; } = "";
-    public string DaConfidentiality { get; set; } = "";
-    public string DaIntegrity { get; set; } = "";
-    public string DaAvailability { get; set; } = "";
-    public string DaAssetValue { get; set; } = "";
     public string DaRemark { get; set; } = "";
     public string DaBackupConfirm { get; set; } = "";
     public string DaReviewer { get; set; } = "";

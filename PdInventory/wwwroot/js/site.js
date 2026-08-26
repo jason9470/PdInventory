@@ -28,6 +28,22 @@
     bind('exportToggle', 'export-collapsed', 'pdinv.exportCollapsed');
 })();
 
+// 資產編號下拉：選了編號就把資產名稱帶出來。
+// 個資盤點、風險自評、拋轉清單三個表單共用，故放在這裡而不是各自的畫面。
+// 名稱欄位是唯讀的，真正的值仍由伺服器端依編號查出後寫入，這裡只是即時回饋。
+(function () {
+    document.querySelectorAll('select.asset-code').forEach(function (select) {
+        var form = select.closest('form');
+        var name = form && form.querySelector('.asset-name');
+        if (!name) return;
+
+        select.addEventListener('change', function () {
+            var option = select.options[select.selectedIndex];
+            name.value = option ? (option.getAttribute('data-name') || '') : '';
+        });
+    });
+})();
+
 // 清單表格欄位排序：點表頭切換升冪/降冪。
 // 六張主要清單資料量都在 50 筆內且未分頁，故在前端排序即可，不必為每張表
 // 在控制器寫一套欄位對應。標了 data-nosort 的表頭（例如「操作」）不參與。

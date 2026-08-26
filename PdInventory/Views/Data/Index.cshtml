@@ -33,7 +33,7 @@
             <tr>
                 <th>關連資產編號</th>
                 <th>資料資產編號</th>
-                <th>資料資產狀態</th>
+                <th>資產狀態</th>
                 <th style="max-width: 260px">資產說明</th>
                 <th>資料備份與保存方式</th>
                 <th>資料保留期限</th>
@@ -48,12 +48,12 @@
                 <tr>
                     <td class="pd-code">@s.SystemCode</td>
                     <td>@s.DaAssetCode</td>
-                    <td>@s.DaStatus</td>
+                    <td>@s.SwStatus</td>
                     <td class="text-break" style="max-width: 260px"><small>@s.DaDescription</small></td>
                     <td><small>@s.DaBackupMethod</small></td>
                     <td><small>@s.DaRetentionPeriod</small></td>
                     <td><small>@s.DaHasSensitiveData</small></td>
-                    <td>@s.DaRiskOwner</td>
+                    <td>@s.SwRiskOwner</td>
                     <td>
                         <a class="btn btn-sm btn-outline-info" asp-controller="Software" asp-action="Details"
                            asp-route-id="@s.Id" asp-route-from="Data">檢視</a>

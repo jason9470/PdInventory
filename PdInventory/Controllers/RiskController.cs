@@ -70,6 +70,9 @@ public class RiskController : Controller
             return View("Form", model);
         }
 
+        // 名稱一律依編號查出，不採信畫面送回來的值
+        model.SystemName = await AssetPicker.ResolveNameAsync(_db, model.SystemCode) ?? model.SystemName;
+
         model.RiskValue = CalculateRiskValue(
             model.RiskImpactLevel, model.RiskLikelihoodLevel, model.RiskEffectivenessLevel);
         _db.InventoryItems.Add(model);
@@ -109,14 +112,21 @@ public class RiskController : Controller
         var existing = await _db.InventoryItems.FindAsync(id);
         if (existing is null) return NotFound();
 
-        // 資產負責人只能異動名下資產底下的資料；直接輸入網址也必須擋下
-        if (!await _access.CanModifyAsync(existing.SystemCode)) return Forbid();
+        // 原資產與改後的資產都必須在權限範圍內，否則資產負責人可以把不屬於自己的資料
+        // 改成自己的資產編號、或把自己的資料丟給別人
+        if (!await _access.CanModifyAsync(existing.SystemCode)
+            || !await _access.CanModifyAsync(model.SystemCode)) return Forbid();
 
         if (!ModelState.IsValid)
         {
             await LoadLookupsAsync();
             return View("Form", model);
         }
+
+        // 資產編號可在本畫面調整（編號 19～21 那幾筆只存在於風險自評，得從這裡維護），
+        // 名稱依編號查出，不採信畫面送回來的值
+        existing.SystemCode = model.SystemCode;
+        existing.SystemName = await AssetPicker.ResolveNameAsync(_db, model.SystemCode) ?? existing.SystemName;
 
         existing.RiskDataSeqNo = model.RiskDataSeqNo;
         existing.RiskCategoryCode = model.RiskCategoryCode;
@@ -199,5 +209,6 @@ public class RiskController : Controller
             .OrderBy(r => r.Level).Select(r => r.Level + "：" + r.Name).ToListAsync();
         ViewBag.EffectivenessLevels = await _db.RiskEffectivenessLevels
             .OrderBy(r => r.Level).Select(r => r.Level + "：" + r.Name).ToListAsync();
+        ViewBag.AssetOptions = await AssetPicker.LoadAsync(_db);
     }
 }
