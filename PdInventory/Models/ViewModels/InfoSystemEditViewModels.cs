@@ -92,7 +92,6 @@ public class SoftwareEditViewModel : IInfoSystemBlockViewModel
     public string SwTrailLocation { get; set; } = "";
     public string SwTrailStorage { get; set; } = "";
     public string SwBusinessOwnerUnit { get; set; } = "";
-    public string SwIsCoreSystem { get; set; } = "";
     public string SwReviewer { get; set; } = "";
     public string SwModifiedBy { get; set; } = "";
     public string SwModifiedTime { get; set; } = "";

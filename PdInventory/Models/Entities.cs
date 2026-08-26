@@ -661,9 +661,6 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [StringLength(100)]
     public string SwBusinessOwnerUnit { get; set; } = "";
 
-    [Display(Name = "SW-是否為核心系統")]
-    [StringLength(20)]
-    public string SwIsCoreSystem { get; set; } = "";
 
     [Display(Name = "SW-115上檢視人員")]
     [StringLength(100)]

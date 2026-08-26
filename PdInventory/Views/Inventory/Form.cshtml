@@ -42,7 +42,10 @@
             </div>
             <div class="col-md-3">
                 <label asp-for="SubjectType" class="form-label"></label>
-                <input asp-for="SubjectType" class="form-control" placeholder="例：客戶、員工" />
+                <select asp-for="SubjectType" class="form-select"
+                        asp-items="FieldOptions.ItemsFor(nameof(InventoryItem.SubjectType), Model.SubjectType)">
+                    <option value="">-- 請選擇 --</option>
+                </select>
             </div>
             <div class="col-md-3">
                 <div class="form-check mt-4 pt-2">
@@ -58,7 +61,10 @@
             </div>
             <div class="col-md-12">
                 <label asp-for="SpecialDataLegalBasis" class="form-label"></label>
-                <input asp-for="SpecialDataLegalBasis" class="form-control" />
+                <select asp-for="SpecialDataLegalBasis" class="form-select"
+                        asp-items="FieldOptions.ItemsFor(nameof(InventoryItem.SpecialDataLegalBasis), Model.SpecialDataLegalBasis)">
+                    <option value="">-- 請選擇 --</option>
+                </select>
             </div>
 
             <div class="col-md-6">
@@ -133,7 +139,10 @@
             </div>
             <div class="col-md-4">
                 <label asp-for="CompanyRole" class="form-label"></label>
-                <input asp-for="CompanyRole" class="form-control" placeholder="例：資料控制者" />
+                <select asp-for="CompanyRole" class="form-select"
+                        asp-items="FieldOptions.ItemsFor(nameof(InventoryItem.CompanyRole), Model.CompanyRole)">
+                    <option value="">-- 請選擇 --</option>
+                </select>
             </div>
         </div>
     </div>
@@ -191,7 +200,10 @@
             </div>
             <div class="col-md-3">
                 <label asp-for="TransferMethod" class="form-label"></label>
-                <input asp-for="TransferMethod" class="form-control" placeholder="例：SFTP加密檔案" />
+                <select asp-for="TransferMethod" class="form-select"
+                        asp-items="FieldOptions.ItemsFor(nameof(InventoryItem.TransferMethod), Model.TransferMethod)">
+                    <option value="">-- 請選擇 --</option>
+                </select>
             </div>
             <div class="col-md-3">
                 <label asp-for="TransferCountry" class="form-label"></label>
@@ -213,7 +225,10 @@
             </div>
             <div class="col-md-6">
                 <label asp-for="Disposal" class="form-label"></label>
-                <input asp-for="Disposal" class="form-control" placeholder="例：資料抹除、永久保存" />
+                <select asp-for="Disposal" class="form-select"
+                        asp-items="FieldOptions.ItemsFor(nameof(InventoryItem.Disposal), Model.Disposal)">
+                    <option value="">-- 請選擇 --</option>
+                </select>
             </div>
             <div class="col-md-6">
                 <label asp-for="LocationPaper" class="form-label"></label>

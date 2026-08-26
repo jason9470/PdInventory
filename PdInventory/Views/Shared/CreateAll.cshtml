@@ -48,23 +48,50 @@
     <div class="card mb-3">
         <div class="card-header fw-bold bg-primary text-white">資訊資產清單－軟體(SW)</div>
         <div class="card-body row g-3">
-            <div class="col-md-3"><label asp-for="Software.SwStatus" class="form-label"></label><input asp-for="Software.SwStatus" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwAssetType" class="form-label"></label><input asp-for="Software.SwAssetType" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwSystemCategory" class="form-label"></label><input asp-for="Software.SwSystemCategory" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwAdIntegration" class="form-label"></label><input asp-for="Software.SwAdIntegration" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwStatus" class="form-label"></label><select asp-for="Software.SwStatus" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwStatus), Model.Software.SwStatus)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwAssetType" class="form-label"></label><select asp-for="Software.SwAssetType" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwAssetType), Model.Software.SwAssetType)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwSystemCategory" class="form-label"></label><select asp-for="Software.SwSystemCategory" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwSystemCategory), Model.Software.SwSystemCategory)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwAdIntegration" class="form-label"></label><select asp-for="Software.SwAdIntegration" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwAdIntegration), Model.Software.SwAdIntegration)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwOsVersion" class="form-label"></label><input asp-for="Software.SwOsVersion" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwDbToolVersion" class="form-label"></label><input asp-for="Software.SwDbToolVersion" class="form-control" /></div>
-            <div class="col-md-6"><label asp-for="Software.SwThirdPartyComponents" class="form-label"></label><input asp-for="Software.SwThirdPartyComponents" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwThirdPartyComponents" class="form-label"></label><select asp-for="Software.SwThirdPartyComponents" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwThirdPartyComponents), Model.Software.SwThirdPartyComponents)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwUserAccountGrant" class="form-label"></label><input asp-for="Software.SwUserAccountGrant" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwProvidesAccountReport" class="form-label"></label><input asp-for="Software.SwProvidesAccountReport" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwProvidesAccountReport" class="form-label"></label><select asp-for="Software.SwProvidesAccountReport" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwProvidesAccountReport), Model.Software.SwProvidesAccountReport)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwRiskOwner" class="form-label"></label><input asp-for="Software.SwRiskOwner" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwLocation" class="form-label"></label><input asp-for="Software.SwLocation" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwOwnerUnit" class="form-label"></label><input asp-for="Software.SwOwnerUnit" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwCustodianUnit" class="form-label"></label><input asp-for="Software.SwCustodianUnit" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Software.SwUserUnit" class="form-label"></label><input asp-for="Software.SwUserUnit" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwConfidentiality" class="form-label"></label><input asp-for="Software.SwConfidentiality" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwIntegrity" class="form-label"></label><input asp-for="Software.SwIntegrity" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwAvailability" class="form-label"></label><input asp-for="Software.SwAvailability" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwConfidentiality" class="form-label"></label><select asp-for="Software.SwConfidentiality" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwConfidentiality), Model.Software.SwConfidentiality)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwIntegrity" class="form-label"></label><select asp-for="Software.SwIntegrity" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwIntegrity), Model.Software.SwIntegrity)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwAvailability" class="form-label"></label><select asp-for="Software.SwAvailability" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwAvailability), Model.Software.SwAvailability)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwAssetValue" class="form-label"></label><input asp-for="Software.SwAssetValue" class="form-control" readonly title="機密性＋完整性＋可用性，存檔時自動計算" /></div>
             <div class="col-md-3"><label asp-for="Software.SwBusinessContact" class="form-label"></label><input asp-for="Software.SwBusinessContact" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppManager" class="form-label"></label><input asp-for="Software.SwAppManager" class="form-control" /></div>
@@ -75,36 +102,74 @@
             <div class="col-md-3"><label asp-for="Software.SwMaintMode" class="form-label"></label><input asp-for="Software.SwMaintMode" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwVendor" class="form-label"></label><input asp-for="Software.SwVendor" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwLanguage" class="form-label"></label><input asp-for="Software.SwLanguage" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwVersionControl" class="form-label"></label><input asp-for="Software.SwVersionControl" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwVersionControl" class="form-label"></label><select asp-for="Software.SwVersionControl" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwVersionControl), Model.Software.SwVersionControl)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwApRepoPath" class="form-label"></label><input asp-for="Software.SwApRepoPath" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwDeployMethod" class="form-label"></label><input asp-for="Software.SwDeployMethod" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwDeployMethod" class="form-label"></label><select asp-for="Software.SwDeployMethod" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwDeployMethod), Model.Software.SwDeployMethod)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwOpRepoPath" class="form-label"></label><input asp-for="Software.SwOpRepoPath" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwCodeAccess" class="form-label"></label><input asp-for="Software.SwCodeAccess" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwCodeAccess" class="form-label"></label><select asp-for="Software.SwCodeAccess" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwCodeAccess), Model.Software.SwCodeAccess)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwDeveloper" class="form-label"></label><input asp-for="Software.SwDeveloper" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwDeployer" class="form-label"></label><input asp-for="Software.SwDeployer" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwRpo" class="form-label"></label><input asp-for="Software.SwRpo" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwLocalBackup" class="form-label"></label><input asp-for="Software.SwLocalBackup" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwRpo" class="form-label"></label><select asp-for="Software.SwRpo" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwRpo), Model.Software.SwRpo)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwLocalBackup" class="form-label"></label><select asp-for="Software.SwLocalBackup" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwLocalBackup), Model.Software.SwLocalBackup)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwLocalBackupType" class="form-label"></label><input asp-for="Software.SwLocalBackupType" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwLocalBackupFreq" class="form-label"></label><input asp-for="Software.SwLocalBackupFreq" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwRemoteBackup" class="form-label"></label><input asp-for="Software.SwRemoteBackup" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwRemoteBackupType" class="form-label"></label><input asp-for="Software.SwRemoteBackupType" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwRemoteBackupFreq" class="form-label"></label><input asp-for="Software.SwRemoteBackupFreq" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwLocalHa" class="form-label"></label><input asp-for="Software.SwLocalHa" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwLocalHa" class="form-label"></label><select asp-for="Software.SwLocalHa" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwLocalHa), Model.Software.SwLocalHa)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwLocalHaArch" class="form-label"></label><input asp-for="Software.SwLocalHaArch" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwRemoteHa" class="form-label"></label><input asp-for="Software.SwRemoteHa" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwRemoteHa" class="form-label"></label><select asp-for="Software.SwRemoteHa" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwRemoteHa), Model.Software.SwRemoteHa)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-3"><label asp-for="Software.SwRemoteHaArch" class="form-label"></label><input asp-for="Software.SwRemoteHaArch" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwRto" class="form-label"></label><input asp-for="Software.SwRto" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwHasRecoveryPlan" class="form-label"></label><input asp-for="Software.SwHasRecoveryPlan" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwHasDrDrill" class="form-label"></label><input asp-for="Software.SwHasDrDrill" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwRto" class="form-label"></label><select asp-for="Software.SwRto" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwRto), Model.Software.SwRto)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwHasRecoveryPlan" class="form-label"></label><select asp-for="Software.SwHasRecoveryPlan" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwHasRecoveryPlan), Model.Software.SwHasRecoveryPlan)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwHasDrDrill" class="form-label"></label><select asp-for="Software.SwHasDrDrill" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwHasDrDrill), Model.Software.SwHasDrDrill)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-12"><label asp-for="Software.SwRelatedSystems" class="form-label"></label><textarea asp-for="Software.SwRelatedSystems" class="form-control" rows="3"></textarea></div>
             <div class="col-md-3"><label asp-for="Software.SwHandlesPersonalData" class="form-label"></label><input asp-for="Software.SwHandlesPersonalData" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwHasUiAuth" class="form-label"></label><input asp-for="Software.SwHasUiAuth" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwKeepsPdTrail" class="form-label"></label><input asp-for="Software.SwKeepsPdTrail" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwProvidesApi" class="form-label"></label><input asp-for="Software.SwProvidesApi" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwHasUiAuth" class="form-label"></label><select asp-for="Software.SwHasUiAuth" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwHasUiAuth), Model.Software.SwHasUiAuth)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwKeepsPdTrail" class="form-label"></label><select asp-for="Software.SwKeepsPdTrail" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwKeepsPdTrail), Model.Software.SwKeepsPdTrail)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwProvidesApi" class="form-label"></label><select asp-for="Software.SwProvidesApi" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwProvidesApi), Model.Software.SwProvidesApi)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-md-6"><label asp-for="Software.SwTrailLocation" class="form-label"></label><input asp-for="Software.SwTrailLocation" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwTrailStorage" class="form-label"></label><input asp-for="Software.SwTrailStorage" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwBusinessOwnerUnit" class="form-label"></label><input asp-for="Software.SwBusinessOwnerUnit" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwIsCoreSystem" class="form-label"></label><input asp-for="Software.SwIsCoreSystem" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwReviewer" class="form-label"></label><input asp-for="Software.SwReviewer" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwModifiedBy" class="form-label"></label><input asp-for="Software.SwModifiedBy" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwModifiedTime" class="form-label"></label><input asp-for="Software.SwModifiedTime" class="form-control" /></div>
@@ -116,7 +181,10 @@
         <div class="card-header fw-bold bg-success text-white">資訊資產清單－資料(DA)</div>
         <div class="card-body row g-3">
             <div class="col-md-4"><label asp-for="Data.DaAssetCode" class="form-label"></label><input asp-for="Data.DaAssetCode" class="form-control" placeholder="例：DA-119" /></div>
-            <div class="col-md-4"><label asp-for="Data.DaAssetType" class="form-label"></label><input asp-for="Data.DaAssetType" class="form-control" /></div>
+            <div class="col-md-4"><label asp-for="Data.DaAssetType" class="form-label"></label><select asp-for="Data.DaAssetType" class="form-select"
+                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.DaAssetType), Model.Data.DaAssetType)">
+                <option value="">-- 請選擇 --</option>
+            </select></div>
             <div class="col-12"><label asp-for="Data.DaDescription" class="form-label">資產說明</label><textarea asp-for="Data.DaDescription" class="form-control" rows="2"></textarea></div>
             <div class="col-md-4"><label asp-for="Data.DaBackupMethod" class="form-label"></label><input asp-for="Data.DaBackupMethod" class="form-control" /></div>
             <div class="col-md-4"><label asp-for="Data.DaRetentionPeriod" class="form-label"></label><input asp-for="Data.DaRetentionPeriod" class="form-control" /></div>
