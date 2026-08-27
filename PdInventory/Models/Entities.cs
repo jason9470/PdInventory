@@ -368,7 +368,7 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [Required(ErrorMessage = "資產名稱必填"), StringLength(200)]
     public string SystemName { get; set; } = "";
 
-    [Display(Name = "系統功能描述")]
+    [Display(Name = "資產說明")]
     public string Description { get; set; } = "";
 
     [Display(Name = "資料庫/資料夾/檔案伺服器名稱")]

@@ -32,10 +32,10 @@
 // 伺服器端存檔時還會再算一次（AppDbContext.RecalculateAssetValues），
 // 這裡只是讓使用者當下看得到結果，不是唯一的把關。
 //
-// 達到門檻（含）代表這是核心系統：先以提示提醒，送出時若系統類別仍不是核心系統就擋下來。
+// 超過門檻代表這是核心系統：先以提示提醒，送出時若系統類別仍不是核心系統就擋下來。
 (function () {
     var CORE_CATEGORY = '核心系統';
-    var CORE_THRESHOLD = 10;   // 達到這個值就算核心系統，不是超過
+    var CORE_THRESHOLD = 10;   // 要「大於」這個值才算核心系統，剛好等於 10 不算
 
     function setup(form) {
         var value = form.querySelector('.sw-asset-value');
@@ -60,11 +60,11 @@
             var sum = total();
             if (sum !== null) value.value = String(sum);
 
-            var reachedThreshold = sum !== null && sum >= CORE_THRESHOLD;
+            var overThreshold = sum !== null && sum > CORE_THRESHOLD;
             if (!hint) return;
-            hint.hidden = !reachedThreshold;
-            if (reachedThreshold) {
-                hint.textContent = '資產價值 ' + sum + ' 已達 ' + CORE_THRESHOLD
+            hint.hidden = !overThreshold;
+            if (overThreshold) {
+                hint.textContent = '資產價值 ' + sum + ' 已超過 ' + CORE_THRESHOLD
                     + '，系統類別應為「' + CORE_CATEGORY + '」。';
             }
         }
@@ -75,7 +75,7 @@
 
         form.addEventListener('submit', function (e) {
             var sum = total();
-            if (sum === null || sum < CORE_THRESHOLD) return;
+            if (sum === null || sum <= CORE_THRESHOLD) return;
             if (!category || category.value === CORE_CATEGORY) return;
 
             e.preventDefault();
@@ -108,7 +108,7 @@
         }
 
         modal.querySelector('.sw-block-message').textContent =
-            '資產價值 ' + sum + ' 已達 ' + CORE_THRESHOLD + '，系統類別必須是「'
+            '資產價值 ' + sum + ' 已超過 ' + CORE_THRESHOLD + '，系統類別必須是「'
             + CORE_CATEGORY + '」，目前是「' + (category.value || '未選擇') + '」。';
 
         var instance = bootstrap.Modal.getOrCreateInstance(modal);
