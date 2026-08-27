@@ -31,29 +31,16 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 builder.Services.AddScoped<IAssetAccess, AssetAccess>();
 
-// 身分來源。Simulated 供權限測試用，正式環境設為 Remote 改由公司身分服務判人。
+// 身分來源。Simulated 供權限測試用，正式環境設為 Ldap 改向公司 AD 驗證帳號密碼。
 var employeeOptions = builder.Configuration
     .GetSection(EmployeeDirectoryOptions.SectionName)
     .Get<EmployeeDirectoryOptions>() ?? new EmployeeDirectoryOptions();
 builder.Services.AddSingleton(employeeOptions);
 
 if (employeeOptions.IsSimulated)
-{
     builder.Services.AddScoped<IEmployeeDirectory, SimulatedEmployeeDirectory>();
-}
 else
-{
-    builder.Services.AddHttpClient<IEmployeeDirectory, RemoteEmployeeDirectory>(client =>
-        {
-            client.Timeout = TimeSpan.FromSeconds(10);
-        })
-        // 身分端點走 Windows 整合驗證，要帶著憑證才問得出人是誰
-        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-        {
-            UseDefaultCredentials = true,
-            AllowAutoRedirect = true,
-        });
-}
+    builder.Services.AddScoped<IEmployeeDirectory, LdapEmployeeDirectory>();
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -65,6 +52,9 @@ builder.Services
         options.SlidingExpiration = true;
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true;
+        // 走 HTTPS 時自動加上 Secure；開發環境用 http 仍可運作
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SameSite = SameSiteMode.Lax;
     });
 
 // 授權原則集中在這裡定義，控制器只掛 [Authorize(Policy = ...)]，

@@ -11,7 +11,7 @@ using PdInventory.Models;
 namespace PdInventory.Controllers;
 
 /// <summary>
-/// 登入與登出。系統不保管帳號密碼，身分一律向公司員工目錄取得（見 Helpers/IEmployeeDirectory.cs），
+/// 登入與登出。系統不保管帳號密碼，一律交給公司 AD 驗證（見 Helpers/IEmployeeDirectory.cs），
 /// 本系統只負責記下「這個人是誰、是什麼角色、負責哪些資產」。
 /// </summary>
 [AllowAnonymous]
@@ -28,43 +28,33 @@ public class AccountController : Controller
 
     public async Task<IActionResult> Login(string? returnUrl)
     {
-        // 正式模式由身分端點直接認人，使用者不需要做任何事
-        if (!_directory.IsSimulated)
-        {
-            var info = await _directory.GetCurrentAsync();
-            if (info is not null)
-            {
-                await SignInAsync(info);
-                return SafeRedirect(returnUrl);
-            }
-
-            ViewBag.Error = "無法從公司身分服務取得您的員工資訊，請確認是在公司內部網路操作，或聯絡系統管理者。";
-        }
-
-        ViewBag.ReturnUrl = returnUrl;
-        ViewBag.IsSimulated = _directory.IsSimulated;
-        // 模擬模式列出已知帳號，測試時直接點選即可，不必記員工編號
-        ViewBag.KnownUsers = _directory.IsSimulated
-            ? await _db.AppUsers.OrderBy(u => u.EmpNo).ToListAsync()
-            : new List<AppUser>();
+        await PrepareLoginViewAsync(returnUrl);
         return View();
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(string empNo, string? returnUrl)
+    public async Task<IActionResult> Login(string account, string? password, string? returnUrl)
     {
-        var info = _directory.IsSimulated
-            ? await _directory.FindAsync(empNo)
-            : await _directory.GetCurrentAsync();
-
+        var info = await _directory.AuthenticateAsync(account, password);
         if (info is null)
         {
-            TempData["Error"] = "查不到這個員工編號的身分資料。";
+            // 帳號不存在與密碼錯誤給同一個訊息，避免旁人藉此確認哪些帳號存在
+            TempData["Error"] = "帳號、密碼或存取權限不正確。";
             return RedirectToAction(nameof(Login), new { returnUrl });
         }
 
         await SignInAsync(info);
         return SafeRedirect(returnUrl);
+    }
+
+    private async Task PrepareLoginViewAsync(string? returnUrl)
+    {
+        ViewBag.ReturnUrl = returnUrl;
+        ViewBag.RequiresPassword = _directory.RequiresPassword;
+        // 模擬模式列出已建檔的帳號，測試時直接點選即可，不必記員工編號
+        ViewBag.KnownUsers = _directory.RequiresPassword
+            ? new List<AppUser>()
+            : await _db.AppUsers.OrderBy(u => u.EmpNo).ToListAsync();
     }
 
     [HttpPost, ValidateAntiForgeryToken]
