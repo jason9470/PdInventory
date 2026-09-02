@@ -5,17 +5,17 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 namespace PdInventory.Models.ViewModels;
 
 /// <summary>
-/// SW／DA／系統盤點三個編輯區塊的 ViewModel。
+/// SW／DA／系統盤點三個編輯區塊的 ViewModel，各自對應一個實體。
 ///
-/// 為什麼不直接綁 InfoSystem：那樣一次送出會綁定全部 98 個欄位，即使 Apply 方法
-/// 只寫回其中一組，模型繫結階段仍然接受了不屬於這個畫面的輸入。改綁 ViewModel 之後，
+/// 為什麼不直接綁實體：那樣一次送出會綁定全部欄位，即使後續只寫回其中一部分，
+/// 模型繫結階段仍然接受了不屬於這個畫面的輸入。改綁 ViewModel 之後，
 /// 畫面能送什麼由型別本身決定，多送的欄位在繫結階段就被丟掉。
 ///
-/// 欄位標題與驗證規則不在這裡重複宣告：[ModelMetadataType] 會讓 MVC 從 InfoSystem
+/// 欄位標題與驗證規則不在這裡重複宣告：[ModelMetadataType] 會讓 MVC 從實體
 /// 取同名屬性的中繼資料，[Display] 仍然只有實體那一份。
 ///
-/// 這三個類別要與 Helpers/InfoSystemBlocks 的欄位分組保持一致；漏掉欄位會在啟動時
-/// 由 InfoSystemBlocks.AssertViewModelsCoverAllFields 直接擲出例外，不會安靜地存不進去。
+/// 這三個類別要與各自的實體保持一致；漏掉欄位會在啟動時由
+/// InfoSystemBlocks.AssertViewModelsCoverAllFields 直接擲出例外，不會安靜地存不進去。
 /// </summary>
 public interface IInfoSystemBlockViewModel
 {
@@ -23,10 +23,7 @@ public interface IInfoSystemBlockViewModel
     Guid RowVersion { get; set; }
 }
 
-/// <summary>資訊資產清單－軟體(SW) 區塊。</summary>
-/// <remarks>
-/// 對應 InfoSystem 中以 Sw 開頭的欄位。
-/// </remarks>
+/// <summary>資訊資產清單－軟體(SW)。含編號／資產編號／資產名稱／資產說明這幾個共用識別欄位，以及原本 SW 與 DA 各有一份、後來合併為 SW 那一份的欄位（資產狀態、機密性…）。</summary>
 [ModelMetadataType(typeof(InfoSystem))]
 public class SoftwareEditViewModel : IInfoSystemBlockViewModel
 {
@@ -35,6 +32,10 @@ public class SoftwareEditViewModel : IInfoSystemBlockViewModel
     /// <summary>並行權杖：畫面載入當下的值，存檔時比對是否已被他人改過。</summary>
     public Guid RowVersion { get; set; }
 
+    public string SeqNo { get; set; } = "";
+    public string SystemCode { get; set; } = "";
+    public string SystemName { get; set; } = "";
+    public string Description { get; set; } = "";
     public string SwStatus { get; set; } = "";
     public string SwAssetType { get; set; } = "";
     public string SwSystemCategory { get; set; } = "";
@@ -97,11 +98,8 @@ public class SoftwareEditViewModel : IInfoSystemBlockViewModel
     public string SwModifiedTime { get; set; } = "";
 }
 
-/// <summary>資訊資產清單－資料(DA) 區塊。</summary>
-/// <remarks>
-/// 對應 InfoSystem 中以 Da 開頭的欄位。
-/// </remarks>
-[ModelMetadataType(typeof(InfoSystem))]
+/// <summary>資訊資產清單－資料(DA)。SystemCode 是關連的 SW 編號，可以留空。</summary>
+[ModelMetadataType(typeof(DataAsset))]
 public class DataEditViewModel : IInfoSystemBlockViewModel
 {
     public int Id { get; set; }
@@ -109,6 +107,7 @@ public class DataEditViewModel : IInfoSystemBlockViewModel
     /// <summary>並行權杖：畫面載入當下的值，存檔時比對是否已被他人改過。</summary>
     public Guid RowVersion { get; set; }
 
+    public string SystemCode { get; set; } = "";
     public string DaAssetCode { get; set; } = "";
     public string DaAssetType { get; set; } = "";
     public string DaDescription { get; set; } = "";
@@ -122,12 +121,8 @@ public class DataEditViewModel : IInfoSystemBlockViewModel
     public string DaModifiedTime { get; set; } = "";
 }
 
-/// <summary>資訊系統、資料庫與檔案伺服器盤點表（系統盤點）區塊。</summary>
-/// <remarks>
-/// 對應 InfoSystem 其餘欄位，含編號／資產編號／資產名稱三個共用識別欄位——
-/// 這三個只由本區塊維護，SW 與 DA 區塊不含它們，因此也不可能互相覆蓋。
-/// </remarks>
-[ModelMetadataType(typeof(InfoSystem))]
+/// <summary>資訊系統、資料庫與檔案伺服器盤點表。SystemCode 必填，一定依附於某個軟體資產。</summary>
+[ModelMetadataType(typeof(SystemInventory))]
 public class SystemEditViewModel : IInfoSystemBlockViewModel
 {
     public int Id { get; set; }
@@ -135,10 +130,7 @@ public class SystemEditViewModel : IInfoSystemBlockViewModel
     /// <summary>並行權杖：畫面載入當下的值，存檔時比對是否已被他人改過。</summary>
     public Guid RowVersion { get; set; }
 
-    public string SeqNo { get; set; } = "";
     public string SystemCode { get; set; } = "";
-    public string SystemName { get; set; } = "";
-    public string Description { get; set; } = "";
     public string DbName { get; set; } = "";
     public string BackupLocation { get; set; } = "";
     public string BackupCycle { get; set; } = "";
@@ -156,19 +148,20 @@ public class SystemEditViewModel : IInfoSystemBlockViewModel
 
 /// <summary>
 /// 統一編輯畫面（EditAll）與統一新增畫面（CreateAll）的模型。
-/// 一個畫面上有三個各自獨立送出的區塊，因此三個 ViewModel 併在這裡，
-/// 各區塊的欄位在表單中以 Software. / Data. / Sheet3. 前綴區隔。
+/// 三個區塊現在分屬三張資料表，DA 與盤點表可能還不存在，
+/// 因此另外記下它們的主鍵，存檔時才知道要更新哪一列、還是要新建。
 /// </summary>
 public class InfoSystemEditViewModel
 {
-    /// <summary>
-    /// 畫面標題、[檢視]連結等唯讀用途；新增時為空白實體。
-    /// 標為不繫結也不驗證：它不是表單欄位，若讓模型繫結去驗證它，
-    /// 實體上的 [Required] 會對著永遠空白的 Asset.SystemCode 報錯，
-    /// 而畫面上沒有對應的輸入框，使用者會看到一個送不出去又找不到原因的表單。
-    /// </summary>
+    /// <summary>畫面標題、[檢視]連結等唯讀用途；新增時為空白實體。</summary>
     [BindNever, ValidateNever]
     public InfoSystem Asset { get; set; } = new();
+
+    /// <summary>對應的 DataAssets 主鍵；null 表示這個資產還沒有 DA 資料。</summary>
+    public int? DataAssetId { get; set; }
+
+    /// <summary>對應的 SystemInventories 主鍵；null 表示還沒有盤點表資料。</summary>
+    public int? InventoryId { get; set; }
 
     public SoftwareEditViewModel Software { get; set; } = new();
     public DataEditViewModel Data { get; set; } = new();

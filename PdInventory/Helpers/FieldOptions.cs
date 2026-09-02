@@ -22,7 +22,9 @@ public static class FieldOptions
     private static readonly Dictionary<string, string[]> Map = new()
     {
         // ── 資訊資產清單－軟體(SW) ───────────────────────────
-        [nameof(InfoSystem.SwAdIntegration)] = YesNo,
+        // 0902 的來源資料在「否」後面加了括號說明，屬於既有答案的細分
+        [nameof(InfoSystem.SwAdIntegration)] =
+            ["是", "否", "否(電子交易密碼)", "否(無AP密碼)", "否(作業系統密碼)"],
         [nameof(InfoSystem.SwLocalHa)] = YesNo,
         [nameof(InfoSystem.SwRemoteHa)] = YesNo,
         [nameof(InfoSystem.SwHasUiAuth)] = YesNo,
@@ -46,11 +48,12 @@ public static class FieldOptions
         [nameof(InfoSystem.SwDeployMethod)] = ["OP過版", "N/A"],
         [nameof(InfoSystem.SwCodeAccess)] = ["目錄與OP分開", "N/A"],
         [nameof(InfoSystem.SwThirdPartyComponents)] = ["詳列於第三方元件檢測平台", "無", "委外系統", "N/A"],
-        [nameof(InfoSystem.SwRto)] = ["1小時", "2小時", "4小時", "8小時", "24小時", "N/A"],
-        [nameof(InfoSystem.SwRpo)] = ["15分鐘", "1小時", "2小時", "4小時", "8小時", "24小時", "168小時", "N/A"],
+        [nameof(InfoSystem.SwRto)] = ["15分鐘", "30分鐘", "1小時", "2小時", "4小時", "8小時", "24小時", "N/A"],
+        [nameof(InfoSystem.SwRpo)] =
+            ["15分鐘", "30分鐘", "1小時", "2小時", "3小時", "4小時", "8小時", "24小時", "168小時", "不適用", "N/A"],
 
         // ── 資訊資產清單－資料(DA) ───────────────────────────
-        [nameof(InfoSystem.DaAssetType)] = ["資料"],
+        [nameof(DataAsset.DaAssetType)] = ["資料"],
 
         // ── 個人資料檔案盤點表－人為產出 ─────────────────────
         // 這三個欄位目前的資料只出現過單一值，其餘選項是依欄位語意補上的，

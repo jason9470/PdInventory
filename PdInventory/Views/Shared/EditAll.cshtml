@@ -188,7 +188,7 @@
         <div class="card-body row g-3">
             <div class="col-md-4"><label asp-for="Data.DaAssetCode" class="form-label"></label><input asp-for="Data.DaAssetCode" class="form-control" placeholder="例：DA-119" /></div>
             <div class="col-md-4"><label asp-for="Data.DaAssetType" class="form-label"></label><select asp-for="Data.DaAssetType" class="form-select"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.DaAssetType), Model.Data.DaAssetType)">
+                    asp-items="FieldOptions.ItemsFor(nameof(DataAsset.DaAssetType), Model.Data.DaAssetType)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-12"><label asp-for="Data.DaDescription" class="form-label">資產說明</label><textarea asp-for="Data.DaDescription" class="form-control" rows="2"></textarea></div>
@@ -222,23 +222,23 @@
             <div class="row g-3">
                 <div class="col-12"><h6 class="text-muted border-bottom pb-1 mb-0">I. 系統基本資訊</h6></div>
                 <div class="col-md-2">
-                    <label asp-for="Sheet3.SeqNo" class="form-label"></label>
-                    <input asp-for="Sheet3.SeqNo" class="form-control" />
-                    <span asp-validation-for="Sheet3.SeqNo" class="text-danger"></span>
+                    <label asp-for="Software.SeqNo" class="form-label"></label>
+                    <input asp-for="Software.SeqNo" class="form-control" />
+                    <span asp-validation-for="Software.SeqNo" class="text-danger"></span>
                 </div>
                 <div class="col-md-3">
-                    <label asp-for="Sheet3.SystemCode" class="form-label"></label>
-                    <input asp-for="Sheet3.SystemCode" class="form-control" placeholder="例：SW-108" />
-                    <span asp-validation-for="Sheet3.SystemCode" class="text-danger"></span>
+                    <label asp-for="Software.SystemCode" class="form-label"></label>
+                    <input asp-for="Software.SystemCode" class="form-control" placeholder="例：SW-108" />
+                    <span asp-validation-for="Software.SystemCode" class="text-danger"></span>
                 </div>
                 <div class="col-md-7">
-                    <label asp-for="Sheet3.SystemName" class="form-label"></label>
-                    <input asp-for="Sheet3.SystemName" class="form-control" placeholder="例：經紀帳務系統" />
-                    <span asp-validation-for="Sheet3.SystemName" class="text-danger"></span>
+                    <label asp-for="Software.SystemName" class="form-label"></label>
+                    <input asp-for="Software.SystemName" class="form-control" placeholder="例：經紀帳務系統" />
+                    <span asp-validation-for="Software.SystemName" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="Sheet3.Description" class="form-label"></label>
-                    <textarea asp-for="Sheet3.Description" class="form-control" rows="4"
+                    <label asp-for="Software.Description" class="form-label"></label>
+                    <textarea asp-for="Software.Description" class="form-control" rows="4"
                               placeholder="使用部門、使用人員、主要功能"></textarea>
                 </div>
                 <div class="col-md-6">

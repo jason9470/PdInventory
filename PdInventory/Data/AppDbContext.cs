@@ -16,6 +16,8 @@ public class AppDbContext : DbContext
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
     public DbSet<TransferRecord> TransferRecords => Set<TransferRecord>();
     public DbSet<InfoSystem> InfoSystems => Set<InfoSystem>();
+    public DbSet<DataAsset> DataAssets => Set<DataAsset>();
+    public DbSet<SystemInventory> SystemInventories => Set<SystemInventory>();
     public DbSet<RiskCategory> RiskCategories => Set<RiskCategory>();
     public DbSet<RiskImpactLevel> RiskImpactLevels => Set<RiskImpactLevel>();
     public DbSet<RiskLikelihoodLevel> RiskLikelihoodLevels => Set<RiskLikelihoodLevel>();
@@ -67,11 +69,19 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<TransferRecord>().HasIndex(t => t.SeqNo).IsUnique()
             .HasFilter("\"SeqNo\" <> ''");
 
-        // DaAssetCode 刻意不設唯一：來源資料本來就允許一筆 DA 對應多個 SW
-        // （例如 DA-049 同時對應 SW-048 與 SW-049）。
+        // 一套系統只會有一份盤點表；空字串排除在外的寫法同上
+        modelBuilder.Entity<SystemInventory>().HasIndex(i => i.SystemCode).IsUnique()
+            .HasFilter("\"SystemCode\" <> ''");
+
+        // DataAssets.DaAssetCode 刻意不設唯一：來源資料允許一筆 DA 對應多個 SW
+        // （DA-049 的關連SW編號是「SW-049;SW-048」）。為了讓 SystemCode 維持單一值
+        // ——權限判斷、下拉選單與各處的關聯都靠它——這種情況拆成兩列，
+        // 因此同一個 DaAssetCode 會出現不只一次。
 
         // SQLite 沒有原生 rowversion，改以 Guid 當並行權杖，於 SaveChanges 換新值
         modelBuilder.Entity<InfoSystem>().Property(e => e.RowVersion).IsConcurrencyToken();
+        modelBuilder.Entity<DataAsset>().Property(e => e.RowVersion).IsConcurrencyToken();
+        modelBuilder.Entity<SystemInventory>().Property(e => e.RowVersion).IsConcurrencyToken();
         modelBuilder.Entity<InventoryItem>().Property(e => e.RowVersion).IsConcurrencyToken();
         modelBuilder.Entity<TransferRecord>().Property(e => e.RowVersion).IsConcurrencyToken();
         modelBuilder.Entity<AppUser>().Property(e => e.RowVersion).IsConcurrencyToken();

@@ -1,5 +1,8 @@
 ﻿@model PdInventory.Models.InfoSystem
 @{
+    // DA 與盤點表已獨立成表，可能不存在；用空實體代替，畫面就是一片空白而不會出錯
+    var da = ViewBag.DataAsset as PdInventory.Models.DataAsset ?? new PdInventory.Models.DataAsset();
+    var inv = ViewBag.Inventory as PdInventory.Models.SystemInventory ?? new PdInventory.Models.SystemInventory();
     ViewData["Title"] = $"系統 {Model.SeqNo}";
 }
 
@@ -89,18 +92,18 @@
     <div class="card-header fw-bold bg-success text-white">資訊資產清單－資料(DA)</div>
     <div class="card-body pd-body">
         <dl class="pd-grid">
-            <dt>@Html.DisplayNameFor(m => m.DaAssetCode)</dt><dd>@Model.DaAssetCode</dd>
-            <dt>@Html.DisplayNameFor(m => m.DaAssetType)</dt><dd>@Model.DaAssetType</dd>
-            <dt class="pd-full">@Html.DisplayNameFor(m => m.DaDescription)</dt><dd class="pd-full" style="white-space: pre-wrap">@Model.DaDescription</dd>
-            <dt>@Html.DisplayNameFor(m => m.DaBackupMethod)</dt><dd>@Model.DaBackupMethod</dd>
-            <dt>@Html.DisplayNameFor(m => m.DaRetentionPeriod)</dt><dd>@Model.DaRetentionPeriod</dd>
-            <dt>@Html.DisplayNameFor(m => m.DaHasSensitiveData)</dt><dd>@Model.DaHasSensitiveData</dd>
-            <dt class="pd-full">@Html.DisplayNameFor(m => m.DaUserUnit)</dt><dd class="pd-full">@Model.DaUserUnit</dd>
+            <dt>@Html.DisplayNameFor(_ => da.DaAssetCode)</dt><dd>@da.DaAssetCode</dd>
+            <dt>@Html.DisplayNameFor(_ => da.DaAssetType)</dt><dd>@da.DaAssetType</dd>
+            <dt class="pd-full">@Html.DisplayNameFor(_ => da.DaDescription)</dt><dd class="pd-full" style="white-space: pre-wrap">@da.DaDescription</dd>
+            <dt>@Html.DisplayNameFor(_ => da.DaBackupMethod)</dt><dd>@da.DaBackupMethod</dd>
+            <dt>@Html.DisplayNameFor(_ => da.DaRetentionPeriod)</dt><dd>@da.DaRetentionPeriod</dd>
+            <dt>@Html.DisplayNameFor(_ => da.DaHasSensitiveData)</dt><dd>@da.DaHasSensitiveData</dd>
+            <dt class="pd-full">@Html.DisplayNameFor(_ => da.DaUserUnit)</dt><dd class="pd-full">@da.DaUserUnit</dd>
             <dt>關連SW編號</dt><dd>@Model.SystemCode</dd>
-            <dt>@Html.DisplayNameFor(m => m.DaBackupConfirm)</dt><dd>@Model.DaBackupConfirm</dd>
-            <dt>@Html.DisplayNameFor(m => m.DaReviewer)</dt><dd>@Model.DaReviewer</dd>
-            <dt>@Html.DisplayNameFor(m => m.DaModifiedTime)</dt><dd>@Model.DaModifiedTime</dd>
-            <dt class="pd-full">@Html.DisplayNameFor(m => m.DaRemark)</dt><dd class="pd-full" style="white-space: pre-wrap">@Model.DaRemark</dd>
+            <dt>@Html.DisplayNameFor(_ => da.DaBackupConfirm)</dt><dd>@da.DaBackupConfirm</dd>
+            <dt>@Html.DisplayNameFor(_ => da.DaReviewer)</dt><dd>@da.DaReviewer</dd>
+            <dt>@Html.DisplayNameFor(_ => da.DaModifiedTime)</dt><dd>@da.DaModifiedTime</dd>
+            <dt class="pd-full">@Html.DisplayNameFor(_ => da.DaRemark)</dt><dd class="pd-full" style="white-space: pre-wrap">@da.DaRemark</dd>
         </dl>
     </div>
 </div>
@@ -115,8 +118,8 @@
             <dd>@Model.SystemName</dd>
             <dt>@Html.DisplayNameFor(m => m.Description)</dt>
             <dd style="white-space: pre-wrap">@Model.Description</dd>
-            <dt>@Html.DisplayNameFor(m => m.DbName)</dt>
-            <dd style="white-space: pre-wrap">@Model.DbName</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.DbName)</dt>
+            <dd style="white-space: pre-wrap">@inv.DbName</dd>
         </dl>
     </div>
 </div>
@@ -125,10 +128,10 @@
     <div class="card-header fw-bold">II. 備份</div>
     <div class="card-body pd-body">
         <dl class="pd-spec">
-            <dt>@Html.DisplayNameFor(m => m.BackupLocation)</dt>
-            <dd style="white-space: pre-wrap">@Model.BackupLocation</dd>
-            <dt>@Html.DisplayNameFor(m => m.BackupCycle)</dt>
-            <dd>@Model.BackupCycle</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.BackupLocation)</dt>
+            <dd style="white-space: pre-wrap">@inv.BackupLocation</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.BackupCycle)</dt>
+            <dd>@inv.BackupCycle</dd>
         </dl>
     </div>
 </div>
@@ -137,24 +140,24 @@
     <div class="card-header fw-bold">III. 外部單位存取權限盤點</div>
     <div class="card-body pd-body">
         <dl class="pd-spec">
-            <dt>@Html.DisplayNameFor(m => m.ExternalUnitName)</dt>
-            <dd>@Model.ExternalUnitName</dd>
-            <dt>@Html.DisplayNameFor(m => m.HasLog)</dt>
-            <dd>@Model.HasLog</dd>
-            <dt>@Html.DisplayNameFor(m => m.AccessCreate)</dt>
-            <dd>@Model.AccessCreate</dd>
-            <dt>@Html.DisplayNameFor(m => m.AccessDelete)</dt>
-            <dd>@Model.AccessDelete</dd>
-            <dt>@Html.DisplayNameFor(m => m.AccessCopy)</dt>
-            <dd>@Model.AccessCopy</dd>
-            <dt>@Html.DisplayNameFor(m => m.FileDescription)</dt>
-            <dd>@Model.FileDescription</dd>
-            <dt>@Html.DisplayNameFor(m => m.SpecialData)</dt>
-            <dd>@Model.SpecialData</dd>
-            <dt>@Html.DisplayNameFor(m => m.SubjectCount)</dt>
-            <dd>@Model.SubjectCount</dd>
-            <dt>@Html.DisplayNameFor(m => m.RetentionPeriod)</dt>
-            <dd>@Model.RetentionPeriod</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.ExternalUnitName)</dt>
+            <dd>@inv.ExternalUnitName</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.HasLog)</dt>
+            <dd>@inv.HasLog</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.AccessCreate)</dt>
+            <dd>@inv.AccessCreate</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.AccessDelete)</dt>
+            <dd>@inv.AccessDelete</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.AccessCopy)</dt>
+            <dd>@inv.AccessCopy</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.FileDescription)</dt>
+            <dd>@inv.FileDescription</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.SpecialData)</dt>
+            <dd>@inv.SpecialData</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.SubjectCount)</dt>
+            <dd>@inv.SubjectCount</dd>
+            <dt>@Html.DisplayNameFor(_ => inv.RetentionPeriod)</dt>
+            <dd>@inv.RetentionPeriod</dd>
         </dl>
     </div>
 </div>
@@ -162,6 +165,6 @@
 <div class="card mb-3">
     <div class="card-header fw-bold">IV. 備註</div>
     <div class="card-body">
-        <p class="mb-0">@Model.Remark</p>
+        <p class="mb-0">@inv.Remark</p>
     </div>
 </div>

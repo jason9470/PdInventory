@@ -18,25 +18,15 @@ public record ExportColumnInfo(string PropertyName, string Title, bool Included)
 public static class ExportCatalog
 {
     /// <summary>SW / DA / 系統盤點三張清單共用 InfoSystems，這三個欄位是它們的共同識別欄位。</summary>
-    private static readonly string[] InfoSystemKeyFields = ["SeqNo", "SystemCode", "SystemName"];
 
-    /// <summary>
-    /// SW 與 DA 兩張表共用的欄位。原本兩邊各有一份，內容其實是同一件事，已合併成 SW 那一份。
-    /// 來源試算表的 DA 表仍然有這些欄位，因此 DA 的匯出也要帶上，否則匯出的檔案會少一截。
-    /// </summary>
-    private static readonly string[] InfoSystemMergedFields =
-    [
-        "SwStatus", "SwConfidentiality", "SwIntegrity", "SwAvailability",
-        "SwOwnerUnit", "SwCustodianUnit", "SwRiskOwner", "SwLocation", "SwAssetValue",
-    ];
 
     /// <summary>清單代碼 → (實體型別, 畫面名稱, 匯出檔名)。</summary>
     public static readonly IReadOnlyDictionary<string, (Type Entity, string Title)> Lists =
         new Dictionary<string, (Type, string)>
         {
             ["Software"]  = (typeof(InfoSystem),     "資訊資產清單-軟體(SW)"),
-            ["Data"]      = (typeof(InfoSystem),     "資訊資產清單-資料(DA)"),
-            ["Systems"]   = (typeof(InfoSystem),     "資訊系統、資料庫與檔案伺服器盤點表"),
+            ["Data"]      = (typeof(DataAsset),      "資訊資產清單-資料(DA)"),
+            ["Systems"]   = (typeof(SystemInventory), "資訊系統、資料庫與檔案伺服器盤點表"),
             ["Inventory"] = (typeof(InventoryItem),  "個人資料檔案盤點表-人為產出"),
             ["Transfers"] = (typeof(TransferRecord), "系統自動拋轉(出入)清單-系統產出"),
             ["Risk"]      = (typeof(InventoryItem),  "個人資料風險自評表"),
@@ -54,17 +44,9 @@ public static class ExportCatalog
                         .OrderBy(p => p.MetadataToken)
                         .ToList();
 
-        if (entity != typeof(InfoSystem)) return all;
-
-        return listKey switch
-        {
-            "Software" => all.Where(p => InfoSystemKeyFields.Contains(p.Name) || p.Name.StartsWith("Sw")).ToList(),
-            "Data"     => all.Where(p => InfoSystemKeyFields.Contains(p.Name)
-                                      || InfoSystemMergedFields.Contains(p.Name)
-                                      || p.Name.StartsWith("Da")).ToList(),
-            // 系統盤點＝Sheet3 欄位：扣掉 SW 與 DA 兩組
-            _          => all.Where(p => !p.Name.StartsWith("Sw") && !p.Name.StartsWith("Da")).ToList(),
-        };
+        // SW／DA／系統盤點已各自獨立成表，一張清單就是一個實體的全部欄位，
+        // 不必再依欄位名稱前綴分組。
+        return all;
     }
 
     public static string TitleOf(PropertyInfo p) =>

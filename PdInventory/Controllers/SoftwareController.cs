@@ -61,6 +61,11 @@ public class SoftwareController : Controller
         // 記住這筆的資產編號，之後進到任一清單頁都會自動帶入搜尋欄
         this.RememberSearch(system.SystemCode);
         ViewBag.From = ListSource.Resolve(from);
+        // DA 與盤點表已是獨立的資料列，檢視頁要另外查出來；沒有就那一區塊留空
+        ViewBag.DataAsset = await _db.DataAssets
+            .FirstOrDefaultAsync(d => d.SystemCode == system.SystemCode);
+        ViewBag.Inventory = await _db.SystemInventories
+            .FirstOrDefaultAsync(i => i.SystemCode == system.SystemCode);
         return View(system);
     }
 
@@ -82,12 +87,15 @@ public class SoftwareController : Controller
         if (!ModelState.IsValid)
         {
             // 統一編輯畫面要三個區塊都在，另外兩塊取資料庫現值，這一塊保留使用者剛才輸入的內容
-            var reload = InfoSystemBlocks.ToEditViewModel(existing);
+            var reload = InfoSystemBlocks.ToEditViewModel(
+                existing,
+                await _db.DataAssets.FirstOrDefaultAsync(d => d.SystemCode == existing.SystemCode),
+                await _db.SystemInventories.FirstOrDefaultAsync(i => i.SystemCode == existing.SystemCode));
             reload.Software = model;
             return View("EditAll", reload);
         }
 
-        InfoSystemBlocks.CopyToEntity(existing, model, InfoSystemBlocks.Sw);
+        InfoSystemBlocks.Copy(existing, model);
         // 以畫面載入當下的權杖比對：若這筆在期間內被他人存過，擋下並要求重新載入，
         // 不做靜默覆蓋。權杖由 AppDbContext 於每次存檔換新。
         _db.Entry(existing).Property(e => e.RowVersion).OriginalValue = model.RowVersion;

@@ -371,57 +371,18 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [Display(Name = "資產說明")]
     public string Description { get; set; } = "";
 
-    [Display(Name = "資料庫/資料夾/檔案伺服器名稱")]
-    public string DbName { get; set; } = "";
 
-    // II. 備份
-    [Display(Name = "備份地點")]
-    [StringLength(300)]
-    public string BackupLocation { get; set; } = "";
 
-    [Display(Name = "備份週期")]
-    [StringLength(200)]
-    public string BackupCycle { get; set; } = "";
 
-    // III. 外部單位存取權限盤點
-    [Display(Name = "外部單位名稱")]
-    [StringLength(200)]
-    public string ExternalUnitName { get; set; } = "";
 
-    [Display(Name = "是否有記錄操作紀錄或log")]
-    [StringLength(20)]
-    public string HasLog { get; set; } = "";
 
-    [Display(Name = "存取權限：新增或修改")]
-    [StringLength(50)]
-    public string AccessCreate { get; set; } = "";
 
-    [Display(Name = "存取權限：刪除")]
-    [StringLength(50)]
-    public string AccessDelete { get; set; } = "";
 
-    [Display(Name = "存取權限：複製(下載、列印、可複製之查詢)")]
-    [StringLength(50)]
-    public string AccessCopy { get; set; } = "";
 
-    [Display(Name = "檔案/報表名稱或內容描述")]
-    public string FileDescription { get; set; } = "";
 
-    [Display(Name = "包含之特種個資內容")]
-    [StringLength(200)]
-    public string SpecialData { get; set; } = "";
 
-    [Display(Name = "檔案含個人資料當事人數量")]
-    [StringLength(50)]
-    public string SubjectCount { get; set; } = "";
 
-    [Display(Name = "檔案保留期間")]
-    [StringLength(100)]
-    public string RetentionPeriod { get; set; } = "";
 
-    // IV. 備註
-    [Display(Name = "備註")]
-    public string Remark { get; set; } = "";
 
     // ───────────────────────────────────────────────────────────────
     // 資訊資產清單－軟體(SW)　以資產編號(SW-xxx) = SystemCode 關聯本表
@@ -674,67 +635,25 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [StringLength(50)]
     public string SwModifiedTime { get; set; } = "";
 
-    // ───────────────────────────────────────────────────────────────
-    // 資訊資產清單－資料(DA)　以「關連SW編號」= SystemCode 關聯本表
-    //
-    // 下列 9 個欄位原本 SW 與 DA 各有一份，但記錄的是同一個資產的同一件事，
-    // 已合併為 SW 那一份（不一致時以 SW 為準）：
-    //   資產狀態、機密性、完整性、可用性、權責單位、保管單位、風險擁有者、位置、資產價值
-    // 因此本區塊看不到它們，要修改請到 SW 區塊。
-    //
-    // 重新匯入 DA 來源檔時要注意：那份檔案仍然有這 9 欄，匯入程式必須略過，
-    // 否則會把 SW 的值蓋掉。
-    // ───────────────────────────────────────────────────────────────
-    [Display(Name = "DA-資產編號")]
-    [StringLength(20)]
-    public string DaAssetCode { get; set; } = "";
-
-    [Display(Name = "DA-資產類別")]
-    [StringLength(20)]
-    public string DaAssetType { get; set; } = "";
-
-
-    [Display(Name = "DA-資產說明")]
-    public string DaDescription { get; set; } = "";
-
-    [Display(Name = "DA-資料備份與保存方式")]
-    [StringLength(300)]
-    public string DaBackupMethod { get; set; } = "";
-
-    [Display(Name = "DA-資料保留期限")]
-    [StringLength(200)]
-    public string DaRetentionPeriod { get; set; } = "";
-
-    [Display(Name = "DA-有無機敏資料")]
-    [StringLength(200)]
-    public string DaHasSensitiveData { get; set; } = "";
 
 
 
 
 
-    [Display(Name = "DA-使用單位")]
-    [StringLength(200)]
-    public string DaUserUnit { get; set; } = "";
 
 
 
 
 
-    [Display(Name = "DA-備註")]
-    public string DaRemark { get; set; } = "";
 
-    [Display(Name = "DA-確認-資料備份與保存方式")]
-    [StringLength(300)]
-    public string DaBackupConfirm { get; set; } = "";
 
-    [Display(Name = "DA-115檢視人員")]
-    [StringLength(100)]
-    public string DaReviewer { get; set; } = "";
 
-    [Display(Name = "DA-修改時間")]
-    [StringLength(50)]
-    public string DaModifiedTime { get; set; } = "";
+
+
+
+
+
+
     // ── 系統軌跡（由 AppDbContext 自動寫入）────────────────────────────
     [Display(Name = "建立者")]
     [StringLength(100)]
@@ -764,6 +683,135 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [StringLength(100)]
     public string DeletedBy { get; set; } = "";
 
+}
+
+/// <summary>
+/// 資訊資產清單－資料(DA)。
+///
+/// 原本與 SW、系統盤點擠在 InfoSystems 的同一列，但來源資料裡有一整批終端設備
+/// （各組的 PC / NB）根本沒有對應的軟體資產，那種資料在「一列 = 一套系統」的模型裡
+/// 無處可放，因此獨立成表。
+/// </summary>
+public class DataAsset : IAuditable, IConcurrencyAware
+{
+    public int Id { get; set; }
+
+    /// <summary>
+    /// 關連的軟體資產編號。**可以留空**——終端設備類的資料資產沒有對應的 SW。
+    /// 這是以欄位值配對的弱關聯，資料庫層沒有外鍵。
+    /// </summary>
+    [StringLength(20)]
+    [Display(Name = "關連SW編號")]
+    public string SystemCode { get; set; } = "";
+    // ───────────────────────────────────────────────────────────────
+    // 資訊資產清單－資料(DA)　以「關連SW編號」= SystemCode 關聯本表
+    //
+    // 下列 9 個欄位原本 SW 與 DA 各有一份，但記錄的是同一個資產的同一件事，
+    // 已合併為 SW 那一份（不一致時以 SW 為準）：
+    //   資產狀態、機密性、完整性、可用性、權責單位、保管單位、風險擁有者、位置、資產價值
+    // 因此本區塊看不到它們，要修改請到 SW 區塊。
+    //
+    // 重新匯入 DA 來源檔時要注意：那份檔案仍然有這 9 欄，匯入程式必須略過，
+    // 否則會把 SW 的值蓋掉。
+    // ───────────────────────────────────────────────────────────────
+    [Display(Name = "DA-資產編號")]
+    [StringLength(20)]
+    public string DaAssetCode { get; set; } = "";
+    [Display(Name = "DA-資產類別")]
+    [StringLength(20)]
+    public string DaAssetType { get; set; } = "";
+    [Display(Name = "DA-資產說明")]
+    public string DaDescription { get; set; } = "";
+    [Display(Name = "DA-資料備份與保存方式")]
+    [StringLength(300)]
+    public string DaBackupMethod { get; set; } = "";
+    [Display(Name = "DA-資料保留期限")]
+    [StringLength(200)]
+    public string DaRetentionPeriod { get; set; } = "";
+    [Display(Name = "DA-有無機敏資料")]
+    [StringLength(200)]
+    public string DaHasSensitiveData { get; set; } = "";
+    [Display(Name = "DA-使用單位")]
+    [StringLength(200)]
+    public string DaUserUnit { get; set; } = "";
+    [Display(Name = "DA-備註")]
+    public string DaRemark { get; set; } = "";
+    [Display(Name = "DA-確認-資料備份與保存方式")]
+    [StringLength(300)]
+    public string DaBackupConfirm { get; set; } = "";
+    [Display(Name = "DA-115檢視人員")]
+    [StringLength(100)]
+    public string DaReviewer { get; set; } = "";
+    [Display(Name = "DA-修改時間")]
+    [StringLength(50)]
+    public string DaModifiedTime { get; set; } = "";
+
+    public string CreatedBy { get; set; } = "";
+    public DateTime? CreatedAt { get; set; }
+    public string UpdatedBy { get; set; } = "";
+    public DateTime? UpdatedAt { get; set; }
+    public Guid RowVersion { get; set; }
+}
+
+/// <summary>
+/// 資訊系統、資料庫與檔案伺服器盤點表。
+///
+/// 與 DA 不同，這張表記錄的是某一套系統的伺服器與備份配置，
+/// 依業務端確認一定依附於某個軟體資產，因此資產編號必填。
+/// </summary>
+public class SystemInventory : IAuditable, IConcurrencyAware
+{
+    public int Id { get; set; }
+
+    /// <summary>所屬的軟體資產編號。以欄位值配對的弱關聯，資料庫層沒有外鍵。</summary>
+    [Required(ErrorMessage = "資產編號必填"), StringLength(20)]
+    [Display(Name = "資產編號")]
+    public string SystemCode { get; set; } = "";
+    [Display(Name = "資料庫/資料夾/檔案伺服器名稱")]
+    public string DbName { get; set; } = "";
+    // II. 備份
+    [Display(Name = "備份地點")]
+    [StringLength(300)]
+    public string BackupLocation { get; set; } = "";
+    [Display(Name = "備份週期")]
+    [StringLength(200)]
+    public string BackupCycle { get; set; } = "";
+    // III. 外部單位存取權限盤點
+    [Display(Name = "外部單位名稱")]
+    [StringLength(200)]
+    public string ExternalUnitName { get; set; } = "";
+    [Display(Name = "是否有記錄操作紀錄或log")]
+    [StringLength(20)]
+    public string HasLog { get; set; } = "";
+    [Display(Name = "存取權限：新增或修改")]
+    [StringLength(50)]
+    public string AccessCreate { get; set; } = "";
+    [Display(Name = "存取權限：刪除")]
+    [StringLength(50)]
+    public string AccessDelete { get; set; } = "";
+    [Display(Name = "存取權限：複製(下載、列印、可複製之查詢)")]
+    [StringLength(50)]
+    public string AccessCopy { get; set; } = "";
+    [Display(Name = "檔案/報表名稱或內容描述")]
+    public string FileDescription { get; set; } = "";
+    [Display(Name = "包含之特種個資內容")]
+    [StringLength(200)]
+    public string SpecialData { get; set; } = "";
+    [Display(Name = "檔案含個人資料當事人數量")]
+    [StringLength(50)]
+    public string SubjectCount { get; set; } = "";
+    [Display(Name = "檔案保留期間")]
+    [StringLength(100)]
+    public string RetentionPeriod { get; set; } = "";
+    // IV. 備註
+    [Display(Name = "備註")]
+    public string Remark { get; set; } = "";
+
+    public string CreatedBy { get; set; } = "";
+    public DateTime? CreatedAt { get; set; }
+    public string UpdatedBy { get; set; } = "";
+    public DateTime? UpdatedAt { get; set; }
+    public Guid RowVersion { get; set; }
 }
 
 /// <summary>3-1：風險分類編號（風險自評「風險分類編號/風險描述分類/潛在風險事件」下拉維護資料）</summary>
