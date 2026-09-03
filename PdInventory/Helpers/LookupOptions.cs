@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
+using PdInventory.Models;
 
 namespace PdInventory.Helpers;
 
@@ -19,6 +20,8 @@ public sealed class LookupOptions
     private readonly AppDbContext _db;
     private List<string>? _departments;
     private List<string>? _opsStaff;
+    private List<string>? _employees;
+    private List<string>? _employeeManagers;
 
     public LookupOptions(AppDbContext db) => _db = db;
 
@@ -32,6 +35,22 @@ public sealed class LookupOptions
     public IReadOnlyList<string> OpsStaff => _opsStaff ??= _db.OpsStaffs
         .OrderBy(o => o.TeamName == "").ThenBy(o => o.TeamName).ThenBy(o => o.Name)
         .Select(o => o.Name)
+        .ToList();
+
+    /// <summary>人員姓名（全部），組別待補的排在最後。</summary>
+    public IReadOnlyList<string> Employees => _employees ??= OrderedEmployees()
+        .Select(e => e.Name)
+        .ToList();
+
+    /// <summary>只有科別是「組長」的人。「SW-應用系統主管」的下拉吃這一份。</summary>
+    public IReadOnlyList<string> EmployeeManagers => _employeeManagers ??= OrderedEmployees()
+        .Where(e => e.Section == Employee.ManagerSection)
+        .Select(e => e.Name)
+        .ToList();
+
+    private IEnumerable<Employee> OrderedEmployees() => _db.Employees
+        .OrderBy(e => e.TeamName == "").ThenBy(e => e.TeamName)
+        .ThenBy(e => e.Section != Employee.ManagerSection).ThenBy(e => e.Name)
         .ToList();
 
     /// <summary>

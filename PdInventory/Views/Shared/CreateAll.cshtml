@@ -101,8 +101,14 @@
                        title="機密性＋完整性＋可用性，變更時自動計算" />
                 <div class="form-text text-danger fw-bold sw-core-hint" hidden></div></div>
             <div class="col-md-3"><label asp-for="Software.SwBusinessContact" class="form-label"></label><input asp-for="Software.SwBusinessContact" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwAppManager" class="form-label"></label><input asp-for="Software.SwAppManager" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwAppMaintainer" class="form-label"></label><input asp-for="Software.SwAppMaintainer" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwAppManager" class="form-label"></label>
+                <select asp-for="Software.SwAppManager" class="form-select"
+                        asp-items="Lookup.ItemsFor(Lookup.EmployeeManagers, Model.Software.SwAppManager)">
+                    <option value="">-- 請選擇 --</option>
+                </select></div>
+            <div class="col-md-6"><label asp-for="Software.SwAppMaintainer" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwAppMaintainer", Model.Software.SwAppMaintainer, Lookup.Employees)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainerDeputy" class="form-label"></label><input asp-for="Software.SwAppMaintainerDeputy" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Software.SwOperator" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
@@ -125,7 +131,9 @@
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwCodeAccess), Model.Software.SwCodeAccess)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwDeveloper" class="form-label"></label><input asp-for="Software.SwDeveloper" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwDeveloper" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwDeveloper", Model.Software.SwDeveloper, Lookup.Employees)' /></div>
             <div class="col-md-6"><label asp-for="Software.SwDeployer" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwDeployer", Model.Software.SwDeployer, Lookup.OpsStaff)' /></div>
@@ -188,7 +196,11 @@
                         asp-items="Lookup.ItemsFor(Lookup.Departments, Model.Software.SwBusinessOwnerUnit)">
                     <option value="">-- 請選擇 --</option>
                 </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwReviewer" class="form-label"></label><input asp-for="Software.SwReviewer" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwReviewer" class="form-label"></label>
+                <select asp-for="Software.SwReviewer" class="form-select"
+                        asp-items="Lookup.ItemsFor(Lookup.Employees, Model.Software.SwReviewer)">
+                    <option value="">-- 請選擇 --</option>
+                </select></div>
             <div class="col-md-3"><label asp-for="Software.SwModifiedBy" class="form-label"></label><input asp-for="Software.SwModifiedBy" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwModifiedTime" class="form-label"></label><input asp-for="Software.SwModifiedTime" class="form-control" /></div>
             <div class="col-12"><label asp-for="Software.SwRemark" class="form-label"></label><textarea asp-for="Software.SwRemark" class="form-control" rows="2"></textarea></div>
@@ -209,7 +221,11 @@
             <div class="col-md-4"><label asp-for="Data.DaHasSensitiveData" class="form-label"></label><input asp-for="Data.DaHasSensitiveData" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Data.DaUserUnit" class="form-label"></label><input asp-for="Data.DaUserUnit" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Data.DaBackupConfirm" class="form-label"></label><input asp-for="Data.DaBackupConfirm" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Data.DaReviewer" class="form-label"></label><input asp-for="Data.DaReviewer" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Data.DaReviewer" class="form-label"></label>
+                <select asp-for="Data.DaReviewer" class="form-select"
+                        asp-items="Lookup.ItemsFor(Lookup.Employees, Model.Data.DaReviewer)">
+                    <option value="">-- 請選擇 --</option>
+                </select></div>
             <div class="col-md-3"><label asp-for="Data.DaModifiedTime" class="form-label"></label><input asp-for="Data.DaModifiedTime" class="form-control" /></div>
             <div class="col-12"><label asp-for="Data.DaRemark" class="form-label"></label><textarea asp-for="Data.DaRemark" class="form-control" rows="2"></textarea></div>
         </div>

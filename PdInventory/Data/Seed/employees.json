@@ -1,0 +1,1066 @@
+[
+  {
+    "EmpNo": "7331",
+    "Name": "陳映玲",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "部室主管",
+    "Section": "部室主管",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "5784",
+    "Name": "許稚苓",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "部室副主管",
+    "Section": "部室副主管",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "6346",
+    "Name": "張瑜玫",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "組長",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0002876",
+    "Name": "謝江河",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "前台核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0006352",
+    "Name": "蘇明暉",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "前台核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0013706",
+    "Name": "周佩君",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "通路核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0013797",
+    "Name": "范維德",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "前台核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0015114",
+    "Name": "王敏耀",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "前台核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0015123",
+    "Name": "張淑娟",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "前台核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0050305",
+    "Name": "曾政嘉",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "通路應用科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0050323",
+    "Name": "柯皓中",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "通路應用科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0180366",
+    "Name": "劉駿",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "前台核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0180889",
+    "Name": "張書瑋",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "前台核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0181039",
+    "Name": "王宏志",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "通路核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0181188",
+    "Name": "吳旻峰",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "前台核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0182552",
+    "Name": "吳浚瑋",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "前台核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0182938",
+    "Name": "張家豪",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "通路應用科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0183120",
+    "Name": "倪柏寧",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "通路核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0183426",
+    "Name": "林銘偉",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發一組",
+    "Section": "通路核心科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "12033",
+    "Name": "紀韶維",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "組長",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "13870",
+    "Name": "鍾春懿",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "12081",
+    "Name": "張瑛瑛",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14770",
+    "Name": "高志豪",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "15113",
+    "Name": "張淑美",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14051",
+    "Name": "王從道",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14412",
+    "Name": "許文瀚",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "181957",
+    "Name": "郭悅瑜",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14834",
+    "Name": "鄭瑋霖",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "50326",
+    "Name": "鍾宏偉",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "20906",
+    "Name": "楊常鑫",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "帳務服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "6340",
+    "Name": "吳淑芳",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "帳務服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "6890",
+    "Name": "黃桂芳",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "帳務服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "15118",
+    "Name": "林惠蘭",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "帳務服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "6341",
+    "Name": "黃美倫",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "183253",
+    "Name": "林子耕",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "帳務服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "183307",
+    "Name": "許庭溦",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "",
+    "Name": "黃鈺棠",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發二組",
+    "Section": "經紀帳務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0005837",
+    "Name": "邱慶霖",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "組長",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0007975",
+    "Name": "王怡如",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0011373",
+    "Name": "陳瑞雄",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0013681",
+    "Name": "邱柏翰",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0013729",
+    "Name": "邱永嬌",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "API通路服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0013748",
+    "Name": "陳佳駿",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0013775",
+    "Name": "許暉煌",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0013776",
+    "Name": "粘淑婷",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "API通路服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0014352",
+    "Name": "翁群弼",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0014486",
+    "Name": "林大鈞",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0014969",
+    "Name": "穆皆仰",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0020931",
+    "Name": "陳倉億",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0021111",
+    "Name": "林志成",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0021142",
+    "Name": "黃朝聰",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0021604",
+    "Name": "陳佩伶",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0021758",
+    "Name": "張宏文",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0101046",
+    "Name": "柳怡禎",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "API通路服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0180212",
+    "Name": "施凱家",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0180330",
+    "Name": "江明哲",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0180352",
+    "Name": "陳奕凱",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0181014",
+    "Name": "林士恒",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0181495",
+    "Name": "洪梓寧",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0181852",
+    "Name": "柯亞慧",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0182043",
+    "Name": "郭哲佑",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0182121",
+    "Name": "陳信宏",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "API通路服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0182430",
+    "Name": "高宗毅",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0182554",
+    "Name": "林軒宇",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0182570",
+    "Name": "郭晉晏",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0183385",
+    "Name": "高漢庭",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0183401",
+    "Name": "陳家正",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0183531",
+    "Name": "王俞之",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "API通路服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "0183952",
+    "Name": "蔡昀霖",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "通路整合科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "",
+    "Name": "林冠汝",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發三組",
+    "Section": "創新研發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "15138",
+    "Name": "洪才元",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "組長",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "50082",
+    "Name": "蔡嘉駒",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "10196",
+    "Name": "彭先達",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "21567",
+    "Name": "薛先㨗",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "13108",
+    "Name": "陳佳淇",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "13291",
+    "Name": "蔡文斌",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14207",
+    "Name": "廖俊華",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14706",
+    "Name": "林昕禾",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14057",
+    "Name": "陳冠州",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "181834",
+    "Name": "許閔智",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "181821",
+    "Name": "李品諺",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "182462",
+    "Name": "吳怡萱",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "13955",
+    "Name": "陳逸群",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "帳戶服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14509",
+    "Name": "羅郁仁",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "帳戶服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "181492",
+    "Name": "黃緯珣",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "帳戶服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "180071",
+    "Name": "彭紹旻",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "帳戶服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "181918",
+    "Name": "林學孜",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "帳戶服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "182320",
+    "Name": "戴翊竹",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "帳戶服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "182472",
+    "Name": "何彥儀",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "帳戶服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "182804",
+    "Name": "張永奕",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "帳戶服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "12461",
+    "Name": "張永顯",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "ERP科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "12811",
+    "Name": "張睿智",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "ERP科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "64620",
+    "Name": "洪睿嬪",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "ERP科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "80620",
+    "Name": "鍾淑暖",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "ERP科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "21605",
+    "Name": "蔡德華",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "ERP科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "2747",
+    "Name": "曾幸惠",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "ERP科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "183079",
+    "Name": "鄭凱倫",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "帳戶服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "183440",
+    "Name": "趙妤瑄",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "183713",
+    "Name": "陳宥鈊",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發五組",
+    "Section": "大財管開發科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "10743",
+    "Name": "林沛樺",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "營運管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "20767",
+    "Name": "姚曉華",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "營運管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14465",
+    "Name": "孫大川",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "營運管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14905",
+    "Name": "蔡逸君",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "營運管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "180709",
+    "Name": "劉庭妤",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "營運管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "11387",
+    "Name": "王敏娟",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "組長",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "12842",
+    "Name": "張容禎",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "12057",
+    "Name": "蕭育智",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "21189",
+    "Name": "楊捷扉",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14210",
+    "Name": "謝錫宗",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "21635",
+    "Name": "張雅惠",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "13998",
+    "Name": "黃耀賢",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14350",
+    "Name": "朱怡芬",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "180702",
+    "Name": "呂盈暄",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "180672",
+    "Name": "賴志傑",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "182042",
+    "Name": "林浩存",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "182291",
+    "Name": "陳怡彤",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "182792",
+    "Name": "陳豊傑",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "183471",
+    "Name": "林琮訓",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "營運管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "183514",
+    "Name": "王御丞",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "投資管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "183899",
+    "Name": "陳俊廷",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發六組",
+    "Section": "營運管理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "7470",
+    "Name": "林秀麗",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "帳務服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "13280",
+    "Name": "郭禮睿",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "帳務服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "13714",
+    "Name": "邱慶治",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "帳務服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "11969",
+    "Name": "林依瑩",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "帳務服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "5721",
+    "Name": "翁淑敏",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "股務代理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "12295",
+    "Name": "番蕙珍",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "股務代理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "182802",
+    "Name": "洪詩翔",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "股務代理科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "14050",
+    "Name": "徐澎翊",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "組長",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "9857",
+    "Name": "蔡世中",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "應用服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "180224",
+    "Name": "賴彥愷",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "應用服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "182123",
+    "Name": "洪有謙",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "應用服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "181908",
+    "Name": "林曉欣",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "應用服務科",
+    "Remark": ""
+  },
+  {
+    "EmpNo": "183112",
+    "Name": "陳威凱",
+    "DepartmentName": "資訊系統開發一部",
+    "TeamName": "開發四組",
+    "Section": "應用服務科",
+    "Remark": ""
+  }
+]

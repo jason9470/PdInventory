@@ -113,6 +113,13 @@ public static class DbSeeder
             db.SaveChanges();
         }
 
+        if (!db.Employees.Any())
+        {
+            var employees = Load<List<Employee>>("employees.json");
+            if (employees is not null) db.Employees.AddRange(employees);
+            db.SaveChanges();
+        }
+
         SeedRiskLookups(db);
         SeedUsers(db);
     }

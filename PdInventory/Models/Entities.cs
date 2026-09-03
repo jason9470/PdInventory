@@ -847,6 +847,55 @@ public class Department
 }
 
 /// <summary>
+/// 人員（共用維護資料）。資訊系統開發一部的組織名冊。
+///
+/// 對照的欄位：SW-應用系統維護人員（多選）、SW-程式設計人員（多選）、
+/// SW-115上檢視人員（單選）、DA-115檢視人員（單選）以及
+/// SW-應用系統主管（單選，**只列科別為「組長」的人**）。
+///
+/// 與 <see cref="OpsStaff"/> 的差別：那份是資管處的維運名單，這份是開發一部的名冊，
+/// 兩邊的人不重疊，對照的欄位也不同，因此分成兩張表而不是合併。
+/// </summary>
+public class Employee
+{
+    public int Id { get; set; }
+
+    /// <summary>
+    /// 員工編號。**可以留空**——名冊裡本來就有兩位沒有員編，
+    /// 另外資料中出現、名冊沒有的值也是先建進來留空待補。
+    /// 位數不一致是來源檔原樣（有 7331 也有 0002876），沒有補零。
+    /// </summary>
+    [Display(Name = "員編")]
+    [StringLength(20)]
+    public string EmpNo { get; set; } = "";
+
+    [Display(Name = "姓名")]
+    [Required(ErrorMessage = "姓名必填"), StringLength(50)]
+    public string Name { get; set; } = "";
+
+    [Display(Name = "部門")]
+    [StringLength(100)]
+    public string DepartmentName { get; set; } = "";
+
+    [Display(Name = "組別")]
+    [StringLength(50)]
+    public string TeamName { get; set; } = "";
+
+    /// <summary>科別。值為「組長」者才會出現在「SW-應用系統主管」的下拉。</summary>
+    [Display(Name = "科別")]
+    [StringLength(50)]
+    public string Section { get; set; } = "";
+
+    [Display(Name = "備註")]
+    public string Remark { get; set; } = "";
+
+    /// <summary>「SW-應用系統主管」的下拉只列這些人。</summary>
+    public const string ManagerSection = "組長";
+
+    public string Label => string.IsNullOrWhiteSpace(EmpNo) ? Name : $"{EmpNo} {Name}";
+}
+
+/// <summary>
 /// 資管維運人員（共用維護資料）。對照的欄位：SW-維運人員、SW-程式換版人員（都是多選）。
 /// </summary>
 public class OpsStaff

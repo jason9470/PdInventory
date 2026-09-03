@@ -27,6 +27,7 @@ public class AppDbContext : DbContext
     public DbSet<AssetOwner> AssetOwners => Set<AssetOwner>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<OpsStaff> OpsStaffs => Set<OpsStaff>();
+    public DbSet<Employee> Employees => Set<Employee>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -79,6 +80,7 @@ public class AppDbContext : DbContext
         // 代號（利潤中心／組別）刻意不設唯一——資料裡有、甲方清單沒有的先留空，會有一批空值。
         modelBuilder.Entity<Department>().HasIndex(d => d.Name).IsUnique();
         modelBuilder.Entity<OpsStaff>().HasIndex(o => o.Name).IsUnique();
+        modelBuilder.Entity<Employee>().HasIndex(e => e.Name).IsUnique();
 
         // DataAssets.DaAssetCode 刻意不設唯一：來源資料允許一筆 DA 對應多個 SW
         // （DA-049 的關連SW編號是「SW-049;SW-048」）。為了讓 SystemCode 維持單一值
