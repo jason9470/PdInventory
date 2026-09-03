@@ -115,7 +115,9 @@
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwDeveloper" class="form-label"></label><input asp-for="Software.SwDeveloper" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwDeployer" class="form-label"></label><input asp-for="Software.SwDeployer" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwDeployer" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwDeployer", Model.Software.SwDeployer, Lookup.OpsStaff)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwRpo" class="form-label"></label><select asp-for="Software.SwRpo" class="form-select"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwRpo), Model.Software.SwRpo)">
                 <option value="">-- 請選擇 --</option>

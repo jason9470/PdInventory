@@ -87,13 +87,20 @@ public class OpsStaffController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>維運人員是多選欄位（以 / 分隔），不能用等號比對，理由同 DepartmentsController。</summary>
+    /// <summary>
+    /// 有多少筆資產用到這個人。維運人員與程式換版人員都是多選欄位（以 / 分隔），
+    /// 不能用等號比對，理由同 DepartmentsController。同一筆兩個欄位都掛他只算一筆。
+    /// </summary>
     private async Task<int> CountUsageAsync(string name)
     {
         if (string.IsNullOrWhiteSpace(name)) return 0;
 
-        var values = await _db.InfoSystems.Select(s => s.SwOperator).ToListAsync();
-        return values.Count(v => MultiValue.Contains(v, name));
+        var rows = await _db.InfoSystems
+            .Select(s => new { s.SwOperator, s.SwDeployer })
+            .ToListAsync();
+
+        return rows.Count(r => MultiValue.Contains(r.SwOperator, name)
+                            || MultiValue.Contains(r.SwDeployer, name));
     }
 
     private async Task ValidateUniqueNameAsync(OpsStaff model)

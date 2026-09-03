@@ -847,7 +847,7 @@ public class Department
 }
 
 /// <summary>
-/// 資管維運人員（共用維護資料）。對照的欄位：SW-維運人員（多選）。
+/// 資管維運人員（共用維護資料）。對照的欄位：SW-維運人員、SW-程式換版人員（都是多選）。
 /// </summary>
 public class OpsStaff
 {
