@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+# 資料庫進版控前先做 WAL checkpoint。
+#
+# 為什麼需要：SQLite 開在 WAL 模式時，寫入先進 <db>-wal，主檔要等 checkpoint 才更新，
+# 而 .gitignore 排除了 *.db-wal。結果是 commit 收進去的主檔落後於實際資料——
+# 在本機看不出來（SQLite 開啟時會連 -wal 一起讀），只有 clone 出去才會發現少了東西。
+#
+# 做法：把 WAL 折回主檔，主檔內容因此改變的就一併 git add，讓版控裡的資料庫永遠是最新的。
+# 這代表純程式的 commit 也可能被帶入資料異動，所以每次都會印一行說明，不會靜靜地做。
+#
+# 若不想要這個行為：git config --unset core.hooksPath
+
+set -e
+
+for db in $(git ls-files '*.db'); do
+    [ -f "$db" ] || continue
+    [ -f "$db-wal" ] || continue
+
+    if ! python -c "
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute('pragma wal_checkpoint(TRUNCATE)')
+c.close()
+" "$db" 2>/dev/null; then
+        echo "pre-commit：$db 的 WAL checkpoint 失敗（資料庫可能正被其他程式鎖住），已中止 commit。" >&2
+        echo "            關掉正在使用資料庫的程式後再試一次。" >&2
+        exit 1
+    fi
+
+    if ! git diff --quiet -- "$db" || ! git diff --cached --quiet -- "$db"; then
+        git add "$db"
+        echo "pre-commit：$db 已 checkpoint 並收進這次 commit。"
+    fi
+done
+
+exit 0
