@@ -56,8 +56,8 @@ public static class FieldOptions
         [nameof(DataAsset.DaAssetType)] = ["資料"],
 
         // ── 個人資料檔案盤點表－人為產出 ─────────────────────
-        // 這三個欄位目前的資料只出現過單一值，其餘選項是依欄位語意補上的，
-        // 上線前要請填表單位確認還有沒有別的答案。
+        // 這三個欄位目前的資料只出現過單一值，其餘選項當初是依欄位語意補上的，
+        // 2026-09-03 已經業務端確認可以照這樣保留。
         [nameof(InventoryItem.SubjectType)] = ["客戶", "員工", "其他"],
         [nameof(InventoryItem.SpecialDataLegalBasis)] = ["Y", "N"],
         [nameof(InventoryItem.CompanyRole)] = ["資料控制者", "資料處理者"],
