@@ -40,6 +40,7 @@ public class EmployeesController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Employee model)
     {
+        model.EmpNo = EmpNo.Normalize(model.EmpNo);
         await ValidateUniqueNameAsync(model);
         if (!ModelState.IsValid) return View("Form", model);
         _db.Employees.Add(model);
@@ -60,6 +61,8 @@ public class EmployeesController : Controller
     public async Task<IActionResult> Edit(int id, Employee model)
     {
         if (id != model.Id) return BadRequest();
+        // 手動輸入 183253 也要存成 0183253，維護畫面不該是格式不一致的來源
+        model.EmpNo = EmpNo.Normalize(model.EmpNo);
         await ValidateUniqueNameAsync(model);
         if (!ModelState.IsValid)
         {

@@ -157,7 +157,7 @@ public sealed class LdapEmployeeDirectory : IEmployeeDirectory
 
             var samAccount = FirstValue(entry, "sAMAccountName");
             return new EmployeeInfo(
-                NormalizeEmpNo(samAccount.Length > 0 ? samAccount : account, _options.EmpNoLength),
+                EmpNo.Normalize(samAccount.Length > 0 ? samAccount : account, _options.EmpNoLength),
                 ExtractName(FirstValue(entry, "displayName"), FirstValue(entry, "cn"), account));
         }
         catch (LdapException ex)
@@ -211,15 +211,6 @@ public sealed class LdapEmployeeDirectory : IEmployeeDirectory
         }
 
         return fallback;
-    }
-
-    /// <summary>純數字帳號補足前導零，對齊本系統既有的員工編號格式。</summary>
-    public static string NormalizeEmpNo(string account, int length)
-    {
-        account = (account ?? "").Trim();
-        return account.Length > 0 && account.Length < length && account.All(char.IsDigit)
-            ? account.PadLeft(length, '0')
-            : account;
     }
 
     /// <summary>跳脫 LDAP 篩選條件的特殊字元，避免有人用帳號欄位注入查詢條件。</summary>
