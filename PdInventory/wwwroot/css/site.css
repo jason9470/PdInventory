@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -105,6 +105,57 @@ body {
 
 .sidebar-heading {
   letter-spacing: .05em;
+}
+
+/* 「維護資料」第二層：一張表單一組，用 <details> 做展開收合。
+   所在群組由伺服器端加上 open，不靠 JavaScript，換頁不會閃。 */
+.sidebar-maint-group > .sidebar-maint-summary {
+  list-style: none;              /* Firefox 的三角形 */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .3rem .75rem .3rem 1rem;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: #55606b;
+  line-height: 1.3;
+}
+
+/* Safari/Chrome 的預設三角形 */
+.sidebar-maint-group > .sidebar-maint-summary::-webkit-details-marker {
+  display: none;
+}
+
+.sidebar-maint-group > .sidebar-maint-summary:hover {
+  color: #0a58ca;
+}
+
+/* 自己畫收合箭頭，方向才跟得上 open 狀態 */
+.sidebar-maint-group > .sidebar-maint-summary::before {
+  content: "▸";
+  flex: 0 0 auto;
+  transition: transform .15s ease-in-out;
+}
+
+.sidebar-maint-group[open] > .sidebar-maint-summary::before {
+  transform: rotate(90deg);
+}
+
+/* 第三層：縮排並拉一條導引線，一眼看得出這些項目屬於上面那張表單 */
+.sidebar-maint-group > .list-group {
+  margin-left: 1rem;
+  border-left: 2px solid #d3d9e0;
+}
+
+.sidebar-maint-group .list-group-item {
+  padding-left: .85rem;
+  font-size: .8125rem;
+}
+
+/* 群組之間留一點空隙，七組並排時不會糊成一片 */
+.sidebar-maint-group + .sidebar-maint-group {
+  margin-top: .15rem;
 }
 
 /* 清單表格欄位排序 */

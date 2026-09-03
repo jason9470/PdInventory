@@ -73,19 +73,27 @@
                         <span>維護資料</span>
                         <span class="maint-caret" aria-hidden="true">▾</span>
                     </button>
-                    <div id="sidebarMaint" class="sidebar-maint list-group list-group-flush small">
-                        <a class="list-group-item list-group-item-action @NavActive("Categories")"
-                           asp-controller="Categories" asp-action="Index">附表一：個人資料類別</a>
-                        <a class="list-group-item list-group-item-action @NavActive("Purposes")"
-                           asp-controller="Purposes" asp-action="Index">附表二：特定目的列表</a>
-                        <a class="list-group-item list-group-item-action @NavActive("RiskCategories")"
-                           asp-controller="RiskCategories" asp-action="Index">3-1：風險分類編號</a>
-                        <a class="list-group-item list-group-item-action @NavActive("RiskImpacts")"
-                           asp-controller="RiskImpacts" asp-action="Index">3-2：評估影響程度</a>
-                        <a class="list-group-item list-group-item-action @NavActive("RiskLikelihoods")"
-                           asp-controller="RiskLikelihoods" asp-action="Index">3-3：評估發生可能性</a>
-                        <a class="list-group-item list-group-item-action @NavActive("RiskEffectiveness")"
-                           asp-controller="RiskEffectiveness" asp-action="Index">3-4：有效性評估</a>
+                    @* 第二層用 <details>：所在群組由伺服器端直接開著，不必等 JavaScript，
+                       換頁時也不會先展開再收起來。項目清單見 Helpers/MaintenanceCatalog.cs *@
+                    <div id="sidebarMaint" class="sidebar-maint">
+                        @{ var activeGroup = MaintenanceCatalog.GroupKeyOf(CurrentController); }
+                        @foreach (var group in MaintenanceCatalog.Groups)
+                        {
+                            <details class="sidebar-maint-group" open="@(group.Key == activeGroup)">
+                                <summary class="sidebar-maint-summary">@group.Title</summary>
+                                <div class="list-group list-group-flush small">
+                                    @foreach (var item in group.Items)
+                                    {
+                                        <a class="list-group-item list-group-item-action @NavActive(item.Controller)"
+                                           asp-controller="@item.Controller" asp-action="Index">@item.Title</a>
+                                    }
+                                    @if (group.Items.Count == 0)
+                                    {
+                                        <span class="list-group-item text-muted fst-italic">尚無維護項目</span>
+                                    }
+                                </div>
+                            </details>
+                        }
                     </div>
 
                     <button id="exportToggle" type="button"
@@ -170,8 +178,10 @@
 
     /// <summary>左側清單目前所在頁面的高亮。</summary>
     string NavActive(string controller) =>
-        string.Equals(ViewContext.RouteData.Values["controller"] as string, controller,
-                      StringComparison.OrdinalIgnoreCase)
+        string.Equals(CurrentController, controller, StringComparison.OrdinalIgnoreCase)
             ? "active"
             : "";
+
+    /// <summary>目前的控制器名稱，供高亮與「維護資料」自動展開所在群組使用。</summary>
+    string? CurrentController => ViewContext.RouteData.Values["controller"] as string;
 }
