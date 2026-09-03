@@ -64,6 +64,11 @@ public static class FieldOptions
 
         [nameof(InventoryItem.TransferMethod)] = ["SFTP加密檔案", "FTP加密檔案", "電子交換"],
         [nameof(InventoryItem.Disposal)] = ["資料抹除", "永久保存", "設定排程自動清除資料"],
+
+        // ── 拋轉清單 ─────────────────────────────────────────
+        // 原始資料有「拋出/拋入」這種一格兩件事的寫法，2026-09-03 業務端確認
+        // 一筆只會是其中一種，那 4 筆已拆成兩筆（編號加 -1），選項也只留這兩個
+        [nameof(TransferRecord.TransferType)] = ["拋入", "拋出"],
     };
 
     /// <summary>這個欄位有沒有固定選項。</summary>

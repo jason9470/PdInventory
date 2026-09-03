@@ -55,17 +55,18 @@
                 <tr>
                     <td>@t.SeqNo</td>
                     <td>
-                        @if (t.TransferType.Contains("拋入") && t.TransferType.Contains("拋出"))
-                        {
-                            <span class="badge bg-warning text-dark">拋入/拋出</span>
-                        }
-                        else if (t.TransferType.Contains("拋入"))
+                        @if (t.TransferType == "拋入")
                         {
                             <span class="badge bg-primary">拋入</span>
                         }
-                        else
+                        else if (t.TransferType == "拋出")
                         {
                             <span class="badge bg-success">拋出</span>
+                        }
+                        else
+                        {
+                            @* 一筆只會是拋入或拋出；出現別的值代表資料有問題，原樣顯示不猜 *@
+                            <span class="badge bg-secondary">@t.TransferType</span>
                         }
                     </td>
                     <td class="pd-code">@t.SystemCode</td>

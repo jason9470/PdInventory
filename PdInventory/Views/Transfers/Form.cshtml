@@ -23,12 +23,9 @@
             </div>
             <div class="col-md-2">
                 <label asp-for="TransferType" class="form-label"></label>
-                <select asp-for="TransferType" class="form-select">
+                <select asp-for="TransferType" class="form-select"
+                        asp-items="FieldOptions.ItemsFor(nameof(TransferRecord.TransferType), Model.TransferType)">
                     <option value="">請選擇</option>
-                    <option>拋入</option>
-                    <option>拋出</option>
-                    <option>拋出/拋入</option>
-                    <option>拋入/拋出</option>
                 </select>
                 <span asp-validation-for="TransferType" class="text-danger"></span>
             </div>
