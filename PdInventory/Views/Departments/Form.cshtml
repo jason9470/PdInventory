@@ -1,0 +1,50 @@
+@model PdInventory.Models.Department
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "新增部門" : $"編輯部門 {Model.Name}";
+    var usedBy = (int)(ViewBag.UsedBy ?? 0);
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (usedBy > 0)
+{
+    <div class="alert alert-info">
+        目前有 <strong>@usedBy</strong> 筆資料使用「@Model.Name」。
+        <strong>改名不會連帶更新那些資料</strong>——它們存的是文字，改完會變成選不到的舊值。
+        真的要改名，請先確認那些資料要怎麼處理。
+    </div>
+}
+
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" class="pd-form col-lg-9">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label asp-for="CostCenter" class="form-label"></label>
+            <input asp-for="CostCenter" class="form-control" placeholder="例：108000" />
+            <div class="form-text">甲方還沒給代號的可以留空。</div>
+            <span asp-validation-for="CostCenter" class="text-danger"></span>
+        </div>
+        <div class="col-md-8">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="例：作業中心" />
+            <div class="form-text">這個名稱就是各表單欄位裡實際存的值，不可重複。</div>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="Remark" class="form-label"></label>
+            <textarea asp-for="Remark" class="form-control" rows="2"></textarea>
+        </div>
+    </div>
+
+    <div class="my-4">
+        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

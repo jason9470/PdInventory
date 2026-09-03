@@ -355,8 +355,12 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
 {
     public int Id { get; set; }
 
+    /// <summary>
+    /// 甲方來源檔的「編號」。**不是必填**——0902 版的 55 筆裡有 22 筆本來就沒有編號，
+    /// 設成必填會讓那些資產完全存不了檔。唯一性仍然有（資料庫的篩選索引排除空字串）。
+    /// </summary>
     [Display(Name = "編號")]
-    [Required(ErrorMessage = "編號必填"), StringLength(20)]
+    [StringLength(20)]
     public string SeqNo { get; set; } = "";
 
     // I. 系統基本資訊
@@ -812,6 +816,56 @@ public class SystemInventory : IAuditable, IConcurrencyAware
     public string UpdatedBy { get; set; } = "";
     public DateTime? UpdatedAt { get; set; }
     public Guid RowVersion { get; set; }
+}
+
+/// <summary>
+/// 部門（共用維護資料）。六張表都會用到的單位清單，因此不掛在任何一張表單底下。
+///
+/// 對照的欄位：SW-業務權責單位（單選）、SW-使用者帳號權限授與（多選）、
+/// SW-使用單位（多選）、拋轉清單-負責內部單位（單選）。
+/// </summary>
+public class Department
+{
+    public int Id { get; set; }
+
+    /// <summary>
+    /// 利潤中心代號。**可以留空**——資料裡出現過但甲方部門清單沒有的單位
+    /// 先建進來把值留住，代號等甲方補。
+    /// </summary>
+    [Display(Name = "利潤中心")]
+    [StringLength(20)]
+    public string CostCenter { get; set; } = "";
+
+    [Display(Name = "部門")]
+    [Required(ErrorMessage = "部門必填"), StringLength(200)]
+    public string Name { get; set; } = "";
+
+    [Display(Name = "備註")]
+    public string Remark { get; set; } = "";
+
+    public string Label => string.IsNullOrWhiteSpace(CostCenter) ? Name : $"{CostCenter} {Name}";
+}
+
+/// <summary>
+/// 資管維運人員（共用維護資料）。對照的欄位：SW-維運人員（多選）。
+/// </summary>
+public class OpsStaff
+{
+    public int Id { get; set; }
+
+    /// <summary>所屬組別。**可以留空**，理由同 <see cref="Department.CostCenter"/>。</summary>
+    [Display(Name = "組別")]
+    [StringLength(50)]
+    public string TeamName { get; set; } = "";
+
+    [Display(Name = "姓名")]
+    [Required(ErrorMessage = "姓名必填"), StringLength(50)]
+    public string Name { get; set; } = "";
+
+    [Display(Name = "備註")]
+    public string Remark { get; set; } = "";
+
+    public string Label => string.IsNullOrWhiteSpace(TeamName) ? Name : $"{TeamName} {Name}";
 }
 
 /// <summary>3-1：風險分類編號（風險自評「風險分類編號/風險描述分類/潛在風險事件」下拉維護資料）</summary>

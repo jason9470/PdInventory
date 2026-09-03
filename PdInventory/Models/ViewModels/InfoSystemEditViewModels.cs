@@ -130,7 +130,14 @@ public class SystemEditViewModel : IInfoSystemBlockViewModel
     /// <summary>並行權杖：畫面載入當下的值，存檔時比對是否已被他人改過。</summary>
     public Guid RowVersion { get; set; }
 
+    /// <summary>
+    /// 資產編號由控制器從所屬的 SW 帶入（<c>existing.SystemCode = system.SystemCode</c>），
+    /// 畫面上那一格屬於 SW 區塊、不會以 Sheet3 前綴送出，因此這裡不驗證——
+    /// 否則會被實體的[Required]擋下，整個盤點表區塊都存不了檔。
+    /// </summary>
+    [ValidateNever]
     public string SystemCode { get; set; } = "";
+
     public string DbName { get; set; } = "";
     public string BackupLocation { get; set; } = "";
     public string BackupCycle { get; set; } = "";

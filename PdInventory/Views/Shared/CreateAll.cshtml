@@ -1,4 +1,5 @@
 @model PdInventory.Models.ViewModels.InfoSystemEditViewModel
+@using PdInventory.Models.ViewModels
 @{
     ViewData["Title"] = "新增資訊資產";
     // 從哪張清單按的[新增]，決定[取消]與新增完成後回到哪裡
@@ -70,7 +71,9 @@
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwThirdPartyComponents), Model.Software.SwThirdPartyComponents)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwUserAccountGrant" class="form-label"></label><input asp-for="Software.SwUserAccountGrant" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwUserAccountGrant" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwUserAccountGrant", Model.Software.SwUserAccountGrant, Lookup.Departments)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwProvidesAccountReport" class="form-label"></label><select asp-for="Software.SwProvidesAccountReport" class="form-select"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwProvidesAccountReport), Model.Software.SwProvidesAccountReport)">
                 <option value="">-- 請選擇 --</option>
@@ -79,7 +82,9 @@
             <div class="col-md-3"><label asp-for="Software.SwLocation" class="form-label"></label><input asp-for="Software.SwLocation" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwOwnerUnit" class="form-label"></label><input asp-for="Software.SwOwnerUnit" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwCustodianUnit" class="form-label"></label><input asp-for="Software.SwCustodianUnit" class="form-control" /></div>
-            <div class="col-md-6"><label asp-for="Software.SwUserUnit" class="form-label"></label><input asp-for="Software.SwUserUnit" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwUserUnit" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwUserUnit", Model.Software.SwUserUnit, Lookup.Departments)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwConfidentiality" class="form-label"></label><select asp-for="Software.SwConfidentiality" class="form-select sw-cia"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwConfidentiality), Model.Software.SwConfidentiality)">
                 <option value="">-- 請選擇 --</option>
@@ -99,7 +104,9 @@
             <div class="col-md-3"><label asp-for="Software.SwAppManager" class="form-label"></label><input asp-for="Software.SwAppManager" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainer" class="form-label"></label><input asp-for="Software.SwAppMaintainer" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainerDeputy" class="form-label"></label><input asp-for="Software.SwAppMaintainerDeputy" class="form-control" /></div>
-            <div class="col-md-6"><label asp-for="Software.SwOperator" class="form-label"></label><input asp-for="Software.SwOperator" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwOperator" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwOperator", Model.Software.SwOperator, Lookup.OpsStaff)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwDevMode" class="form-label"></label><input asp-for="Software.SwDevMode" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwMaintMode" class="form-label"></label><input asp-for="Software.SwMaintMode" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwVendor" class="form-label"></label><input asp-for="Software.SwVendor" class="form-control" /></div>
@@ -174,7 +181,11 @@
             </select></div>
             <div class="col-md-6"><label asp-for="Software.SwTrailLocation" class="form-label"></label><input asp-for="Software.SwTrailLocation" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwTrailStorage" class="form-label"></label><input asp-for="Software.SwTrailStorage" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwBusinessOwnerUnit" class="form-label"></label><input asp-for="Software.SwBusinessOwnerUnit" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwBusinessOwnerUnit" class="form-label"></label>
+                <select asp-for="Software.SwBusinessOwnerUnit" class="form-select"
+                        asp-items="Lookup.ItemsFor(Lookup.Departments, Model.Software.SwBusinessOwnerUnit)">
+                    <option value="">-- 請選擇 --</option>
+                </select></div>
             <div class="col-md-3"><label asp-for="Software.SwReviewer" class="form-label"></label><input asp-for="Software.SwReviewer" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwModifiedBy" class="form-label"></label><input asp-for="Software.SwModifiedBy" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwModifiedTime" class="form-label"></label><input asp-for="Software.SwModifiedTime" class="form-control" /></div>

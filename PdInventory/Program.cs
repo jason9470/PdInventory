@@ -30,6 +30,8 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 builder.Services.AddScoped<IAssetAccess, AssetAccess>();
+// 維護資料表提供的下拉選項。畫面用 @inject 直接取，不必每個控制器都補 ViewBag。
+builder.Services.AddScoped<LookupOptions>();
 
 // 身分來源。Simulated 供權限測試用，正式環境設為 Ldap 改向公司 AD 驗證帳號密碼。
 var employeeOptions = builder.Configuration

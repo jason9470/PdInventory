@@ -72,7 +72,10 @@
             </div>
             <div class="col-md-6">
                 <label asp-for="InternalUnit" class="form-label"></label>
-                <input asp-for="InternalUnit" class="form-control" />
+                <select asp-for="InternalUnit" class="form-select"
+                        asp-items="Lookup.ItemsFor(Lookup.Departments, Model.InternalUnit)">
+                    <option value="">-- 請選擇 --</option>
+                </select>
             </div>
         </div>
     </div>

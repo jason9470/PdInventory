@@ -41,7 +41,11 @@ public static class MaintenanceCatalog
             new("RiskLikelihoods", "3-3：評估發生可能性"),
             new("RiskEffectiveness", "3-4：有效性評估"),
         ]),
-        new(SharedKey, "共用", []),
+        new(SharedKey, "共用",
+        [
+            new("Departments", "部門"),
+            new("OpsStaff", "資管維運"),
+        ]),
     ];
 
     /// <summary>

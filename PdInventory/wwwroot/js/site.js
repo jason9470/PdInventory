@@ -28,6 +28,46 @@
     bind('exportToggle', 'export-collapsed', 'pdinv.exportCollapsed');
 })();
 
+// 多選欄位（_MultiCheckList.cshtml）：勾選同步到那個 hidden input。
+// 欄位在資料庫仍然是一格文字，以 / 分隔——與來源 Excel 的寫法一致。
+//
+// 沒有動過的欄位不會重寫 hidden 的值，因此不碰它就不會有任何變化；
+// 一旦動過，順序就會照維護資料表的順序重排，這是刻意的，讓寫法統一。
+(function () {
+    var SEPARATOR = '/';
+
+    function checkedValues(container) {
+        return [].slice.call(container.querySelectorAll('input[type=checkbox]'))
+            .filter(function (box) { return box.checked; })
+            .map(function (box) { return box.value; });
+    }
+
+    // 摘要一律照勾選狀態算，不去解析 hidden 的字串——那串裡的分隔符有好幾種
+    // （/、;、括號內不算），在瀏覽器端重切一次只會跟後端的規則對不起來。
+    function summarize(container) {
+        var summary = container.querySelector('.pd-multicheck-summary');
+        if (!summary) return;
+
+        var checked = checkedValues(container);
+        summary.textContent = checked.length
+            ? '已選 ' + checked.length + ' 項：' + checked.join('、')
+            : '未選取';
+    }
+
+    [].forEach.call(document.querySelectorAll('.pd-multicheck'), function (container) {
+        // 進畫面只寫摘要，不動 hidden 的值——避免只是打開畫面就把原本的順序改掉
+        summarize(container);
+
+        container.addEventListener('change', function (event) {
+            if (event.target.type !== 'checkbox') return;
+
+            var hidden = document.getElementById(container.dataset.target);
+            if (hidden) hidden.value = checkedValues(container).join(SEPARATOR);
+            summarize(container);
+        });
+    });
+})();
+
 // 資產價值＝機密性＋完整性＋可用性，選單一改就立刻重算。
 // 伺服器端存檔時還會再算一次（AppDbContext.RecalculateAssetValues），
 // 這裡只是讓使用者當下看得到結果，不是唯一的把關。

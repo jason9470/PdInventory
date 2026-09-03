@@ -99,6 +99,20 @@ public static class DbSeeder
             db.SaveChanges();
         }
 
+        if (!db.Departments.Any())
+        {
+            var depts = Load<List<Department>>("departments.json");
+            if (depts is not null) db.Departments.AddRange(depts);
+            db.SaveChanges();
+        }
+
+        if (!db.OpsStaffs.Any())
+        {
+            var staff = Load<List<OpsStaff>>("opsstaff.json");
+            if (staff is not null) db.OpsStaffs.AddRange(staff);
+            db.SaveChanges();
+        }
+
         SeedRiskLookups(db);
         SeedUsers(db);
     }

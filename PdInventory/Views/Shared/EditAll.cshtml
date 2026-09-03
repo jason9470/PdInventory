@@ -1,4 +1,5 @@
 ﻿@model PdInventory.Models.ViewModels.InfoSystemEditViewModel
+@using PdInventory.Models.ViewModels
 @{
     ViewData["Title"] = $"編輯 {Model.Asset.SystemCode} {Model.Asset.SystemName}";
     // 從哪張清單進來的；三個區塊都要把它帶進 POST，存檔後導回本頁時才不會遺失
@@ -28,7 +29,7 @@
 <p class="text-muted small">三個區塊各自獨立儲存，按下區塊下方的[儲存]只會寫入該區塊的欄位。</p>
 
 @* ─────────────────────────── 資訊資產清單－軟體(SW) ─────────────────────────── *@
-<form method="post" class="pd-form" asp-controller="Software" asp-action="Edit" asp-route-id="@Model.Asset.Id">
+<form id="swBlockForm" method="post" class="pd-form" asp-controller="Software" asp-action="Edit" asp-route-id="@Model.Asset.Id">
     <input type="hidden" name="Software.Id" value="@Model.Asset.Id" />
     <input type="hidden" name="from" value="@from" />
     @* 並行控制：帶回載入當下的權杖，存檔時比對是否已被他人改過 *@
@@ -59,7 +60,9 @@
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwThirdPartyComponents), Model.Software.SwThirdPartyComponents)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwUserAccountGrant" class="form-label"></label><input asp-for="Software.SwUserAccountGrant" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwUserAccountGrant" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwUserAccountGrant", Model.Software.SwUserAccountGrant, Lookup.Departments)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwProvidesAccountReport" class="form-label"></label><select asp-for="Software.SwProvidesAccountReport" class="form-select"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwProvidesAccountReport), Model.Software.SwProvidesAccountReport)">
                 <option value="">-- 請選擇 --</option>
@@ -68,7 +71,9 @@
             <div class="col-md-3"><label asp-for="Software.SwLocation" class="form-label"></label><input asp-for="Software.SwLocation" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwOwnerUnit" class="form-label"></label><input asp-for="Software.SwOwnerUnit" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwCustodianUnit" class="form-label"></label><input asp-for="Software.SwCustodianUnit" class="form-control" /></div>
-            <div class="col-md-6"><label asp-for="Software.SwUserUnit" class="form-label"></label><input asp-for="Software.SwUserUnit" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwUserUnit" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwUserUnit", Model.Software.SwUserUnit, Lookup.Departments)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwConfidentiality" class="form-label"></label><select asp-for="Software.SwConfidentiality" class="form-select sw-cia"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwConfidentiality), Model.Software.SwConfidentiality)">
                 <option value="">-- 請選擇 --</option>
@@ -88,7 +93,9 @@
             <div class="col-md-3"><label asp-for="Software.SwAppManager" class="form-label"></label><input asp-for="Software.SwAppManager" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainer" class="form-label"></label><input asp-for="Software.SwAppMaintainer" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainerDeputy" class="form-label"></label><input asp-for="Software.SwAppMaintainerDeputy" class="form-control" /></div>
-            <div class="col-md-6"><label asp-for="Software.SwOperator" class="form-label"></label><input asp-for="Software.SwOperator" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwOperator" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwOperator", Model.Software.SwOperator, Lookup.OpsStaff)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwDevMode" class="form-label"></label><input asp-for="Software.SwDevMode" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwMaintMode" class="form-label"></label><input asp-for="Software.SwMaintMode" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwVendor" class="form-label"></label><input asp-for="Software.SwVendor" class="form-control" /></div>
@@ -163,7 +170,11 @@
             </select></div>
             <div class="col-md-6"><label asp-for="Software.SwTrailLocation" class="form-label"></label><input asp-for="Software.SwTrailLocation" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwTrailStorage" class="form-label"></label><input asp-for="Software.SwTrailStorage" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwBusinessOwnerUnit" class="form-label"></label><input asp-for="Software.SwBusinessOwnerUnit" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwBusinessOwnerUnit" class="form-label"></label>
+                <select asp-for="Software.SwBusinessOwnerUnit" class="form-select"
+                        asp-items="Lookup.ItemsFor(Lookup.Departments, Model.Software.SwBusinessOwnerUnit)">
+                    <option value="">-- 請選擇 --</option>
+                </select></div>
             <div class="col-md-3"><label asp-for="Software.SwReviewer" class="form-label"></label><input asp-for="Software.SwReviewer" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwModifiedBy" class="form-label"></label><input asp-for="Software.SwModifiedBy" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwModifiedTime" class="form-label"></label><input asp-for="Software.SwModifiedTime" class="form-control" /></div>
@@ -220,25 +231,29 @@
         <div class="card-header fw-bold bg-info text-white">資訊系統／資料庫／伺服器盤點表</div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-12"><h6 class="text-muted border-bottom pb-1 mb-0">I. 系統基本資訊</h6></div>
+                <div class="col-12"><h6 class="text-muted border-bottom pb-1 mb-0">I. 系統基本資訊</h6>
+                    @* 這四個欄位版面上在盤點表這張卡，資料卻屬於 SW。用 HTML 的 form 屬性
+                       掛回上面那張 SW 表單，按盤點表的[儲存]不會動到它們，按 SW 的[儲存]才會。 *@
+                    <div class="form-text">編號、資產編號、資產名稱、資產說明屬於上方的 SW 區塊，請按 SW 的[儲存]。</div>
+                </div>
                 <div class="col-md-2">
                     <label asp-for="Software.SeqNo" class="form-label"></label>
-                    <input asp-for="Software.SeqNo" class="form-control" />
+                    <input asp-for="Software.SeqNo" class="form-control" form="swBlockForm" />
                     <span asp-validation-for="Software.SeqNo" class="text-danger"></span>
                 </div>
                 <div class="col-md-3">
                     <label asp-for="Software.SystemCode" class="form-label"></label>
-                    <input asp-for="Software.SystemCode" class="form-control" placeholder="例：SW-108" />
+                    <input asp-for="Software.SystemCode" class="form-control" placeholder="例：SW-108" form="swBlockForm" />
                     <span asp-validation-for="Software.SystemCode" class="text-danger"></span>
                 </div>
                 <div class="col-md-7">
                     <label asp-for="Software.SystemName" class="form-label"></label>
-                    <input asp-for="Software.SystemName" class="form-control" placeholder="例：經紀帳務系統" />
+                    <input asp-for="Software.SystemName" class="form-control" placeholder="例：經紀帳務系統" form="swBlockForm" />
                     <span asp-validation-for="Software.SystemName" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
                     <label asp-for="Software.Description" class="form-label"></label>
-                    <textarea asp-for="Software.Description" class="form-control" rows="4"
+                    <textarea asp-for="Software.Description" class="form-control" rows="4" form="swBlockForm"
                               placeholder="使用部門、使用人員、主要功能"></textarea>
                 </div>
                 <div class="col-md-6">

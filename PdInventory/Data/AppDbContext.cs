@@ -25,6 +25,8 @@ public class AppDbContext : DbContext
     public DbSet<ExportColumn> ExportColumns => Set<ExportColumn>();
     public DbSet<AppUser> AppUsers => Set<AppUser>();
     public DbSet<AssetOwner> AssetOwners => Set<AssetOwner>();
+    public DbSet<Department> Departments => Set<Department>();
+    public DbSet<OpsStaff> OpsStaffs => Set<OpsStaff>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -72,6 +74,11 @@ public class AppDbContext : DbContext
         // 一套系統只會有一份盤點表；空字串排除在外的寫法同上
         modelBuilder.Entity<SystemInventory>().HasIndex(i => i.SystemCode).IsUnique()
             .HasFilter("\"SystemCode\" <> ''");
+
+        // 共用維護資料：名稱是各表單存進欄位的值，必須唯一，否則下拉會出現兩個一模一樣的選項。
+        // 代號（利潤中心／組別）刻意不設唯一——資料裡有、甲方清單沒有的先留空，會有一批空值。
+        modelBuilder.Entity<Department>().HasIndex(d => d.Name).IsUnique();
+        modelBuilder.Entity<OpsStaff>().HasIndex(o => o.Name).IsUnique();
 
         // DataAssets.DaAssetCode 刻意不設唯一：來源資料允許一筆 DA 對應多個 SW
         // （DA-049 的關連SW編號是「SW-049;SW-048」）。為了讓 SystemCode 維持單一值

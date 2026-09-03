@@ -1,0 +1,162 @@
+[
+  {
+    "CostCenter": "000100",
+    "Name": "香港法人",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "100500",
+    "Name": "主管區",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "101000",
+    "Name": "綜合企劃部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "102000",
+    "Name": "稽核部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "103000",
+    "Name": "法務部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "104000",
+    "Name": "人力資源部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "105000",
+    "Name": "資訊系統開發一部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "106000",
+    "Name": "行政管理部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "107100",
+    "Name": "財務部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "107200",
+    "Name": "會計部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "108000",
+    "Name": "作業中心",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "109000",
+    "Name": "通路事業部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "110000",
+    "Name": "債券部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "111000",
+    "Name": "證券投資部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "112000",
+    "Name": "金融交易部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "113000",
+    "Name": "國際營運部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "115000",
+    "Name": "投資銀行業務部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "116000",
+    "Name": "股務代理部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "118000",
+    "Name": "風險管理部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "119000",
+    "Name": "財富管理部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "119700",
+    "Name": "資產管理組",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "120000",
+    "Name": "國際法人部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "120200",
+    "Name": "SBL",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "121000",
+    "Name": "國際金融業務部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "122000",
+    "Name": "法令遵循部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "123000",
+    "Name": "數位金融部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "125000",
+    "Name": "董事會秘書室",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "126000",
+    "Name": "計量交易部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "128000",
+    "Name": "資訊系統管理部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "129000",
+    "Name": "資訊安全管理部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "130000",
+    "Name": "資訊系統開發二部",
+    "Remark": ""
+  },
+  {
+    "CostCenter": "501000",
+    "Name": "經紀部",
+    "Remark": ""
+  }
+]

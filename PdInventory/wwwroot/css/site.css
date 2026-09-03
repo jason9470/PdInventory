@@ -406,3 +406,26 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* 多選欄位的勾選清單：選項多的時候固定高度、自己捲，不要把表單撐開 */
+.pd-multicheck-box {
+  max-height: 11rem;
+  overflow-y: auto;
+  border: 1px solid #ced4da;
+  border-radius: .375rem;
+  padding: .4rem .6rem;
+  background-color: #fff;
+}
+
+.pd-multicheck-box .form-check {
+  margin-bottom: .1rem;
+}
+
+.pd-multicheck-box .form-check-label {
+  font-size: .875rem;
+  cursor: pointer;
+}
+
+.pd-multicheck-summary {
+  word-break: break-word;
+}
