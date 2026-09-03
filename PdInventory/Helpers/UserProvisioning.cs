@@ -1,0 +1,172 @@
+using Microsoft.EntityFrameworkCore;
+using PdInventory.Data;
+using PdInventory.Models;
+
+namespace PdInventory.Helpers;
+
+/// <summary>
+/// 人員表（<see cref="Employee"/>）與使用者帳號（<see cref="AppUser"/>）的對接。
+///
+/// 兩張表以**員工編號**相認，各自負責不同的事：
+///   人員表   —— 組織名冊，也是各表單人員欄位下拉的來源，姓名就是欄位裡存的值。
+///   使用者帳號 —— 能不能登入、是什麼角色、名下有哪些資產。
+///
+/// 兩種建立途徑都會讓兩邊同時存在：
+///   (1) 使用者自己先登入 —— 人員表沒有他就自動建一筆（部門與備註填固定值待補），
+///       帳號給最低的資產負責人。
+///   (2) 管理者先在人員表建檔 —— 這裡同時補上帳號，管理者接著到權限設定調角色；
+///       那個人之後登入就直接對應到已經設好的權限。
+///
+/// 刪除一律是軟刪除，而且兩邊一起：各表單存的是姓名文字，實體真的消失之後
+/// 那些欄位會變成查不出來源的孤兒值，軌跡欄位也一樣認不出人。
+///
+/// 這些規則集中在這裡，是因為登入（AccountController）與人員維護
+/// （EmployeesController）兩邊都要用；散在兩個控制器很快就會走樣。
+/// </summary>
+public sealed class UserProvisioning
+{
+    private readonly AppDbContext _db;
+    private readonly ILogger<UserProvisioning> _logger;
+
+    public UserProvisioning(AppDbContext db, ILogger<UserProvisioning> logger)
+    {
+        _db = db;
+        _logger = logger;
+    }
+
+    /// <summary>被停用的人不得登入，這是回傳給他看的訊息。</summary>
+    public const string DeactivatedMessage = "這個帳號已被停用，請洽系統管理者。";
+
+    /// <summary>
+    /// 人員表建檔後補上對應的使用者帳號。已存在就沿用（被停用過的會一併復原），
+    /// 因此管理者「刪除後再新增同一個人」不會撞到編號唯一索引。
+    /// </summary>
+    /// <returns>對應的帳號；<paramref name="employee"/> 沒有員工編號時回傳 null——
+    /// 沒有編號就無從對應登入身分，例如名冊裡本來就缺編號的人與幾家委外廠商。</returns>
+    public async Task<AppUser?> EnsureUserForEmployeeAsync(Employee employee)
+    {
+        if (string.IsNullOrWhiteSpace(employee.EmpNo)) return null;
+
+        var user = await FindUserAsync(employee.EmpNo);
+        if (user is null)
+        {
+            user = new AppUser
+            {
+                EmpNo = employee.EmpNo,
+                EmpName = employee.Name,
+                Role = UserRole.AssetOwner,
+            };
+            _db.AppUsers.Add(user);
+        }
+        else if (user.IsDeleted)
+        {
+            Restore(user);
+            user.EmpName = employee.Name;
+        }
+
+        return user;
+    }
+
+    /// <summary>
+    /// 登入時確保人員表有這個人。已停用回傳 null，呼叫端要拒絕登入。
+    /// </summary>
+    public async Task<Employee?> EnsureEmployeeForLoginAsync(EmployeeInfo info)
+    {
+        var employee = await FindEmployeeAsync(info.EmpNo);
+        if (employee is not null) return employee.IsDeleted ? null : employee;
+
+        // 名冊裡本來就有這個人、只是還沒有員工編號（甲方名冊有兩位是這樣）：
+        // 補上編號即可，不要再插一筆同名的——姓名是唯一的，插了會直接失敗。
+        if (!string.IsNullOrWhiteSpace(info.EmpName))
+        {
+            var byName = await _db.Employees.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(e => e.Name == info.EmpName);
+
+            if (byName is not null)
+            {
+                if (byName.IsDeleted) return null;
+
+                if (string.IsNullOrWhiteSpace(byName.EmpNo))
+                {
+                    byName.EmpNo = info.EmpNo;
+                    _logger.LogInformation("人員「{Name}」原本沒有員工編號，登入時補上 {EmpNo}",
+                                           info.EmpName, info.EmpNo);
+                    return byName;
+                }
+
+                // 同名但編號不同：可能真的有兩個同名的人，也可能是資料有誤。
+                // 這裡不硬插一筆去撞唯一索引，也不擋登入，交給管理者處理人員表。
+                _logger.LogWarning("人員「{Name}」已存在但員工編號是 {Existing}，登入者是 {Incoming}，"
+                                 + "未自動建立人員資料，請管理者確認人員表",
+                                   info.EmpName, byName.EmpNo, info.EmpNo);
+                return null;
+            }
+        }
+
+        // 姓名是人員表的主識別，也是各表單欄位裡存的值，沒有姓名就不要建一筆空的——
+        // 姓名欄有唯一索引，第二個沒姓名的人還會直接撞號。正式的 LDAP 一定回得出姓名，
+        // 會走到這裡的是模擬模式沒有輸入姓名的情況。
+        if (string.IsNullOrWhiteSpace(info.EmpName))
+        {
+            _logger.LogWarning("員工目錄沒有回傳 {EmpNo} 的姓名，未自動建立人員資料", info.EmpNo);
+            return null;
+        }
+
+        employee = new Employee
+        {
+            EmpNo = info.EmpNo,
+            Name = info.EmpName,
+            DepartmentName = Employee.DefaultDepartment,
+            Remark = Employee.AutoCreatedRemark,
+        };
+        _db.Employees.Add(employee);
+        return employee;
+    }
+
+    /// <summary>
+    /// 停用一個人：人員表與使用者帳號一起加註記。兩邊都不會真的從資料庫刪掉，
+    /// 但全域查詢篩選會讓他從清單、下拉與權限設定中消失，也不能再登入。
+    /// </summary>
+    public async Task DeactivateAsync(Employee employee, string actor)
+    {
+        Stamp(employee, actor);
+
+        if (string.IsNullOrWhiteSpace(employee.EmpNo)) return;
+
+        var user = await FindUserAsync(employee.EmpNo);
+        if (user is not null && !user.IsDeleted) Stamp(user, actor);
+    }
+
+    /// <summary>連同已停用的一起找——復原與擋登入都需要看得到被刪掉的那些。</summary>
+    private Task<AppUser?> FindUserAsync(string empNo) => _db.AppUsers
+        .IgnoreQueryFilters()
+        .FirstOrDefaultAsync(u => u.EmpNo == empNo);
+
+    private Task<Employee?> FindEmployeeAsync(string empNo) => string.IsNullOrWhiteSpace(empNo)
+        ? Task.FromResult<Employee?>(null)
+        : _db.Employees.IgnoreQueryFilters().FirstOrDefaultAsync(e => e.EmpNo == empNo);
+
+    /// <summary>登入時用：這個編號的帳號存在但已停用嗎。</summary>
+    public async Task<bool> IsDeactivatedAsync(string empNo)
+    {
+        var user = await FindUserAsync(empNo);
+        if (user is not null && user.IsDeleted) return true;
+
+        var employee = await FindEmployeeAsync(empNo);
+        return employee is not null && employee.IsDeleted;
+    }
+
+    private static void Stamp(ISoftDeletable target, string actor)
+    {
+        target.IsDeleted = true;
+        target.DeletedAt = DateTime.Now;
+        target.DeletedBy = actor;
+    }
+
+    private static void Restore(ISoftDeletable target)
+    {
+        target.IsDeleted = false;
+        target.DeletedAt = null;
+        target.DeletedBy = "";
+    }
+}

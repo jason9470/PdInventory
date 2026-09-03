@@ -856,7 +856,7 @@ public class Department
 /// 與 <see cref="OpsStaff"/> 的差別：那份是資管處的維運名單，這份是開發一部的名冊，
 /// 兩邊的人不重疊，對照的欄位也不同，因此分成兩張表而不是合併。
 /// </summary>
-public class Employee
+public class Employee : ISoftDeletable
 {
     public int Id { get; set; }
 
@@ -893,6 +893,21 @@ public class Employee
 
     /// <summary>「SW-應用系統主管」的下拉只列這些人。</summary>
     public const string ManagerSection = "組長";
+
+    /// <summary>使用者第一次登入自動建檔時填的部門。</summary>
+    public const string DefaultDepartment = "資訊系統開發一部";
+
+    /// <summary>同上，備註寫死這一句，方便管理者事後篩出來補齊。</summary>
+    public const string AutoCreatedRemark = "使用者登入自動帶入資料；資料待補";
+
+    // ── 軟刪除 ──────────────────────────────────────────────
+    // 人員一旦被各表單引用就不能真的刪掉：那些欄位存的是姓名文字，
+    // 實體消失之後畫面會變成一堆對不到來源的孤兒值，也查不出這個人是誰。
+    // 因此只加註記，全域查詢篩選會讓他從清單與所有下拉中消失。
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    [StringLength(100)]
+    public string DeletedBy { get; set; } = "";
 
     public string Label => string.IsNullOrWhiteSpace(EmpNo) ? Name : $"{EmpNo} {Name}";
 }
@@ -1051,7 +1066,7 @@ public enum UserRole
 /// 系統使用者。帳號不自建，一律由公司員工目錄帶入（見 Helpers/IEmployeeDirectory.cs），
 /// 因此這張表只在「某人第一次登入成功」時新增，記錄他的角色與資產授權。
 /// </summary>
-public class AppUser : IAuditable, IConcurrencyAware
+public class AppUser : IAuditable, IConcurrencyAware, ISoftDeletable
 {
     public int Id { get; set; }
 
@@ -1079,6 +1094,15 @@ public class AppUser : IAuditable, IConcurrencyAware
     public string UpdatedBy { get; set; } = "";
     public DateTime? UpdatedAt { get; set; }
     public Guid RowVersion { get; set; }
+
+    // ── 軟刪除 ──────────────────────────────────────────────
+    // 由管理者在人員維護畫面刪除時，連同這裡一起加註記（兩邊以員工編號對應）。
+    // 不真的刪除是為了留住軌跡：CreatedBy／UpdatedBy 存的是姓名文字，
+    // 帳號整筆消失之後就查不出那些異動是誰做的。被停用的人也不能再登入。
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    [StringLength(100)]
+    public string DeletedBy { get; set; } = "";
 
     /// <summary>畫面與軌跡共用的顯示字串。姓名可能重複，所以一律帶上員工編號。</summary>
     public string Label => string.IsNullOrWhiteSpace(EmpName) ? EmpNo : $"{EmpName}({EmpNo})";

@@ -19,11 +19,14 @@ public class AccountController : Controller
 {
     private readonly AppDbContext _db;
     private readonly IEmployeeDirectory _directory;
+    private readonly UserProvisioning _provisioning;
 
-    public AccountController(AppDbContext db, IEmployeeDirectory directory)
+    public AccountController(AppDbContext db, IEmployeeDirectory directory,
+                             UserProvisioning provisioning)
     {
         _db = db;
         _directory = directory;
+        _provisioning = provisioning;
     }
 
     public async Task<IActionResult> Login(string? returnUrl)
@@ -33,7 +36,12 @@ public class AccountController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(string account, string? password, string? returnUrl)
+    /// <param name="displayName">
+    /// 只有模擬模式看得到的姓名欄位。模擬的員工目錄回不出姓名，而姓名是人員表建檔的必要資訊，
+    /// 沒有它就無法在沒有 AD 的環境下驗證「第一次登入自動建檔」這條流程。正式模式忽略這個值。
+    /// </param>
+    public async Task<IActionResult> Login(string account, string? password,
+                                           string? displayName, string? returnUrl)
     {
         var info = await _directory.AuthenticateAsync(account, password);
         if (info is null)
@@ -42,6 +50,17 @@ public class AccountController : Controller
             TempData["Error"] = "帳號、密碼或存取權限不正確。";
             return RedirectToAction(nameof(Login), new { returnUrl });
         }
+
+        // 被管理者停用的人：密碼是對的，所以不必再遮掩原因，直接說明並請他找管理者，
+        // 否則他只會看到「帳號密碼不正確」而反覆重試。
+        if (await _provisioning.IsDeactivatedAsync(info.EmpNo))
+        {
+            TempData["Error"] = UserProvisioning.DeactivatedMessage;
+            return RedirectToAction(nameof(Login), new { returnUrl });
+        }
+
+        if (!_directory.RequiresPassword && !string.IsNullOrWhiteSpace(displayName))
+            info = info with { EmpName = displayName.Trim() };
 
         await SignInAsync(info);
         return SafeRedirect(returnUrl);
@@ -69,8 +88,12 @@ public class AccountController : Controller
 
     /// <summary>
     /// 建立（或更新）使用者資料並簽發驗證 Cookie。
-    /// 第一次登入的人自動建檔，角色給最低的資產負責人且名下沒有資產，
+    ///
+    /// 第一次登入的人在**人員表與使用者帳號**都自動建檔（見 UserProvisioning）：
+    /// 人員表帶入員編、姓名與固定的部門與備註，帳號給最低的資產負責人且名下沒有資產，
     /// 也就是只能看不能改；要能改什麼由管理者在權限設定畫面指定。
+    ///
+    /// 若管理者已經先在人員表建過檔，這裡就直接對應到那筆已設好的權限。
     /// </summary>
     private async Task SignInAsync(EmployeeInfo info)
     {
@@ -82,6 +105,11 @@ public class AccountController : Controller
         if (!string.IsNullOrWhiteSpace(info.EmpName)) user.EmpName = info.EmpName;
         user.LastLoginAt = DateTime.Now;
         if (isNew) _db.AppUsers.Add(user);
+
+        // 人員表那一邊。姓名只在建檔時寫入，之後不隨員工目錄更新——
+        // 人員表的姓名就是各表單欄位裡存的值，自動改名會讓那些資料變成孤兒。
+        await _provisioning.EnsureEmployeeForLoginAsync(
+            info with { EmpName = string.IsNullOrWhiteSpace(info.EmpName) ? user.EmpName : info.EmpName });
 
         var principal = BuildPrincipal(user);
         // 先掛上身分再存檔，這樣自動建檔的軌跡會記成本人，而不是「(未登入)」

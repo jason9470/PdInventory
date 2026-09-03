@@ -29,6 +29,11 @@
                                                : "text-bg-secondary")">@RoleDisplay.Name(user.Role)</span>
                         </div>
                         <div class="text-muted mt-1" style="font-size: .75rem">
+                            @{ var person = Model.EmployeeOf(user); }
+                            @if (person is not null && !string.IsNullOrWhiteSpace(person.TeamName))
+                            {
+                                <span>@person.TeamName @person.Section ・ </span>
+                            }
                             最後登入：@(user.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "尚未登入")
                         </div>
                     </a>
@@ -36,7 +41,9 @@
             </div>
         </div>
         <p class="text-muted small mt-2 mb-0">
-            使用者不在這裡新增。每個人第一次登入成功時自動建檔，預設為資產負責人且名下沒有資產。
+            使用者不在這裡新增或刪除，兩者都跟著<a asp-controller="Employees" asp-action="Index">人員表</a>走：
+            管理者在人員表建檔時會一併建立帳號，那個人第一次登入時也會自動建檔，
+            預設都是資產負責人且名下沒有資產；從人員表刪除時，這裡的帳號會一起停用並且不能再登入。
         </p>
     </div>
 

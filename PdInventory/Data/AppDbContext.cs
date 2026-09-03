@@ -38,7 +38,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<RiskLikelihoodLevel>().HasIndex(r => r.Level).IsUnique();
         modelBuilder.Entity<RiskEffectivenessLevel>().HasIndex(r => r.Level).IsUnique();
         modelBuilder.Entity<ExportColumn>().HasIndex(e => new { e.ListKey, e.PropertyName }).IsUnique();
-        modelBuilder.Entity<AppUser>().HasIndex(u => u.EmpNo).IsUnique();
+        // 唯一索引排除已停用：同一個人被停用後又回鍋，要能重新建檔而不是撞號
+        modelBuilder.Entity<AppUser>().HasIndex(u => u.EmpNo).IsUnique()
+            .HasFilter("\"IsDeleted\" = 0");
 
         // 同一位使用者對同一個資產只會有一筆授權；重複勾選在畫面上看不出來，但會讓
         // 「取消授權」變成刪一筆留一筆的假象，因此由資料庫直接擋掉。
@@ -64,6 +66,11 @@ public class AppDbContext : DbContext
         // 軟刪除的資料一律不出現在任何查詢（清單、檢視、匯出、重複檢查都吃這個篩選）
         modelBuilder.Entity<InfoSystem>().HasQueryFilter(s => !s.IsDeleted);
 
+        // 人員與使用者帳號一併採軟刪除：被刪的人不會出現在維護清單、任何下拉，
+        // 也不會出現在權限設定，而且無法再登入（見 AccountController）。
+        modelBuilder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<AppUser>().HasQueryFilter(u => !u.IsDeleted);
+
         // 唯一索引同時排除已刪除，否則刪掉 SW-027 之後就再也不能建立同編號的資料
         modelBuilder.Entity<InfoSystem>().HasIndex(s => s.SystemCode).IsUnique()
             .HasFilter("\"SystemCode\" <> '' AND \"IsDeleted\" = 0");
@@ -80,7 +87,9 @@ public class AppDbContext : DbContext
         // 代號（利潤中心／組別）刻意不設唯一——資料裡有、甲方清單沒有的先留空，會有一批空值。
         modelBuilder.Entity<Department>().HasIndex(d => d.Name).IsUnique();
         modelBuilder.Entity<OpsStaff>().HasIndex(o => o.Name).IsUnique();
-        modelBuilder.Entity<Employee>().HasIndex(e => e.Name).IsUnique();
+        // 人員是軟刪除，唯一性只在還沒被刪的人之間成立
+        modelBuilder.Entity<Employee>().HasIndex(e => e.Name).IsUnique()
+            .HasFilter("\"IsDeleted\" = 0");
 
         // DataAssets.DaAssetCode 刻意不設唯一：來源資料允許一筆 DA 對應多個 SW
         // （DA-049 的關連SW編號是「SW-049;SW-048」）。為了讓 SystemCode 維持單一值

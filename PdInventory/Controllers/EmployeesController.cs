@@ -12,7 +12,16 @@ namespace PdInventory.Controllers;
 public class EmployeesController : Controller
 {
     private readonly AppDbContext _db;
-    public EmployeesController(AppDbContext db) => _db = db;
+    private readonly ICurrentUser _currentUser;
+    private readonly UserProvisioning _provisioning;
+
+    public EmployeesController(AppDbContext db, ICurrentUser currentUser,
+                               UserProvisioning provisioning)
+    {
+        _db = db;
+        _currentUser = currentUser;
+        _provisioning = provisioning;
+    }
 
     public async Task<IActionResult> Index(string? q)
     {
@@ -43,9 +52,16 @@ public class EmployeesController : Controller
         model.EmpNo = EmpNo.Normalize(model.EmpNo);
         await ValidateUniqueNameAsync(model);
         if (!ModelState.IsValid) return View("Form", model);
+
         _db.Employees.Add(model);
+        // 建人員的同時把使用者帳號也建起來，管理者接著到權限設定調角色即可；
+        // 那個人之後登入就直接對應到已經設好的權限，不必等他先登入一次。
+        var user = await _provisioning.EnsureUserForEmployeeAsync(model);
         await _db.SaveChangesAsync();
-        TempData["Message"] = $"已新增人員「{model.Label}」";
+
+        TempData["Message"] = user is null
+            ? $"已新增人員「{model.Label}」。因為沒有填員編，沒有一併建立可登入的帳號。"
+            : $"已新增人員「{model.Label}」，並在權限設定建立帳號（預設為資產負責人）。";
         return RedirectToAction(nameof(Index));
     }
 
@@ -88,9 +104,12 @@ public class EmployeesController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        _db.Employees.Remove(model);
+        // 軟刪除：人員表與使用者帳號一起加註記。資料不會真的從資料庫消失，
+        // 但全域查詢篩選讓他從清單、所有下拉與權限設定中消失，也不能再登入。
+        await _provisioning.DeactivateAsync(model, _currentUser.Name);
         await _db.SaveChangesAsync();
-        TempData["Message"] = $"已刪除人員「{model.Label}」";
+
+        TempData["Message"] = $"已刪除人員「{model.Label}」，其登入帳號與權限一併停用。";
         return RedirectToAction(nameof(Index));
     }
 

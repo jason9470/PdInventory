@@ -57,6 +57,19 @@
                             <div class="form-text">與您登入公司電腦的網域密碼相同。</div>
                         </div>
                     }
+                    else
+                    {
+                        @* 模擬模式沒有 AD 可問姓名，但姓名是人員表建檔的必要資訊，
+                           這裡補一格才能在沒有 AD 的環境驗證「第一次登入自動建檔」 *@
+                        <div class="mb-3">
+                            <label class="form-label" for="displayName">姓名</label>
+                            <input id="displayName" name="displayName" class="form-control"
+                                   placeholder="第一次登入的新帳號才需要填" />
+                            <div class="form-text">
+                                模擬模式專用。正式環境的姓名由公司 AD 提供，不會顯示這一格。
+                            </div>
+                        </div>
+                    }
                     <button type="submit" class="btn btn-primary w-100">登入</button>
                 </form>
 

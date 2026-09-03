@@ -10,7 +10,10 @@ namespace PdInventory.Controllers;
 
 /// <summary>
 /// 權限設定：調整使用者的角色，以及資產負責人名下的資產。
-/// 使用者不在這裡新增——每個人第一次登入成功時自動建檔。
+///
+/// 使用者不在這裡新增也不在這裡刪除，兩者都由人員表那一邊帶動
+/// （見 Helpers/UserProvisioning.cs）：管理者在人員表建檔時一併建立帳號，
+/// 或是那個人第一次登入時自動建檔；人員表刪除時帳號一起停用。
 /// </summary>
 [Authorize(Policy = Policies.Admin)]
 public class PermissionsController : Controller
@@ -32,6 +35,10 @@ public class PermissionsController : Controller
                 .OrderByDescending(u => u.Role)
                 .ThenBy(u => u.EmpNo)
                 .ToListAsync(),
+            // 組別／科別在人員表那一邊，畫面要顯示就得補查（以員工編號相認）
+            Employees = await _db.Employees
+                .Where(e => e.EmpNo != "")
+                .ToDictionaryAsync(e => e.EmpNo),
             Assets = await _db.InfoSystems
                 .OrderBy(s => s.SystemCode)
                 .ToListAsync(),
