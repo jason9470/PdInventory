@@ -110,7 +110,7 @@
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainer" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwAppMaintainer", Model.Software.SwAppMaintainer, Lookup.Employees, AllowCustom: true)' /></div>
-            <div class="col-md-6"><label asp-for="Software.SwAppMaintainerDeputy" class="form-label"></label>
+            <div class="col-md-3"><label asp-for="Software.SwAppMaintainerDeputy" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwAppMaintainerDeputy", Model.Software.SwAppMaintainerDeputy,
                     Lookup.Employees, AllowCustom: true)' /></div>
