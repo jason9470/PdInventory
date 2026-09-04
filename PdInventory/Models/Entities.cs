@@ -388,29 +388,9 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [Required(ErrorMessage = "資產名稱必填"), StringLength(200)]
     public string SystemName { get; set; } = "";
 
-    [Display(Name = "資產說明")]
-    public string Description { get; set; } = "";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // ───────────────────────────────────────────────────────────────
     // 資訊資產清單－軟體(SW)　以資產編號(SW-xxx) = SystemCode 關聯本表
     // 資產編號=SystemCode、軟體資產名稱=SystemName。
-    //
-    // 注意：SW 的「資產說明」沒有自己的欄位，它同時寫進 DaDescription（全部 33 筆）與
-    // Description（僅第 6 表沒涵蓋到的 7 筆）。因此重新匯入 DA 表會蓋掉 SW 的資產說明，
-    // 反之亦然——匯入前務必確認這一欄要以哪張表為準。詳見 docs/架構文件.md 的 5.3。
     // ───────────────────────────────────────────────────────────────
     [Display(Name = "SW-資產狀態")]
     [StringLength(20)]
@@ -427,6 +407,14 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [Display(Name = "SW-與AD整合")]
     [StringLength(20)]
     public string SwAdIntegration { get; set; } = "";
+
+    /// <summary>
+    /// SW 自己的資產說明。0904 之前 SW 與第 6 表（盤點表）共用一個 Description 欄位，
+    /// 業務端決議拆開：盤點表那一個移除，SW 改用這個獨立欄位，
+    /// 重新匯入任一張來源表都不會再蓋掉另一張的內容。
+    /// </summary>
+    [Display(Name = "SW-資產說明")]
+    public string SwDescription { get; set; } = "";
 
     [Display(Name = "SW-作業系統/版本")]
     [StringLength(200)]

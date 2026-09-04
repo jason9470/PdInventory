@@ -79,6 +79,9 @@
                     asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwAdIntegration), Model.Software.SwAdIntegration)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
+            <div class="col-md-12"><label asp-for="Software.SwDescription" class="form-label"></label>
+                <textarea asp-for="Software.SwDescription" class="form-control" rows="3" form="swBlockForm"
+                          placeholder="使用部門、使用人員、主要功能"></textarea></div>
             <div class="col-md-3"><label asp-for="Software.SwOsVersion" class="form-label"></label><input asp-for="Software.SwOsVersion" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwDbToolVersion" class="form-label"></label><input asp-for="Software.SwDbToolVersion" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwThirdPartyComponents" class="form-label"></label><select asp-for="Software.SwThirdPartyComponents" class="form-select"
@@ -310,16 +313,8 @@
         <div class="card-header fw-bold bg-info text-white">資訊系統／資料庫／伺服器盤點表</div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-12"><h6 class="text-muted border-bottom pb-1 mb-0">I. 系統基本資訊</h6>
-                    @* 資產說明版面上在盤點表這張卡，資料卻屬於 SW。用 HTML 的 form 屬性
-                       掛回上面那張 SW 表單，按盤點表的[儲存]不會動到它，按 SW 的[儲存]才會。 *@
-                    <div class="form-text">資產說明屬於上方的 SW 區塊，請按 SW 的[儲存]。</div>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Software.Description" class="form-label"></label>
-                    <textarea asp-for="Software.Description" class="form-control" rows="4" form="swBlockForm"
-                              placeholder="使用部門、使用人員、主要功能"></textarea>
-                </div>
+                @* 資產說明 0904 改回 SW 區塊，這張卡現在全部都是盤點表自己的欄位 *@
+                <div class="col-12"><h6 class="text-muted border-bottom pb-1 mb-0">I. 系統基本資訊</h6></div>
                 <div class="col-md-6">
                     <label asp-for="Sheet3.DbName" class="form-label"></label>
                     <textarea asp-for="Sheet3.DbName" class="form-control" rows="4"

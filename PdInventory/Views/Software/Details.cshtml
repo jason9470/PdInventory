@@ -23,11 +23,11 @@
     <div class="card-header fw-bold bg-primary text-white">資訊資產清單－軟體(SW)</div>
     <div class="card-body pd-body">
         <dl class="pd-grid">
-            <dt class="pd-full">資產說明</dt><dd class="pd-full" style="white-space: pre-wrap">@Model.Description</dd>
             <dt>@Html.DisplayNameFor(m => m.SwStatus)</dt><dd>@Model.SwStatus</dd>
             <dt>@Html.DisplayNameFor(m => m.SwAssetType)</dt><dd>@Model.SwAssetType</dd>
             <dt>@Html.DisplayNameFor(m => m.SwSystemCategory)</dt><dd>@Model.SwSystemCategory</dd>
             <dt>@Html.DisplayNameFor(m => m.SwAdIntegration)</dt><dd>@Model.SwAdIntegration</dd>
+            <dt class="pd-full">@Html.DisplayNameFor(m => m.SwDescription)</dt><dd class="pd-full" style="white-space: pre-wrap">@Model.SwDescription</dd>
             <dt>@Html.DisplayNameFor(m => m.SwOsVersion)</dt><dd>@Model.SwOsVersion</dd>
             <dt>@Html.DisplayNameFor(m => m.SwDbToolVersion)</dt><dd>@Model.SwDbToolVersion</dd>
             <dt>@Html.DisplayNameFor(m => m.SwThirdPartyComponents)</dt><dd>@Model.SwThirdPartyComponents</dd>
@@ -116,8 +116,6 @@
             <dd>@Model.SystemCode</dd>
             <dt>@Html.DisplayNameFor(m => m.SystemName)</dt>
             <dd>@Model.SystemName</dd>
-            <dt>@Html.DisplayNameFor(m => m.Description)</dt>
-            <dd style="white-space: pre-wrap">@Model.Description</dd>
             <dt>@Html.DisplayNameFor(_ => inv.DbName)</dt>
             <dd style="white-space: pre-wrap">@inv.DbName</dd>
         </dl>

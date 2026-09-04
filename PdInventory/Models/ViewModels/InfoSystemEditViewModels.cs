@@ -35,11 +35,11 @@ public class SoftwareEditViewModel : IInfoSystemBlockViewModel
     public string SeqNo { get; set; } = "";
     public string SystemCode { get; set; } = "";
     public string SystemName { get; set; } = "";
-    public string Description { get; set; } = "";
     public string SwStatus { get; set; } = "";
     public string SwAssetType { get; set; } = "";
     public string SwSystemCategory { get; set; } = "";
     public string SwAdIntegration { get; set; } = "";
+    public string SwDescription { get; set; } = "";
     public string SwOsVersion { get; set; } = "";
     public string SwDbToolVersion { get; set; } = "";
     public string SwThirdPartyComponents { get; set; } = "";
