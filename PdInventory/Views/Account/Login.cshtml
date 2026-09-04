@@ -32,11 +32,11 @@
 
                 @if (!requiresPassword)
                 {
-                    <p class="text-muted small">
-                        目前是<strong>模擬登入</strong>模式，不會驗證密碼，僅供權限測試使用。
-                        正式環境請將 appsettings 的 <code>Employee:Mode</code> 設為 <code>Ldap</code>，
-                        帳號密碼將改由公司 AD 驗證。
-                    </p>
+                    <div class="alert alert-warning small mb-3">
+                        <strong>AD 密碼驗證暫停中</strong>，測試期間<strong>只要輸入帳號就能登入</strong>。
+                        要恢復請把 appsettings 的 <code>Employee:Mode</code> 改回 <code>Ldap</code>，
+                        密碼欄就會啟用、改由公司 AD 驗證。
+                    </div>
                 }
 
                 <form method="post" class="mb-3">
@@ -45,60 +45,51 @@
                     <div class="mb-3">
                         <label class="form-label" for="account">帳號</label>
                         <input id="account" name="account" class="form-control" required
-                               autocomplete="username" autofocus
-                               placeholder="員工編號，例如 183253" />
+                               autocomplete="off" autofocus list="knownAccounts"
+                               placeholder="員工編號，例如 0183253" />
+                        @if (!requiresPassword && knownUsers.Count > 0)
+                        {
+                            @* 已建檔的帳號做成建議清單：133 筆列成按鈕會變成一面牆，
+                               打字或下拉挑都可以，比較好測 *@
+                            <datalist id="knownAccounts">
+                                @foreach (var user in knownUsers)
+                                {
+                                    <option value="@user.EmpNo">@user.EmpName（@PdInventory.Helpers.RoleDisplay.Name(user.Role)）</option>
+                                }
+                            </datalist>
+                            <div class="form-text">共 @knownUsers.Count 個已建檔的帳號，可直接輸入或從清單挑選。</div>
+                        }
                     </div>
-                    @if (requiresPassword)
-                    {
-                        <div class="mb-3">
-                            <label class="form-label" for="password">密碼</label>
-                            <input id="password" name="password" type="password" class="form-control"
-                                   required autocomplete="current-password" />
-                            <div class="form-text">與您登入公司電腦的網域密碼相同。</div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">密碼</label>
+                        @* 暫停期間刻意保留這一格但停用，讓使用者看得出來「之後會用到」，
+                           而不是以為系統本來就不需要密碼。disabled 的欄位不會送出。 *@
+                        <input id="password" name="password" type="password" class="form-control"
+                               required="@requiresPassword" disabled="@(!requiresPassword)"
+                               autocomplete="current-password" />
+                        <div class="form-text">
+                            @if (requiresPassword)
+                            {
+                                <text>與您登入公司電腦的網域密碼相同。</text>
+                            }
+                            else
+                            {
+                                <text>AD 驗證暫停中，這一格暫時停用，不必填。</text>
+                            }
                         </div>
-                    }
-                    else
+                    </div>
+                    @if (!requiresPassword)
                     {
-                        @* 模擬模式沒有 AD 可問姓名，但姓名是人員表建檔的必要資訊，
-                           這裡補一格才能在沒有 AD 的環境驗證「第一次登入自動建檔」 *@
+                        @* 姓名只有「名冊裡還沒有這個人」時才用得到，平常留空即可 *@
                         <div class="mb-3">
-                            <label class="form-label" for="displayName">姓名</label>
+                            <label class="form-label" for="displayName">姓名<span class="text-muted">（選填）</span></label>
                             <input id="displayName" name="displayName" class="form-control"
-                                   placeholder="第一次登入的新帳號才需要填" />
-                            <div class="form-text">
-                                模擬模式專用。正式環境的姓名由公司 AD 提供，不會顯示這一格。
-                            </div>
+                                   placeholder="名冊裡還沒有的新帳號才需要填" />
                         </div>
                     }
                     <button type="submit" class="btn btn-primary w-100">登入</button>
                 </form>
 
-                @if (!requiresPassword && knownUsers.Count > 0)
-                {
-                    <hr />
-                    <div class="small text-muted mb-2">或直接點選已建檔的帳號：</div>
-                    <div class="list-group list-group-flush small">
-                        @foreach (var user in knownUsers)
-                        {
-                            <form method="post" class="list-group-item list-group-item-action d-flex
-                                                        justify-content-between align-items-center py-2">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="account" value="@user.EmpNo" />
-                                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
-                                <span>
-                                    <span class="pd-code">@user.EmpNo</span>
-                                    <span class="ms-2">@user.EmpName</span>
-                                </span>
-                                <span>
-                                    <span class="badge text-bg-secondary me-2">
-                                        @PdInventory.Helpers.RoleDisplay.Name(user.Role)
-                                    </span>
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">登入</button>
-                                </span>
-                            </form>
-                        }
-                    </div>
-                }
             </div>
         </div>
     </div>
