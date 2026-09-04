@@ -122,6 +122,7 @@ public static class DbSeeder
 
         SeedRiskLookups(db);
         SeedUsers(db);
+        SeedUsersForEmployees(db);
     }
 
     /// <summary>
@@ -143,6 +144,38 @@ public static class DbSeeder
             Role = UserRole.Admin,
         });
 
+        db.SaveChanges();
+    }
+
+    /// <summary>
+    /// 人員表裡的每個人都要在權限設定看得到，否則管理者無從指定他的角色。
+    ///
+    /// 平常這件事由 <see cref="Helpers.UserProvisioning.EnsureUserForEmployeeAsync"/> 處理
+    /// （管理者從人員表建檔時一併建立帳號），但名冊是直接匯入資料表的，沒有經過那條路，
+    /// 所以這裡補一次。已經有帳號的不動——角色與名下資產都是設定過的，不能覆蓋。
+    ///
+    /// 沒有員工編號的略過：兩張表以員編相認，沒有編號就無從對應登入身分。
+    /// </summary>
+    private static void SeedUsersForEmployees(AppDbContext db)
+    {
+        var existing = db.AppUsers.IgnoreQueryFilters()
+            .Select(u => u.EmpNo)
+            .ToHashSet();
+
+        var missing = db.Employees
+            .Where(e => e.EmpNo != "")
+            .Where(e => !existing.Contains(e.EmpNo))
+            .Select(e => new { e.EmpNo, e.Name })
+            .ToList();
+
+        if (missing.Count == 0) return;
+
+        db.AppUsers.AddRange(missing.Select(e => new AppUser
+        {
+            EmpNo = e.EmpNo,
+            EmpName = e.Name,
+            Role = UserRole.AssetOwner,
+        }));
         db.SaveChanges();
     }
 
