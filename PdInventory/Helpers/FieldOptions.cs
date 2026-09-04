@@ -11,9 +11,21 @@ namespace PdInventory.Helpers;
 /// 這種本質上不會變的，寫在程式裡即可，不值得為它們各開一張維護表。
 ///
 /// 選項來自 docs/欄位選項化盤點.md 的逐欄統計，並已確認涵蓋資料庫現有的所有值。
+///
+/// 還有第三種來源：<see cref="OptionCatalog"/>——值固定但**業務端要能自己維護**的欄位
+/// （位置、使用語言、自行/委外開發…），選項存在資料表，由側邊欄「維護資料」下的畫面管理。
 /// </summary>
 public static class FieldOptions
 {
+    /// <summary>
+    /// 保管單位與風險擁有者由業務端指定為固定值，畫面上唯讀、不可更改。
+    ///
+    /// 寫死在程式裡是照業務端的要求；代價是異動（例如風險擁有者換人）要改這裡再重新部署。
+    /// 若之後變成會換的資料，改成維護資料表即可，兩個常數只有這裡與 AppDbContext 兩處引用。
+    /// </summary>
+    public const string FixedCustodianUnit = "資訊系統開發一部";
+    public const string FixedRiskOwner = "陳映玲";
+
     private static readonly string[] YesNo = ["是", "否"];
     private static readonly string[] YesNoNa = ["是", "否", "N/A"];
     private static readonly string[] HasNoneNa = ["有", "無", "N/A"];

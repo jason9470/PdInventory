@@ -28,6 +28,7 @@ public class AppDbContext : DbContext
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<OpsStaff> OpsStaffs => Set<OpsStaff>();
     public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<FieldOptionItem> FieldOptionItems => Set<FieldOptionItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -88,6 +89,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Department>().HasIndex(d => d.Name).IsUnique();
         modelBuilder.Entity<OpsStaff>().HasIndex(o => o.Name).IsUnique();
         // 人員是軟刪除，唯一性只在還沒被刪的人之間成立
+        // 同一個欄位底下的選項不能重複，否則下拉會出現兩個一模一樣的
+        modelBuilder.Entity<FieldOptionItem>().HasIndex(o => new { o.FieldName, o.Value }).IsUnique();
         modelBuilder.Entity<Employee>().HasIndex(e => e.Name).IsUnique()
             .HasFilter("\"IsDeleted\" = 0");
 
@@ -119,6 +122,7 @@ public class AppDbContext : DbContext
     {
         StampAuditFields();
         RecalculateAssetValues();
+        ApplyFixedAndMultiValueFields();
         return base.SaveChanges();
     }
 
@@ -126,6 +130,7 @@ public class AppDbContext : DbContext
     {
         StampAuditFields();
         RecalculateAssetValues();
+        ApplyFixedAndMultiValueFields();
         return base.SaveChangesAsync(cancellationToken);
     }
 
@@ -152,6 +157,38 @@ public class AppDbContext : DbContext
             {
                 system.SwAssetValue = (confidentiality + integrity + availability).ToString();
             }
+        }
+    }
+
+    /// <summary>
+    /// 兩件存檔前的整理，放在這裡是因為新增與編輯兩條路徑都會經過，
+    /// 集中處理才不會有某一條忘了做。
+    ///
+    /// 一、保管單位與風險擁有者是業務端指定的固定值。畫面上已經是唯讀，
+    ///     但唯讀只是操作防呆，改個表單欄位就繞過去了，所以這裡再蓋一次。
+    /// 二、複選欄位的分隔符統一成「/」。來源試算表混用了 / ; ;# 三種，
+    ///     不統一的話同一組答案會有好幾種寫法，比對與統計都會漏。
+    /// </summary>
+    private void ApplyFixedAndMultiValueFields()
+    {
+        foreach (var entry in ChangeTracker.Entries<InfoSystem>())
+        {
+            if (entry.State is not (EntityState.Added or EntityState.Modified)) continue;
+
+            var system = entry.Entity;
+            system.SwCustodianUnit = FieldOptions.FixedCustodianUnit;
+            system.SwRiskOwner = FieldOptions.FixedRiskOwner;
+
+            system.SwDevMode = MultiValue.Normalize(system.SwDevMode);
+            system.SwLocation = MultiValue.Normalize(system.SwLocation);
+            system.SwLanguage = MultiValue.Normalize(system.SwLanguage);
+        }
+
+        foreach (var entry in ChangeTracker.Entries<DataAsset>())
+        {
+            if (entry.State is not (EntityState.Added or EntityState.Modified)) continue;
+
+            entry.Entity.DaHasSensitiveData = MultiValue.Normalize(entry.Entity.DaHasSensitiveData);
         }
     }
 

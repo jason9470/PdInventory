@@ -819,6 +819,38 @@ public class SystemInventory : IAuditable, IConcurrencyAware
 }
 
 /// <summary>
+/// 可維護的欄位選項。一列就是某個欄位的一個選項。
+///
+/// 與 <see cref="Helpers.FieldOptions"/> 的分工：那裡寫死的是本質上不會變的
+/// （是／否、等級 1~4）；這裡放的是值固定、但業務端要能自己增刪的
+/// （位置、使用語言、自行/委外開發…）。哪些欄位走這條路見 <see cref="Helpers.OptionCatalog"/>。
+///
+/// 為什麼是一張通用表而不是一張選項一張表：這類欄位只會愈來愈多，
+/// 每個都複製一份 CRUD 很快就會有六、七份幾乎一樣的程式碼。
+/// 側邊欄的作法比照「維護匯出」——同一個畫面帶不同的欄位參數。
+/// </summary>
+public class FieldOptionItem
+{
+    public int Id { get; set; }
+
+    /// <summary>對應的屬性名稱，例如 <c>SwLocation</c>。見 <see cref="Helpers.OptionCatalog"/>。</summary>
+    [Required, StringLength(100)]
+    [Display(Name = "欄位")]
+    public string FieldName { get; set; } = "";
+
+    /// <summary>選項的值。**這就是各表單欄位裡實際存的文字**，不是顯示用的別名。</summary>
+    [Required(ErrorMessage = "選項值必填"), StringLength(200)]
+    [Display(Name = "選項")]
+    public string Value { get; set; } = "";
+
+    [Display(Name = "排序")]
+    public int SortOrder { get; set; }
+
+    [Display(Name = "備註")]
+    public string Remark { get; set; } = "";
+}
+
+/// <summary>
 /// 部門（共用維護資料）。六張表都會用到的單位清單，因此不掛在任何一張表單底下。
 ///
 /// 對照的欄位：SW-業務權責單位（單選）、SW-使用者帳號權限授與（多選）、

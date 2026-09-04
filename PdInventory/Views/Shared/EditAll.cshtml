@@ -67,10 +67,22 @@
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwProvidesAccountReport), Model.Software.SwProvidesAccountReport)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwRiskOwner" class="form-label"></label><input asp-for="Software.SwRiskOwner" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwLocation" class="form-label"></label><input asp-for="Software.SwLocation" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwOwnerUnit" class="form-label"></label><input asp-for="Software.SwOwnerUnit" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwCustodianUnit" class="form-label"></label><input asp-for="Software.SwCustodianUnit" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwRiskOwner" class="form-label"></label>
+                @* 業務端指定的固定值：畫面唯讀，存檔時 AppDbContext 會再蓋一次 *@
+                <input asp-for="Software.SwRiskOwner" class="form-control" readonly
+                       value="@FieldOptions.FixedRiskOwner" title="固定值，不可更改" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwLocation" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwLocation", Model.Software.SwLocation, Lookup.OptionsFor(nameof(InfoSystem.SwLocation)))' /></div>
+            <div class="col-md-3"><label asp-for="Software.SwOwnerUnit" class="form-label"></label>
+                <select asp-for="Software.SwOwnerUnit" class="form-select"
+                        asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwOwnerUnit), Model.Software.SwOwnerUnit)">
+                    <option value="">-- 請選擇 --</option>
+                </select></div>
+            <div class="col-md-3"><label asp-for="Software.SwCustodianUnit" class="form-label"></label>
+                @* 業務端指定的固定值：畫面唯讀，存檔時 AppDbContext 會再蓋一次 *@
+                <input asp-for="Software.SwCustodianUnit" class="form-control" readonly
+                       value="@FieldOptions.FixedCustodianUnit" title="固定值，不可更改" /></div>
             <div class="col-md-6"><label asp-for="Software.SwUserUnit" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwUserUnit", Model.Software.SwUserUnit, Lookup.Departments)' /></div>
@@ -102,10 +114,14 @@
             <div class="col-md-6"><label asp-for="Software.SwOperator" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwOperator", Model.Software.SwOperator, Lookup.OpsStaff)' /></div>
-            <div class="col-md-3"><label asp-for="Software.SwDevMode" class="form-label"></label><input asp-for="Software.SwDevMode" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwDevMode" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwDevMode", Model.Software.SwDevMode, Lookup.OptionsFor(nameof(InfoSystem.SwDevMode)))' /></div>
             <div class="col-md-3"><label asp-for="Software.SwMaintMode" class="form-label"></label><input asp-for="Software.SwMaintMode" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwVendor" class="form-label"></label><input asp-for="Software.SwVendor" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwLanguage" class="form-label"></label><input asp-for="Software.SwLanguage" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwLanguage" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwLanguage", Model.Software.SwLanguage, Lookup.OptionsFor(nameof(InfoSystem.SwLanguage)))' /></div>
             <div class="col-md-3"><label asp-for="Software.SwVersionControl" class="form-label"></label><select asp-for="Software.SwVersionControl" class="form-select"
                     asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwVersionControl), Model.Software.SwVersionControl)">
                 <option value="">-- 請選擇 --</option>
@@ -179,7 +195,11 @@
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-6"><label asp-for="Software.SwTrailLocation" class="form-label"></label><input asp-for="Software.SwTrailLocation" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Software.SwTrailStorage" class="form-label"></label><input asp-for="Software.SwTrailStorage" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwTrailStorage" class="form-label"></label>
+                <select asp-for="Software.SwTrailStorage" class="form-select"
+                        asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwTrailStorage), Model.Software.SwTrailStorage)">
+                    <option value="">-- 請選擇 --</option>
+                </select></div>
             <div class="col-md-3"><label asp-for="Software.SwBusinessOwnerUnit" class="form-label"></label>
                 <select asp-for="Software.SwBusinessOwnerUnit" class="form-select"
                         asp-items="Lookup.ItemsFor(Lookup.Departments, Model.Software.SwBusinessOwnerUnit)">
@@ -219,7 +239,9 @@
             <div class="col-12"><label asp-for="Data.DaDescription" class="form-label">資產說明</label><textarea asp-for="Data.DaDescription" class="form-control" rows="2"></textarea></div>
             <div class="col-md-4"><label asp-for="Data.DaBackupMethod" class="form-label"></label><input asp-for="Data.DaBackupMethod" class="form-control" /></div>
             <div class="col-md-4"><label asp-for="Data.DaRetentionPeriod" class="form-label"></label><input asp-for="Data.DaRetentionPeriod" class="form-control" /></div>
-            <div class="col-md-4"><label asp-for="Data.DaHasSensitiveData" class="form-label"></label><input asp-for="Data.DaHasSensitiveData" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Data.DaHasSensitiveData" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Data.DaHasSensitiveData", Model.Data.DaHasSensitiveData, Lookup.OptionsFor(nameof(DataAsset.DaHasSensitiveData)))' /></div>
             <div class="col-md-6"><label asp-for="Data.DaUserUnit" class="form-label"></label><input asp-for="Data.DaUserUnit" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Data.DaBackupConfirm" class="form-label"></label><input asp-for="Data.DaBackupConfirm" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Data.DaReviewer" class="form-label"></label>

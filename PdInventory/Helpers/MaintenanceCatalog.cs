@@ -1,7 +1,13 @@
 namespace PdInventory.Helpers;
 
-/// <summary>一個維護項目：對應的控制器與側邊欄顯示名稱。</summary>
-public record MaintenanceItem(string Controller, string Title);
+/// <summary>
+/// 一個維護項目：對應的控制器與側邊欄顯示名稱。
+/// </summary>
+/// <param name="Field">
+/// 欄位選項的維護畫面共用同一個控制器，靠這個參數決定維護哪一個欄位
+/// （作法比照「維護匯出」的 <c>?list=</c>）。其他維護項目留空。
+/// </param>
+public record MaintenanceItem(string Controller, string Title, string? Field = null);
 
 /// <summary>
 /// 維護項目所屬的表單。<paramref name="Key"/> 與 <see cref="ExportCatalog.Lists"/>
@@ -22,8 +28,13 @@ public static class MaintenanceCatalog
 {
     public const string SharedKey = "Shared";
 
-    /// <summary>依側邊欄由上而下的順序。前六個對應六張表單，最後是共用。</summary>
-    public static readonly IReadOnlyList<MaintenanceGroup> Groups =
+    /// <summary>
+    /// 依側邊欄由上而下的順序。前六個對應六張表單，最後是共用。
+    ///
+    /// 各群組除了這裡寫死的項目，還會自動接上 <see cref="OptionCatalog"/> 中屬於它的欄位
+    /// ——見 <see cref="ItemsOf"/>。要多一個可維護的選項只要動 OptionCatalog，這裡不必改。
+    /// </summary>
+    private static readonly IReadOnlyList<MaintenanceGroup> Declared =
     [
         new("Software", "資訊資產清單-軟體(SW)", []),
         new("Data", "資訊資產清單-資料(DA)", []),
@@ -49,13 +60,35 @@ public static class MaintenanceCatalog
         ]),
     ];
 
+    /// <summary>側邊欄實際要顯示的群組：宣告的項目加上該群組的可維護選項。</summary>
+    public static readonly IReadOnlyList<MaintenanceGroup> Groups = Declared
+        .Select(g => g with { Items = ItemsOf(g) })
+        .ToList();
+
+    private static List<MaintenanceItem> ItemsOf(MaintenanceGroup group) =>
+    [
+        .. group.Items,
+        .. OptionCatalog.InGroup(group.Key)
+            .Select(f => new MaintenanceItem(OptionsController, f.Title, f.Field)),
+    ];
+
+    /// <summary>欄位選項維護畫面的控制器名稱。</summary>
+    public const string OptionsController = "FieldOptionItems";
+
     /// <summary>
     /// 目前這個控制器屬於哪一個群組，供側邊欄自動展開它所在的那一組。
+    /// 選項維護畫面共用一個控制器，因此還要看是哪一個欄位才分得出群組。
     /// 不是維護頁面就回傳 null，此時七個群組都收合。
     /// </summary>
-    public static string? GroupKeyOf(string? controller) =>
-        string.IsNullOrEmpty(controller)
-            ? null
-            : Groups.FirstOrDefault(g => g.Items.Any(
-                  i => string.Equals(i.Controller, controller, StringComparison.OrdinalIgnoreCase)))?.Key;
+    public static string? GroupKeyOf(string? controller, string? field = null)
+    {
+        if (string.IsNullOrEmpty(controller)) return null;
+
+        if (string.Equals(controller, OptionsController, StringComparison.OrdinalIgnoreCase))
+            return OptionCatalog.Find(field)?.Group;
+
+        return Groups.FirstOrDefault(g => g.Items.Any(
+            i => i.Field is null
+              && string.Equals(i.Controller, controller, StringComparison.OrdinalIgnoreCase)))?.Key;
+    }
 }

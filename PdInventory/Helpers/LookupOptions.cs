@@ -22,6 +22,7 @@ public sealed class LookupOptions
     private List<string>? _opsStaff;
     private List<string>? _employees;
     private List<string>? _employeeManagers;
+    private readonly Dictionary<string, IReadOnlyList<string>> _fieldOptions = [];
 
     public LookupOptions(AppDbContext db) => _db = db;
 
@@ -52,6 +53,23 @@ public sealed class LookupOptions
         .OrderBy(e => e.TeamName == "").ThenBy(e => e.TeamName)
         .ThenBy(e => e.Section != Employee.ManagerSection).ThenBy(e => e.Name)
         .ToList();
+
+    /// <summary>
+    /// 由業務端自行維護的欄位選項（<see cref="OptionCatalog"/> 登記的那些）。
+    /// 同一個請求內每個欄位只查一次。
+    /// </summary>
+    public IReadOnlyList<string> OptionsFor(string field) =>
+        _fieldOptions.TryGetValue(field, out var cached)
+            ? cached
+            : _fieldOptions[field] = _db.FieldOptionItems
+                .Where(o => o.FieldName == field)
+                .OrderBy(o => o.SortOrder).ThenBy(o => o.Id)
+                .Select(o => o.Value)
+                .ToList();
+
+    /// <summary>單選下拉的捷徑，等同 <c>ItemsFor(OptionsFor(field), currentValue)</c>。</summary>
+    public List<SelectListItem> OptionItemsFor(string field, string? currentValue) =>
+        ItemsFor(OptionsFor(field), currentValue);
 
     /// <summary>
     /// 單選下拉。目前值不在選項中時額外插入一個標示過的選項並選中它——

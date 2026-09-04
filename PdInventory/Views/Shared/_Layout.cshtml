@@ -76,7 +76,7 @@
                     @* 第二層用 <details>：所在群組由伺服器端直接開著，不必等 JavaScript，
                        換頁時也不會先展開再收起來。項目清單見 Helpers/MaintenanceCatalog.cs *@
                     <div id="sidebarMaint" class="sidebar-maint">
-                        @{ var activeGroup = MaintenanceCatalog.GroupKeyOf(CurrentController); }
+                        @{ var activeGroup = MaintenanceCatalog.GroupKeyOf(CurrentController, CurrentField); }
                         @foreach (var group in MaintenanceCatalog.Groups)
                         {
                             <details class="sidebar-maint-group" open="@(group.Key == activeGroup)">
@@ -84,8 +84,9 @@
                                 <div class="list-group list-group-flush small">
                                     @foreach (var item in group.Items)
                                     {
-                                        <a class="list-group-item list-group-item-action @NavActive(item.Controller)"
-                                           asp-controller="@item.Controller" asp-action="Index">@item.Title</a>
+                                        <a class="list-group-item list-group-item-action @MaintActive(item)"
+                                           asp-controller="@item.Controller" asp-action="Index"
+                                           asp-route-field="@item.Field">@item.Title</a>
                                     }
                                     @if (group.Items.Count == 0)
                                     {
@@ -184,4 +185,14 @@
 
     /// <summary>目前的控制器名稱，供高亮與「維護資料」自動展開所在群組使用。</summary>
     string? CurrentController => ViewContext.RouteData.Values["controller"] as string;
+
+    /// <summary>欄位選項的維護畫面共用一個控制器，靠這個參數分辨是哪一個欄位。</summary>
+    string? CurrentField => Context.Request.Query["field"];
+
+    /// <summary>「維護資料」項目的高亮。選項維護要連欄位一起比，否則六個會同時亮。</summary>
+    string MaintActive(MaintenanceItem item) =>
+        NavActive(item.Controller) == "active"
+        && (item.Field is null || string.Equals(CurrentField, item.Field, StringComparison.Ordinal))
+            ? "active"
+            : "";
 }
