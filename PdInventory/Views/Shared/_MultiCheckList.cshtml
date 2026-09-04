@@ -29,5 +29,15 @@
         }
     </div>
 
+    @if (Model.AllowCustom)
+    {
+        @* 清單以外的值（例如委外廠商）直接打進來。業務端決定這類名稱不回寫維護表，
+           所以這裡只是把它加成一個勾好的項目，存進欄位而已。 *@
+        <div class="input-group input-group-sm mt-1 pd-multicheck-custom">
+            <input type="text" class="form-control" placeholder="清單裡沒有的（例如委外廠商）自行輸入" />
+            <button type="button" class="btn btn-outline-secondary">加入</button>
+        </div>
+    }
+
     <div class="form-text pd-multicheck-summary"></div>
 </div>

@@ -114,7 +114,7 @@ public class EmployeesController : Controller
     }
 
     /// <summary>
-    /// 有多少筆資料用到這個人。五個對照欄位裡有兩個是多選（以 / 分隔），
+    /// 有多少筆資料用到這個人。六個對照欄位裡有三個是多選（以 / 分隔），
     /// 不能用等號比對，理由同 DepartmentsController。同一筆多個欄位都是他只算一筆。
     /// </summary>
     private async Task<int> CountUsageAsync(string name)
@@ -122,12 +122,14 @@ public class EmployeesController : Controller
         if (string.IsNullOrWhiteSpace(name)) return 0;
 
         var systems = await _db.InfoSystems
-            .Select(s => new { s.SwAppManager, s.SwAppMaintainer, s.SwDeveloper, s.SwReviewer })
+            .Select(s => new { s.SwAppManager, s.SwAppMaintainer, s.SwAppMaintainerDeputy,
+                               s.SwDeveloper, s.SwReviewer })
             .ToListAsync();
         var dataAssets = await _db.DataAssets.Select(d => d.DaReviewer).ToListAsync();
 
         return systems.Count(s => MultiValue.Contains(s.SwAppManager, name)
                                || MultiValue.Contains(s.SwAppMaintainer, name)
+                               || MultiValue.Contains(s.SwAppMaintainerDeputy, name)
                                || MultiValue.Contains(s.SwDeveloper, name)
                                || MultiValue.Contains(s.SwReviewer, name))
              + dataAssets.Count(d => MultiValue.Contains(d, name));

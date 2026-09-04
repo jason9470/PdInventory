@@ -72,13 +72,17 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<AppUser>().HasQueryFilter(u => !u.IsDeleted);
 
+        // 盤點表與拋轉清單也改成軟刪除，全站的刪除行為因此一致
+        modelBuilder.Entity<InventoryItem>().HasQueryFilter(i => !i.IsDeleted);
+        modelBuilder.Entity<TransferRecord>().HasQueryFilter(t => !t.IsDeleted);
+
         // 唯一索引同時排除已刪除，否則刪掉 SW-027 之後就再也不能建立同編號的資料
         modelBuilder.Entity<InfoSystem>().HasIndex(s => s.SystemCode).IsUnique()
             .HasFilter("\"SystemCode\" <> '' AND \"IsDeleted\" = 0");
         modelBuilder.Entity<InventoryItem>().HasIndex(i => i.SeqNo).IsUnique()
-            .HasFilter("\"SeqNo\" <> ''");
+            .HasFilter("\"SeqNo\" <> '' AND \"IsDeleted\" = 0");
         modelBuilder.Entity<TransferRecord>().HasIndex(t => t.SeqNo).IsUnique()
-            .HasFilter("\"SeqNo\" <> ''");
+            .HasFilter("\"SeqNo\" <> '' AND \"IsDeleted\" = 0");
 
         // 一套系統只會有一份盤點表；空字串排除在外的寫法同上
         modelBuilder.Entity<SystemInventory>().HasIndex(i => i.SystemCode).IsUnique()
@@ -181,6 +185,7 @@ public class AppDbContext : DbContext
 
             system.SwDevMode = MultiValue.Normalize(system.SwDevMode);
             system.SwMaintMode = MultiValue.Normalize(system.SwMaintMode);
+            system.SwAppMaintainerDeputy = MultiValue.Normalize(system.SwAppMaintainerDeputy);
             system.SwLocation = MultiValue.Normalize(system.SwLocation);
             system.SwLanguage = MultiValue.Normalize(system.SwLanguage);
         }

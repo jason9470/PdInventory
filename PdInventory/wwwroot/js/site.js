@@ -60,12 +60,68 @@
 
         container.addEventListener('change', function (event) {
             if (event.target.type !== 'checkbox') return;
-
-            var hidden = document.getElementById(container.dataset.target);
-            if (hidden) hidden.value = checkedValues(container).join(SEPARATOR);
-            summarize(container);
+            apply(container);
         });
+
+        bindCustomInput(container);
     });
+
+    function apply(container) {
+        var hidden = document.getElementById(container.dataset.target);
+        if (hidden) hidden.value = checkedValues(container).join(SEPARATOR);
+        summarize(container);
+    }
+
+    // 「自行輸入」：清單裡沒有的值（委外廠商那種）直接打進來，
+    // 加成一個勾好的項目就好——業務端決定這類名稱不回寫維護表。
+    function bindCustomInput(container) {
+        var group = container.querySelector('.pd-multicheck-custom');
+        if (!group) return;
+
+        var input = group.querySelector('input');
+        var button = group.querySelector('button');
+        var box = container.querySelector('.pd-multicheck-box');
+
+        function add() {
+            var value = (input.value || '').trim();
+            if (!value) return;
+
+            if (value.indexOf(SEPARATOR) >= 0) {
+                input.setCustomValidity('不能包含「' + SEPARATOR + '」，那是分隔符號');
+                input.reportValidity();
+                return;
+            }
+            input.setCustomValidity('');
+
+            var existing = [].slice.call(container.querySelectorAll('input[type=checkbox]'))
+                .filter(function (b) { return b.value === value; })[0];
+
+            if (existing) {
+                existing.checked = true;          // 已經有這個項目，勾起來就好
+            } else {
+                var id = container.dataset.target + '__c' + Date.now();
+                var item = document.createElement('div');
+                item.className = 'form-check';
+                item.innerHTML =
+                    '<input class="form-check-input" type="checkbox" checked id="' + id + '" />' +
+                    '<label class="form-check-label" for="' + id + '"></label>';
+                item.querySelector('input').value = value;
+                // textContent 而不是字串拼接：值是使用者打的，不能當成 HTML
+                item.querySelector('label').textContent = value;
+                box.appendChild(item);
+                item.scrollIntoView({ block: 'nearest' });
+            }
+
+            input.value = '';
+            apply(container);
+        }
+
+        button.addEventListener('click', add);
+        input.addEventListener('keydown', function (event) {
+            // 在輸入框按 Enter 是「加入」，不要順手把整張表單送出去
+            if (event.key === 'Enter') { event.preventDefault(); add(); }
+        });
+    }
 })();
 
 // 資產價值＝機密性＋完整性＋可用性，選單一改就立刻重算。

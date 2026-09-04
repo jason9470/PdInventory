@@ -37,13 +37,14 @@ public class FieldOptionItemsController : Controller
         if (target is null) return NotFound();
 
         value = (value ?? "").Trim();
+        var reject = value.Length == 0 ? null : target.RejectReason(value);
+
         if (value.Length == 0)
             TempData["Error"] = "選項不可空白。";
         else if (await _db.FieldOptionItems.AnyAsync(o => o.FieldName == field && o.Value == value))
             TempData["Error"] = $"選項「{value}」已存在。";
-        else if (target.IsMultiple && value.Contains(MultiValue.Separator))
-            // 多選欄位以 / 分隔，選項本身含斜線的話存進去就切成兩半了
-            TempData["Error"] = $"多選欄位的選項不能包含「{MultiValue.Separator}」，那是分隔符號。";
+        else if (reject is not null)
+            TempData["Error"] = reject;
         else
         {
             var order = await _db.FieldOptionItems.Where(o => o.FieldName == field)
@@ -104,6 +105,14 @@ public class FieldOptionItemsController : Controller
         if (item is null) return RedirectToAction(nameof(Index));
 
         var target = OptionCatalog.Find(item.FieldName);
+
+        // 程式碼直接依賴的選項不准刪，刪了會讓別處靜靜地失效
+        if (target is not null && target.IsReserved(item.Value))
+        {
+            TempData["Error"] = $"「{item.Value}」是程式邏輯依賴的選項，不能刪除。";
+            return RedirectToAction(nameof(Index), new { field = item.FieldName });
+        }
+
         var used = target is null ? 0 : await CountUsageAsync(target, item.Value);
         if (used > 0)
         {

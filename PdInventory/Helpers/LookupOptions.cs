@@ -22,6 +22,7 @@ public sealed class LookupOptions
     private List<string>? _opsStaff;
     private List<string>? _employees;
     private List<string>? _employeeManagers;
+    private List<string>? _vendors;
     private readonly Dictionary<string, IReadOnlyList<string>> _fieldOptions = [];
 
     public LookupOptions(AppDbContext db) => _db = db;
@@ -52,6 +53,17 @@ public sealed class LookupOptions
     private IEnumerable<Employee> OrderedEmployees() => _db.Employees
         .OrderBy(e => e.TeamName == "").ThenBy(e => e.TeamName)
         .ThenBy(e => e.Section != Employee.ManagerSection).ThenBy(e => e.Name)
+        .ToList();
+
+    /// <summary>
+    /// 委外廠商的建議清單。業務端決定廠商不進維護表——可以下拉也可以自行輸入，
+    /// 自行輸入的名稱不回寫——所以這裡的建議直接取自資料現有的值。
+    /// </summary>
+    public IReadOnlyList<string> Vendors => _vendors ??= _db.InfoSystems
+        .Select(s => s.SwVendor)
+        .Where(v => v != "")
+        .Distinct()
+        .OrderBy(v => v)
         .ToList();
 
     /// <summary>

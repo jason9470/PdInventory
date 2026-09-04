@@ -16,10 +16,7 @@ namespace PdInventory.Helpers;
 ///   Departments／Employees／OpsStaffs　組織資料，各有專屬的維護畫面。
 ///
 /// 選項來自 docs/欄位選項化盤點.md 的逐欄統計，並已確認涵蓋資料庫現有的所有值。
-///
-/// **注意**：這裡還留著三組程式碼有依賴的選項，改動前要先看依賴：
-///   機密性／完整性／可用性　AppDbContext 會把三個值相加算資產價值，必須是數字。
-///   系統類別　　　　　　　　site.js 的 CORE_CATEGORY 寫死「核心系統」。
+
 /// </summary>
 public static class FieldOptions
 {
@@ -35,7 +32,6 @@ public static class FieldOptions
     private static readonly string[] YesNo = ["是", "否"];
     private static readonly string[] YesNoNa = ["是", "否", "N/A"];
     private static readonly string[] HasNoneNa = ["有", "無", "N/A"];
-    private static readonly string[] Levels = ["1", "2", "3", "4"];
 
     private static readonly Dictionary<string, string[]> Map = new()
     {
@@ -54,10 +50,6 @@ public static class FieldOptions
 
         // 這兩張清單就是這個類別，型錄常數而不是可選的答案
         [nameof(InfoSystem.SwAssetType)] = ["軟體"],
-        [nameof(InfoSystem.SwSystemCategory)] = ["一般系統", "核心系統", "套裝系統"],
-        [nameof(InfoSystem.SwConfidentiality)] = Levels,
-        [nameof(InfoSystem.SwIntegrity)] = Levels,
-        [nameof(InfoSystem.SwAvailability)] = Levels,
 
         // ── 資訊資產清單－資料(DA) ───────────────────────────
         [nameof(DataAsset.DaAssetType)] = ["資料"],

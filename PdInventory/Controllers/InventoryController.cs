@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Models.ViewModels;
 using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
@@ -13,11 +14,13 @@ public class InventoryController : Controller
 {
     private readonly AppDbContext _db;
     private readonly IAssetAccess _access;
+    private readonly ICurrentUser _currentUser;
 
-    public InventoryController(AppDbContext db, IAssetAccess access)
+    public InventoryController(AppDbContext db, IAssetAccess access, ICurrentUser currentUser)
     {
         _db = db;
         _access = access;
+        _currentUser = currentUser;
     }
 
     public async Task<IActionResult> Index(string? q)
@@ -72,27 +75,31 @@ public class InventoryController : Controller
     public async Task<IActionResult> Create()
     {
         await LoadLookupsAsync();
-        return View("Form", new InventoryItem());
+        return View("Form", new InventoryItemEditViewModel());
     }
 
     [HttpPost, ValidateAntiForgeryToken]
     [Authorize(Policy = Policies.ManageAssets)]
-    public async Task<IActionResult> Create(InventoryItem item, int[] categoryIds, int[] purposeIds)
+    public async Task<IActionResult> Create(InventoryItemEditViewModel model,
+                                            int[] categoryIds, int[] purposeIds)
     {
-        await ValidateUniqueSeqNoAsync(item);
+        await ValidateUniqueSeqNoAsync(model.Id, model.SeqNo);
         if (!ModelState.IsValid)
         {
             await LoadLookupsAsync(categoryIds, purposeIds);
-            return View("Form", item);
+            return View("Form", model);
         }
 
         // 名稱一律依編號查出，不採信畫面送回來的值
-        item.SystemName = await AssetPicker.ResolveNameAsync(_db, item.SystemCode) ?? item.SystemName;
+        model.SystemName = await AssetPicker.ResolveNameAsync(_db, model.SystemCode) ?? model.SystemName;
 
+        var item = new InventoryItem();
+        InfoSystemBlocks.Copy(item, model);
         item.Categories = await _db.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
         item.Purposes = await _db.Purposes.Where(p => purposeIds.Contains(p.Id)).ToListAsync();
         _db.InventoryItems.Add(item);
         await _db.SaveChangesAsync();
+
         TempData["Message"] = $"已新增盤點項目「{item.SeqNo} {item.DocumentName}」";
         return RedirectToAction(nameof(Index));
     }
@@ -113,13 +120,19 @@ public class InventoryController : Controller
         await LoadLookupsAsync(
             item.Categories.Select(c => c.Id).ToArray(),
             item.Purposes.Select(p => p.Id).ToArray());
-        return View("Form", item);
+
+        var model = new InventoryItemEditViewModel();
+        InfoSystemBlocks.Copy(model, item);
+        model.Id = item.Id;
+        model.RowVersion = item.RowVersion;
+        return View("Form", model);
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, InventoryItem item, int[] categoryIds, int[] purposeIds)
+    public async Task<IActionResult> Edit(int id, InventoryItemEditViewModel model,
+                                          int[] categoryIds, int[] purposeIds)
     {
-        if (id != item.Id) return BadRequest();
+        if (id != model.Id) return BadRequest();
 
         var existing = await _db.InventoryItems
             .Include(i => i.Categories)
@@ -130,37 +143,34 @@ public class InventoryController : Controller
         // 原資產與改後的資產都必須在權限範圍內，否則資產負責人可以把不屬於自己的資料
         // 改成自己的資產編號、或把自己的資料丟給別人
         if (!await _access.CanModifyAsync(existing.SystemCode)
-            || !await _access.CanModifyAsync(item.SystemCode)) return Forbid();
+            || !await _access.CanModifyAsync(model.SystemCode)) return Forbid();
 
-        await ValidateUniqueSeqNoAsync(item);
+        await ValidateUniqueSeqNoAsync(model.Id, model.SeqNo);
         if (!ModelState.IsValid)
         {
             await LoadLookupsAsync(categoryIds, purposeIds);
-            return View("Form", item);
+            return View("Form", model);
         }
 
-        // 本表單不維護風險自評欄位，先帶回既有值，避免 SetValues 以空值覆寫。
-        item.RiskDataSeqNo = existing.RiskDataSeqNo;
-        item.RiskCategoryCode = existing.RiskCategoryCode;
-        item.RiskCategoryName = existing.RiskCategoryName;
-        item.RiskEvent = existing.RiskEvent;
-        item.RiskImpactLevel = existing.RiskImpactLevel;
-        item.RiskLikelihoodLevel = existing.RiskLikelihoodLevel;
-        item.RiskRelatedRegulation = existing.RiskRelatedRegulation;
-        item.RiskControlDescription = existing.RiskControlDescription;
-        item.RiskEffectivenessLevel = existing.RiskEffectivenessLevel;
-        item.RiskValue = existing.RiskValue;
-        item.RiskImprovementPlan = existing.RiskImprovementPlan;
-        item.RiskUnitConfirm = existing.RiskUnitConfirm;
-        item.RiskRemark = existing.RiskRemark;
+        model.SystemName = await AssetPicker.ResolveNameAsync(_db, model.SystemCode) ?? model.SystemName;
 
-        item.SystemName = await AssetPicker.ResolveNameAsync(_db, item.SystemCode) ?? item.SystemName;
-
-        _db.Entry(existing).CurrentValues.SetValues(item);
+        // 只搬 ViewModel 上有的欄位。風險自評那一組、軌跡與刪除註記都不在上面，
+        // 因此不必再手動回填既有值——它們根本不會被畫面覆寫。
+        InfoSystemBlocks.Copy(existing, model);
         existing.Categories = await _db.Categories.Where(c => categoryIds.Contains(c.Id)).ToListAsync();
         existing.Purposes = await _db.Purposes.Where(p => purposeIds.Contains(p.Id)).ToListAsync();
-        await _db.SaveChangesAsync();
-        TempData["Message"] = $"已更新盤點項目「{item.SeqNo} {item.DocumentName}」";
+        _db.Entry(existing).Property(e => e.RowVersion).OriginalValue = model.RowVersion;
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            TempData["Error"] = "這筆資料在你編輯期間已被其他人修改，畫面已重新載入最新內容，請確認後再存一次。";
+            return RedirectToAction(nameof(Edit), new { id });
+        }
+
+        TempData["Message"] = $"已更新盤點項目「{existing.SeqNo} {existing.DocumentName}」";
         return RedirectToAction(nameof(Index));
     }
 
@@ -173,7 +183,10 @@ public class InventoryController : Controller
             // 資產負責人只能刪除名下資產底下的資料
             if (!await _access.CanModifyAsync(item.SystemCode)) return Forbid();
 
-            _db.InventoryItems.Remove(item);
+            // 軟刪除：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失
+            item.IsDeleted = true;
+            item.DeletedAt = DateTime.Now;
+            item.DeletedBy = _currentUser.Name;
             await _db.SaveChangesAsync();
             TempData["Message"] = $"已刪除盤點項目「{item.SeqNo} {item.DocumentName}」";
         }
@@ -192,10 +205,10 @@ public class InventoryController : Controller
     }
 
     /// <summary>編號在主檔須唯一（資料庫也有對應的唯一索引）。</summary>
-    private async Task ValidateUniqueSeqNoAsync(InventoryItem item)
+    private async Task ValidateUniqueSeqNoAsync(int id, string seqNo)
     {
-        if (!string.IsNullOrWhiteSpace(item.SeqNo)
-            && await _db.InventoryItems.AnyAsync(i => i.SeqNo == item.SeqNo && i.Id != item.Id))
-            ModelState.AddModelError(nameof(InventoryItem.SeqNo), $"編號 {item.SeqNo} 已存在");
+        if (!string.IsNullOrWhiteSpace(seqNo)
+            && await _db.InventoryItems.AnyAsync(i => i.SeqNo == seqNo && i.Id != id))
+            ModelState.AddModelError(nameof(InventoryItem.SeqNo), $"編號 {seqNo} 已存在");
     }
 }

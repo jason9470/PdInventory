@@ -113,7 +113,9 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+// AllowAnonymous：靜態檔是端點，會套用全域的 FallbackPolicy（必須登入）。
+// 少了這一句，未登入時連 bootstrap.min.css 都被導回登入頁——登入頁自己因此沒有樣式。
+app.MapStaticAssets().AllowAnonymous();
 
 app.MapControllerRoute(
     name: "default",

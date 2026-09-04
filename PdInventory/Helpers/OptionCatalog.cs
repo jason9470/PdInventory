@@ -9,9 +9,38 @@ namespace PdInventory.Helpers;
 /// <param name="Title">側邊欄與維護畫面的標題。</param>
 /// <param name="Group">所屬表單，對應 <see cref="MaintenanceCatalog"/> 的群組代碼。</param>
 /// <param name="IsMultiple">多選欄位（值以 / 分隔）。</param>
-public record OptionField(string Field, string Title, string Group, bool IsMultiple)
+/// <param name="NumericOnly">
+/// 選項必須是數字。機密性／完整性／可用性三個等級會被
+/// <c>AppDbContext.RecalculateAssetValues</c> 相加算出資產價值，
+/// 混進一個非數字的選項，資產價值會**安靜地停止計算**而不會報錯。
+/// </param>
+/// <param name="ReservedValues">
+/// 程式碼直接依賴、不准刪除的選項。例如「核心系統」寫死在 site.js 的
+/// <c>CORE_CATEGORY</c>，被刪掉之後資產價值 &gt; 10 的阻擋視窗就失效了。
+/// </param>
+public record OptionField(string Field, string Title, string Group, bool IsMultiple,
+                          bool NumericOnly = false,
+                          IReadOnlyList<string>? ReservedValues = null)
 {
     public string ModeLabel => IsMultiple ? "多選" : "單選";
+
+    public IReadOnlyList<string> Reserved => ReservedValues ?? [];
+
+    public bool IsReserved(string value) =>
+        Reserved.Any(v => string.Equals(v, value, StringComparison.Ordinal));
+
+    /// <summary>新增選項時的檢查。通過回傳 null，否則回傳要顯示的原因。</summary>
+    public string? RejectReason(string value)
+    {
+        if (IsMultiple && value.Contains(MultiValue.Separator))
+            return $"多選欄位的選項不能包含「{MultiValue.Separator}」，那是分隔符號。";
+
+        if (NumericOnly && !int.TryParse(value, out _))
+            return $"「{Title}」的選項必須是數字——資產價值是把這三個等級相加算出來的，"
+                 + "混進非數字的選項會讓它算不出來。";
+
+        return null;
+    }
 }
 
 /// <summary>
@@ -48,6 +77,16 @@ public static class OptionCatalog
         new(nameof(InventoryItem.SubjectType), "個資當事人類別", "Inventory", IsMultiple: false),
         new(nameof(InventoryItem.TransferMethod), "傳輸：對外傳遞方式", "Inventory", IsMultiple: false),
         new(nameof(InventoryItem.Disposal), "處置：期限屆滿後處置方式", "Inventory", IsMultiple: false),
+
+        // ── 程式碼有依賴的四個，維護畫面會擋住會弄壞計算的操作 ────────────
+        new(nameof(InfoSystem.SwSystemCategory), "SW-系統類別", "Software", IsMultiple: false,
+            ReservedValues: ["核心系統"]),
+        new(nameof(InfoSystem.SwConfidentiality), "SW-機密性", "Software", IsMultiple: false,
+            NumericOnly: true),
+        new(nameof(InfoSystem.SwIntegrity), "SW-完整性", "Software", IsMultiple: false,
+            NumericOnly: true),
+        new(nameof(InfoSystem.SwAvailability), "SW-可用性", "Software", IsMultiple: false,
+            NumericOnly: true),
     ];
 
     public static OptionField? Find(string? field) =>

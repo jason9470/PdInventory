@@ -1,4 +1,4 @@
-﻿@model PdInventory.Models.InventoryItem
+﻿@model PdInventory.Models.ViewModels.InventoryItemEditViewModel
 @{
     var isNew = Model.Id == 0;
     ViewData["Title"] = isNew ? "新增盤點項目" : $"編輯盤點項目 {Model.SeqNo}";
@@ -14,6 +14,8 @@
 <form method="post" class="pd-form" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
+    @* 並行控制：帶回載入當下的權杖，存檔時比對是否已被他人改過 *@
+    <input type="hidden" asp-for="RowVersion" />
     @* 並行控制：帶回載入當下的權杖 *@
     <input type="hidden" asp-for="RowVersion" />
 

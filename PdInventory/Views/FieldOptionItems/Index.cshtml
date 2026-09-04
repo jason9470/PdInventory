@@ -53,7 +53,14 @@
                                             title="下移" disabled="@(i == Model.Count - 1)">▼</button>
                                 </form>
                             </td>
-                            <td class="text-break fw-semibold">@item.Value</td>
+                            <td class="text-break fw-semibold">
+                                @item.Value
+                                @if (field.IsReserved(item.Value))
+                                {
+                                    <span class="badge text-bg-dark ms-1"
+                                          title="程式邏輯依賴這個選項，不能刪除">系統保留</span>
+                                }
+                            </td>
                             <td>
                                 @if (used > 0)
                                 {
@@ -77,9 +84,14 @@
                                 <form method="post" asp-action="Delete" asp-route-id="@item.Id" class="d-inline"
                                       onsubmit="return confirm('確定刪除選項「@item.Value」？');">
                                     @Html.AntiForgeryToken()
+                                    @{
+                                        var reserved = field.IsReserved(item.Value);
+                                        var reason = reserved ? "程式邏輯依賴這個選項，不能刪除"
+                                                   : used > 0 ? "還被資料使用中，不能刪除"
+                                                   : "刪除";
+                                    }
                                     <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            disabled="@(used > 0)"
-                                            title="@(used > 0 ? "還被資料使用中，不能刪除" : "刪除")">刪除</button>
+                                            disabled="@(used > 0 || reserved)" title="@reason">刪除</button>
                                 </form>
                             </td>
                         </tr>
@@ -109,6 +121,11 @@
                             {
                                 <text>不能包含「@PdInventory.Helpers.MultiValue.Separator」，那是分隔符號。</text>
                             }
+                            @if (field.NumericOnly)
+                            {
+                                <text><strong>必須是數字</strong>——資產價值是把機密性、完整性、
+                                可用性三個等級相加算出來的。</text>
+                            }
                         </div>
                     </div>
                     <div class="mb-3">
@@ -126,6 +143,12 @@
             只會讓它們變成選不到的舊值。要改字請新增正確的選項、把資料改過去，再刪掉舊的。
             <br />
             還在使用中的選項不能刪除，「使用中」那一欄看得到有幾筆在用。
+            @if (field.Reserved.Count > 0)
+            {
+                <br />
+                <text>標示<span class="badge text-bg-dark">系統保留</span>的選項是程式邏輯直接依賴的，
+                一律不能刪除。</text>
+            }
         </div>
     </div>
 </div>

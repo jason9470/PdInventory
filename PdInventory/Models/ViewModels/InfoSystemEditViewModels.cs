@@ -174,3 +174,67 @@ public class InfoSystemEditViewModel
     public DataEditViewModel Data { get; set; } = new();
     public SystemEditViewModel Sheet3 { get; set; } = new();
 }
+
+/// <summary>個人資料檔案盤點表－人為產出。不含風險自評那一組欄位（由風險自評畫面維護），也不含軌跡與刪除註記。</summary>
+[ModelMetadataType(typeof(InventoryItem))]
+public class InventoryItemEditViewModel : IInfoSystemBlockViewModel
+{
+    public int Id { get; set; }
+
+    /// <summary>並行權杖：畫面載入當下的值，存檔時比對是否已被他人改過。</summary>
+    public Guid RowVersion { get; set; }
+
+    public string SeqNo { get; set; } = "";
+    public string DocumentName { get; set; } = "";
+    public string SubjectCount { get; set; } = "";
+    public string SubjectType { get; set; } = "";
+    public bool HasSpecialData { get; set; }
+    public string SpecialDataLegalBasis { get; set; } = "";
+    public bool MinFieldCompliant { get; set; }
+    public string SystemCode { get; set; } = "";
+    public string SystemName { get; set; } = "";
+    public string SourceCode { get; set; } = "";
+    public string SourceName { get; set; } = "";
+    public string CompanyRole { get; set; } = "";
+    public string CollectProcedure { get; set; } = "";
+    public string CollectStatement { get; set; } = "";
+    public string CollectConsent { get; set; } = "";
+    public string ProcessProcedure { get; set; } = "";
+    public string ProcessDept { get; set; } = "";
+    public string ProcessStatement { get; set; } = "";
+    public string ProcessConsent { get; set; } = "";
+    public string TransferTarget { get; set; } = "";
+    public string TransferContract { get; set; } = "";
+    public string TransferMethod { get; set; } = "";
+    public string TransferCountry { get; set; } = "";
+    public string RetentionPaper { get; set; } = "";
+    public string RetentionDigital { get; set; } = "";
+    public string LocationPaper { get; set; } = "";
+    public string LocationDigital { get; set; } = "";
+    public string Disposal { get; set; } = "";
+    public string Remark { get; set; } = "";
+}
+
+/// <summary>系統自動拋轉(出/入)清單－系統產出。不含軌跡與刪除註記。</summary>
+[ModelMetadataType(typeof(TransferRecord))]
+public class TransferRecordEditViewModel : IInfoSystemBlockViewModel
+{
+    public int Id { get; set; }
+
+    /// <summary>並行權杖：畫面載入當下的值，存檔時比對是否已被他人改過。</summary>
+    public Guid RowVersion { get; set; }
+
+    public string SeqNo { get; set; } = "";
+    public string TransferType { get; set; } = "";
+    public string SystemCode { get; set; } = "";
+    public string SystemName { get; set; } = "";
+    public string PathName { get; set; } = "";
+    public string ExternalUnit { get; set; } = "";
+    public string InternalUnit { get; set; } = "";
+    public string ContentDescription { get; set; } = "";
+    public string SpecialData { get; set; } = "";
+    public string SubjectCount { get; set; } = "";
+    public string InternationalTransfer { get; set; } = "";
+    public string Contract { get; set; } = "";
+    public string Remark { get; set; } = "";
+}

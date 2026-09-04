@@ -83,7 +83,7 @@ public class Purpose
 }
 
 /// <summary>Sheet1：個人資料檔案盤點表</summary>
-public class InventoryItem : IAuditable, IConcurrencyAware
+public class InventoryItem : IAuditable, IConcurrencyAware, ISoftDeletable
 {
     public int Id { get; set; }
 
@@ -274,10 +274,18 @@ public class InventoryItem : IAuditable, IConcurrencyAware
     [Display(Name = "並行控制標記")]
     public Guid RowVersion { get; set; }
 
+    // ── 軟刪除 ──────────────────────────────────────────────
+    // 與 InfoSystem 同一套：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失。
+    // 盤點資料是稽核用的，誤刪之後查不回來比留著一列註記麻煩得多。
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    [StringLength(100)]
+    public string DeletedBy { get; set; } = "";
+
 }
 
 /// <summary>Sheet2：系統自動拋轉清單</summary>
-public class TransferRecord : IAuditable, IConcurrencyAware
+public class TransferRecord : IAuditable, IConcurrencyAware, ISoftDeletable
 {
     public int Id { get; set; }
 
@@ -285,7 +293,7 @@ public class TransferRecord : IAuditable, IConcurrencyAware
     [Required(ErrorMessage = "編號必填"), StringLength(20)]
     public string SeqNo { get; set; } = "";
 
-    [Display(Name = "類別(拋入/拋出)")]
+    [Display(Name = "類別")]
     [Required(ErrorMessage = "類別必填"), StringLength(20)]
     public string TransferType { get; set; } = "";
 
@@ -347,6 +355,14 @@ public class TransferRecord : IAuditable, IConcurrencyAware
 
     [Display(Name = "並行控制標記")]
     public Guid RowVersion { get; set; }
+
+    // ── 軟刪除 ──────────────────────────────────────────────
+    // 與 InfoSystem 同一套：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失。
+    // 盤點資料是稽核用的，誤刪之後查不回來比留著一列註記麻煩得多。
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    [StringLength(100)]
+    public string DeletedBy { get; set; } = "";
 
 }
 

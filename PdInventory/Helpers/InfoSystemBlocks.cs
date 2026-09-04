@@ -93,18 +93,34 @@ public static class InfoSystemBlocks
     /// 存檔時安靜地保持舊值——那種錯誤很難從畫面看出來。改成在啟動時就擲出例外，
     /// 讓它變成一眼可見的失敗。由 Program.cs 在建好服務後呼叫。
     /// </summary>
+    /// <summary>風險自評獨有的欄位：存在 InventoryItem 上，但由風險自評畫面維護。</summary>
+    private static readonly string[] RiskFields =
+    [
+        nameof(InventoryItem.RiskDataSeqNo), nameof(InventoryItem.RiskCategoryCode),
+        nameof(InventoryItem.RiskCategoryName), nameof(InventoryItem.RiskEvent),
+        nameof(InventoryItem.RiskImpactLevel), nameof(InventoryItem.RiskLikelihoodLevel),
+        nameof(InventoryItem.RiskRelatedRegulation), nameof(InventoryItem.RiskControlDescription),
+        nameof(InventoryItem.RiskEffectivenessLevel), nameof(InventoryItem.RiskValue),
+        nameof(InventoryItem.RiskImprovementPlan), nameof(InventoryItem.RiskUnitConfirm),
+        nameof(InventoryItem.RiskRemark),
+    ];
+
     public static void AssertViewModelsCoverAllFields()
     {
-        var pairs = new (Type Entity, Type ViewModel)[]
+        // Excluded：實體上有、但那個畫面刻意不維護的欄位。
+        // 個資盤點表的風險自評那一組由風險自評畫面維護，不該出現在盤點表單上。
+        var pairs = new (Type Entity, Type ViewModel, string[] Excluded)[]
         {
-            (typeof(InfoSystem), typeof(SoftwareEditViewModel)),
-            (typeof(DataAsset), typeof(DataEditViewModel)),
-            (typeof(SystemInventory), typeof(SystemEditViewModel)),
+            (typeof(InfoSystem), typeof(SoftwareEditViewModel), []),
+            (typeof(DataAsset), typeof(DataEditViewModel), []),
+            (typeof(SystemInventory), typeof(SystemEditViewModel), []),
+            (typeof(InventoryItem), typeof(InventoryItemEditViewModel), RiskFields),
+            (typeof(TransferRecord), typeof(TransferRecordEditViewModel), []),
         };
 
         var missing = new List<string>();
 
-        foreach (var (entity, viewModel) in pairs)
+        foreach (var (entity, viewModel, excluded) in pairs)
         {
             var declared = viewModel
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -114,7 +130,8 @@ public static class InfoSystemBlocks
             missing.AddRange(entity
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.CanWrite && p.PropertyType == typeof(string)
-                            && !NotWritable.Contains(p.Name) && !declared.Contains(p.Name))
+                            && !NotWritable.Contains(p.Name) && !declared.Contains(p.Name)
+                            && !excluded.Contains(p.Name))
                 .Select(p => $"{viewModel.Name} 缺少 {entity.Name}.{p.Name}"));
         }
 

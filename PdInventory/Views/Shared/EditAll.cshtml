@@ -47,7 +47,7 @@
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwSystemCategory" class="form-label"></label><select asp-for="Software.SwSystemCategory" class="form-select sw-system-category"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwSystemCategory), Model.Software.SwSystemCategory)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwSystemCategory), Model.Software.SwSystemCategory)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwAdIntegration" class="form-label"></label><select asp-for="Software.SwAdIntegration" class="form-select"
@@ -87,15 +87,15 @@
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwUserUnit", Model.Software.SwUserUnit, Lookup.Departments)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwConfidentiality" class="form-label"></label><select asp-for="Software.SwConfidentiality" class="form-select sw-cia"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwConfidentiality), Model.Software.SwConfidentiality)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwConfidentiality), Model.Software.SwConfidentiality)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwIntegrity" class="form-label"></label><select asp-for="Software.SwIntegrity" class="form-select sw-cia"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwIntegrity), Model.Software.SwIntegrity)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwIntegrity), Model.Software.SwIntegrity)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwAvailability" class="form-label"></label><select asp-for="Software.SwAvailability" class="form-select sw-cia"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwAvailability), Model.Software.SwAvailability)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwAvailability), Model.Software.SwAvailability)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwAssetValue" class="form-label"></label><input asp-for="Software.SwAssetValue" class="form-control sw-asset-value" readonly
@@ -109,18 +109,30 @@
                 </select></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainer" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
-                    "Software.SwAppMaintainer", Model.Software.SwAppMaintainer, Lookup.Employees)' /></div>
-            <div class="col-md-3"><label asp-for="Software.SwAppMaintainerDeputy" class="form-label"></label><input asp-for="Software.SwAppMaintainerDeputy" class="form-control" /></div>
+                    "Software.SwAppMaintainer", Model.Software.SwAppMaintainer, Lookup.Employees, AllowCustom: true)' /></div>
+            <div class="col-md-6"><label asp-for="Software.SwAppMaintainerDeputy" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwAppMaintainerDeputy", Model.Software.SwAppMaintainerDeputy,
+                    Lookup.Employees, AllowCustom: true)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwOperator" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
-                    "Software.SwOperator", Model.Software.SwOperator, Lookup.OpsStaff)' /></div>
+                    "Software.SwOperator", Model.Software.SwOperator, Lookup.OpsStaff, AllowCustom: true)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwDevMode" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwDevMode", Model.Software.SwDevMode, Lookup.OptionsFor(nameof(InfoSystem.SwDevMode)))' /></div>
             <div class="col-md-3"><label asp-for="Software.SwMaintMode" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwMaintMode", Model.Software.SwMaintMode, Lookup.OptionsFor(nameof(InfoSystem.SwMaintMode)))' /></div>
-            <div class="col-md-3"><label asp-for="Software.SwVendor" class="form-label"></label><input asp-for="Software.SwVendor" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Software.SwVendor" class="form-label"></label>
+                @* 廠商不進維護表：可以從既有的值挑，也可以直接打新的（datalist 就是這個行為） *@
+                <input asp-for="Software.SwVendor" class="form-control" list="swVendorList"
+                       autocomplete="off" placeholder="可挑選或自行輸入" />
+                <datalist id="swVendorList">
+                    @foreach (var vendor in Lookup.Vendors)
+                    {
+                        <option value="@vendor"></option>
+                    }
+                </datalist></div>
             <div class="col-md-3"><label asp-for="Software.SwLanguage" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwLanguage", Model.Software.SwLanguage, Lookup.OptionsFor(nameof(InfoSystem.SwLanguage)))' /></div>
@@ -140,10 +152,10 @@
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwDeveloper" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
-                    "Software.SwDeveloper", Model.Software.SwDeveloper, Lookup.Employees)' /></div>
+                    "Software.SwDeveloper", Model.Software.SwDeveloper, Lookup.Employees, AllowCustom: true)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwDeployer" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
-                    "Software.SwDeployer", Model.Software.SwDeployer, Lookup.OpsStaff)' /></div>
+                    "Software.SwDeployer", Model.Software.SwDeployer, Lookup.OpsStaff, AllowCustom: true)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwRpo" class="form-label"></label><select asp-for="Software.SwRpo" class="form-select"
                     asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwRpo), Model.Software.SwRpo)">
                 <option value="">-- 請選擇 --</option>
