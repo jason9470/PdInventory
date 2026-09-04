@@ -43,7 +43,7 @@
             <div class="col-md-3">
                 <label asp-for="SubjectType" class="form-label"></label>
                 <select asp-for="SubjectType" class="form-select"
-                        asp-items="FieldOptions.ItemsFor(nameof(InventoryItem.SubjectType), Model.SubjectType)">
+                        asp-items="Lookup.OptionItemsFor(nameof(InventoryItem.SubjectType), Model.SubjectType)">
                     <option value="">-- 請選擇 --</option>
                 </select>
             </div>
@@ -201,7 +201,7 @@
             <div class="col-md-3">
                 <label asp-for="TransferMethod" class="form-label"></label>
                 <select asp-for="TransferMethod" class="form-select"
-                        asp-items="FieldOptions.ItemsFor(nameof(InventoryItem.TransferMethod), Model.TransferMethod)">
+                        asp-items="Lookup.OptionItemsFor(nameof(InventoryItem.TransferMethod), Model.TransferMethod)">
                     <option value="">-- 請選擇 --</option>
                 </select>
             </div>
@@ -226,7 +226,7 @@
             <div class="col-md-6">
                 <label asp-for="Disposal" class="form-label"></label>
                 <select asp-for="Disposal" class="form-select"
-                        asp-items="FieldOptions.ItemsFor(nameof(InventoryItem.Disposal), Model.Disposal)">
+                        asp-items="Lookup.OptionItemsFor(nameof(InventoryItem.Disposal), Model.Disposal)">
                     <option value="">-- 請選擇 --</option>
                 </select>
             </div>

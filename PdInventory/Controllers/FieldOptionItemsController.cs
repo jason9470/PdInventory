@@ -143,10 +143,24 @@ public class FieldOptionItemsController : Controller
 
     /// <summary>
     /// 這個欄位目前存了哪些值。屬性名稱是動態的，用 EF.Property 取，
-    /// 這樣 OptionCatalog 多登記一個欄位時這裡不必跟著改。
+    /// 這樣 OptionCatalog 多登記一個同表的欄位時這裡不必跟著改。
+    ///
+    /// 以屬性掛在哪個實體上決定要查哪張表。若日後有欄位登記在這三張以外的實體，
+    /// 這裡會擲出例外而不是安靜地算成 0——寧可當場壞掉，也不要讓刪除保護失效。
     /// </summary>
-    private async Task<List<string>> StoredValuesAsync(OptionField target) =>
-        typeof(DataAsset).GetProperty(target.Field) is not null
-            ? await _db.DataAssets.Select(d => EF.Property<string>(d, target.Field)).ToListAsync()
-            : await _db.InfoSystems.Select(s => EF.Property<string>(s, target.Field)).ToListAsync();
+    private async Task<List<string>> StoredValuesAsync(OptionField target)
+    {
+        if (typeof(InfoSystem).GetProperty(target.Field) is not null)
+            return await _db.InfoSystems.Select(s => EF.Property<string>(s, target.Field)).ToListAsync();
+
+        if (typeof(DataAsset).GetProperty(target.Field) is not null)
+            return await _db.DataAssets.Select(d => EF.Property<string>(d, target.Field)).ToListAsync();
+
+        if (typeof(InventoryItem).GetProperty(target.Field) is not null)
+            return await _db.InventoryItems.Select(i => EF.Property<string>(i, target.Field)).ToListAsync();
+
+        throw new InvalidOperationException(
+            $"OptionCatalog 登記的欄位 {target.Field} 不屬於 InfoSystem／DataAsset／InventoryItem，"
+            + "請在 StoredValuesAsync 補上對應的資料表。");
+    }
 }

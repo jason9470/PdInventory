@@ -34,7 +34,20 @@ public static class OptionCatalog
         new(nameof(InfoSystem.SwMaintMode), "SW-自行/委外維護", "Software", IsMultiple: true),
         new(nameof(InfoSystem.SwLanguage), "SW-使用語言種類", "Software", IsMultiple: true),
         new(nameof(InfoSystem.SwTrailStorage), "SW-軌跡留存方式", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwStatus), "SW-資產狀態", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwAdIntegration), "SW-與AD整合", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwVersionControl), "SW-版控系統", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwDeployMethod), "SW-上版方式", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwCodeAccess), "SW-程式碼存取方式", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwThirdPartyComponents), "SW-第三方元件程式/版本", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwRto), "SW-回復時間目標(RTO)", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwRpo), "SW-回復資料目標(RPO)", "Software", IsMultiple: false),
+
         new(nameof(DataAsset.DaHasSensitiveData), "DA-有無機敏資料", "Data", IsMultiple: true),
+
+        new(nameof(InventoryItem.SubjectType), "個資當事人類別", "Inventory", IsMultiple: false),
+        new(nameof(InventoryItem.TransferMethod), "傳輸：對外傳遞方式", "Inventory", IsMultiple: false),
+        new(nameof(InventoryItem.Disposal), "處置：期限屆滿後處置方式", "Inventory", IsMultiple: false),
     ];
 
     public static OptionField? Find(string? field) =>

@@ -4,16 +4,22 @@ using PdInventory.Models;
 namespace PdInventory.Helpers;
 
 /// <summary>
-/// 值固定、不隨組織異動的欄位選項。
+/// **邏輯上封閉**的欄位選項——是／否、有／無、Y／N 這種沒有第三個答案的，
+/// 以及兩張清單各自的型錄常數（軟體／資料）。
 ///
-/// 與「維護資料」表（附表一、附表二、3-1~3-4）的分工：單位、人員、地點那類會隨組織
-/// 變動的選項要進資料表，由管理者自行維護；這裡放的是像「是／否」「線上／下線」
-/// 這種本質上不會變的，寫在程式裡即可，不值得為它們各開一張維護表。
+/// 開放這些讓人編輯只有壞處：多一個「也許」並不會讓資料更準確。
+/// 剩下的 15 個欄位就是這樣的性質，其餘的都已經移到 <see cref="OptionCatalog"/>。
+///
+/// 三種選項來源的分工：
+///   FieldOptions（這裡）　　　邏輯封閉，寫死在程式裡。
+///   OptionCatalog ＋ FieldOptionItems　值固定但業務端要能自己增刪，存資料表、有維護畫面。
+///   Departments／Employees／OpsStaffs　組織資料，各有專屬的維護畫面。
 ///
 /// 選項來自 docs/欄位選項化盤點.md 的逐欄統計，並已確認涵蓋資料庫現有的所有值。
 ///
-/// 還有第三種來源：<see cref="OptionCatalog"/>——值固定但**業務端要能自己維護**的欄位
-/// （位置、使用語言、自行/委外開發…），選項存在資料表，由側邊欄「維護資料」下的畫面管理。
+/// **注意**：這裡還留著三組程式碼有依賴的選項，改動前要先看依賴：
+///   機密性／完整性／可用性　AppDbContext 會把三個值相加算資產價值，必須是數字。
+///   系統類別　　　　　　　　site.js 的 CORE_CATEGORY 寫死「核心系統」。
 /// </summary>
 public static class FieldOptions
 {
@@ -34,9 +40,6 @@ public static class FieldOptions
     private static readonly Dictionary<string, string[]> Map = new()
     {
         // ── 資訊資產清單－軟體(SW) ───────────────────────────
-        // 0902 的來源資料在「否」後面加了括號說明，屬於既有答案的細分
-        [nameof(InfoSystem.SwAdIntegration)] =
-            ["是", "否", "否(電子交易密碼)", "否(無AP密碼)", "否(作業系統密碼)"],
         [nameof(InfoSystem.SwLocalHa)] = YesNo,
         [nameof(InfoSystem.SwRemoteHa)] = YesNo,
         [nameof(InfoSystem.SwHasUiAuth)] = YesNo,
@@ -49,33 +52,21 @@ public static class FieldOptions
         [nameof(InfoSystem.SwHasRecoveryPlan)] = HasNoneNa,
         [nameof(InfoSystem.SwHasDrDrill)] = HasNoneNa,
 
-        // 「下線」目前資料裡還沒出現過，但那是資產狀態本來就有的另一個值，先留著
-        [nameof(InfoSystem.SwStatus)] = ["線上", "下線"],
+        // 這兩張清單就是這個類別，型錄常數而不是可選的答案
         [nameof(InfoSystem.SwAssetType)] = ["軟體"],
         [nameof(InfoSystem.SwSystemCategory)] = ["一般系統", "核心系統", "套裝系統"],
         [nameof(InfoSystem.SwConfidentiality)] = Levels,
         [nameof(InfoSystem.SwIntegrity)] = Levels,
         [nameof(InfoSystem.SwAvailability)] = Levels,
-        [nameof(InfoSystem.SwVersionControl)] = ["TFS", "N/A"],
-        [nameof(InfoSystem.SwDeployMethod)] = ["OP過版", "N/A"],
-        [nameof(InfoSystem.SwCodeAccess)] = ["目錄與OP分開", "N/A"],
-        [nameof(InfoSystem.SwThirdPartyComponents)] = ["詳列於第三方元件檢測平台", "無", "委外系統", "N/A"],
-        [nameof(InfoSystem.SwRto)] = ["15分鐘", "30分鐘", "1小時", "2小時", "4小時", "8小時", "24小時", "N/A"],
-        [nameof(InfoSystem.SwRpo)] =
-            ["15分鐘", "30分鐘", "1小時", "2小時", "3小時", "4小時", "8小時", "24小時", "168小時", "不適用", "N/A"],
 
         // ── 資訊資產清單－資料(DA) ───────────────────────────
         [nameof(DataAsset.DaAssetType)] = ["資料"],
 
         // ── 個人資料檔案盤點表－人為產出 ─────────────────────
-        // 這三個欄位目前的資料只出現過單一值，其餘選項當初是依欄位語意補上的，
+        // 目前的資料只出現過單一值，另一個選項當初是依欄位語意補上的，
         // 2026-09-03 已經業務端確認可以照這樣保留。
-        [nameof(InventoryItem.SubjectType)] = ["客戶", "員工", "其他"],
         [nameof(InventoryItem.SpecialDataLegalBasis)] = ["Y", "N"],
         [nameof(InventoryItem.CompanyRole)] = ["資料控制者", "資料處理者"],
-
-        [nameof(InventoryItem.TransferMethod)] = ["SFTP加密檔案", "FTP加密檔案", "電子交換"],
-        [nameof(InventoryItem.Disposal)] = ["資料抹除", "永久保存", "設定排程自動清除資料"],
 
         // ── 拋轉清單 ─────────────────────────────────────────
         // 原始資料有「拋出/拋入」這種一格兩件事的寫法，2026-09-03 業務端確認

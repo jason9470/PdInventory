@@ -50,7 +50,7 @@
         <div class="card-header fw-bold bg-primary text-white">資訊資產清單－軟體(SW)</div>
         <div class="card-body row g-3">
             <div class="col-md-3"><label asp-for="Software.SwStatus" class="form-label"></label><select asp-for="Software.SwStatus" class="form-select"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwStatus), Model.Software.SwStatus)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwStatus), Model.Software.SwStatus)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwAssetType" class="form-label"></label><select asp-for="Software.SwAssetType" class="form-select"
@@ -62,13 +62,13 @@
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwAdIntegration" class="form-label"></label><select asp-for="Software.SwAdIntegration" class="form-select"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwAdIntegration), Model.Software.SwAdIntegration)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwAdIntegration), Model.Software.SwAdIntegration)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwOsVersion" class="form-label"></label><input asp-for="Software.SwOsVersion" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwDbToolVersion" class="form-label"></label><input asp-for="Software.SwDbToolVersion" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Software.SwThirdPartyComponents" class="form-label"></label><select asp-for="Software.SwThirdPartyComponents" class="form-select"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwThirdPartyComponents), Model.Software.SwThirdPartyComponents)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwThirdPartyComponents), Model.Software.SwThirdPartyComponents)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-6"><label asp-for="Software.SwUserAccountGrant" class="form-label"></label>
@@ -136,17 +136,17 @@
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwLanguage", Model.Software.SwLanguage, Lookup.OptionsFor(nameof(InfoSystem.SwLanguage)))' /></div>
             <div class="col-md-3"><label asp-for="Software.SwVersionControl" class="form-label"></label><select asp-for="Software.SwVersionControl" class="form-select"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwVersionControl), Model.Software.SwVersionControl)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwVersionControl), Model.Software.SwVersionControl)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwApRepoPath" class="form-label"></label><input asp-for="Software.SwApRepoPath" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwDeployMethod" class="form-label"></label><select asp-for="Software.SwDeployMethod" class="form-select"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwDeployMethod), Model.Software.SwDeployMethod)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwDeployMethod), Model.Software.SwDeployMethod)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwOpRepoPath" class="form-label"></label><input asp-for="Software.SwOpRepoPath" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwCodeAccess" class="form-label"></label><select asp-for="Software.SwCodeAccess" class="form-select"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwCodeAccess), Model.Software.SwCodeAccess)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwCodeAccess), Model.Software.SwCodeAccess)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-6"><label asp-for="Software.SwDeveloper" class="form-label"></label>
@@ -156,7 +156,7 @@
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwDeployer", Model.Software.SwDeployer, Lookup.OpsStaff)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwRpo" class="form-label"></label><select asp-for="Software.SwRpo" class="form-select"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwRpo), Model.Software.SwRpo)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwRpo), Model.Software.SwRpo)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwLocalBackup" class="form-label"></label><select asp-for="Software.SwLocalBackup" class="form-select"
@@ -179,7 +179,7 @@
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwRemoteHaArch" class="form-label"></label><input asp-for="Software.SwRemoteHaArch" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwRto" class="form-label"></label><select asp-for="Software.SwRto" class="form-select"
-                    asp-items="FieldOptions.ItemsFor(nameof(InfoSystem.SwRto), Model.Software.SwRto)">
+                    asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwRto), Model.Software.SwRto)">
                 <option value="">-- 請選擇 --</option>
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwHasRecoveryPlan" class="form-label"></label><select asp-for="Software.SwHasRecoveryPlan" class="form-select"
