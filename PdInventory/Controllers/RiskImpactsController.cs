@@ -15,7 +15,12 @@ public class RiskImpactsController : Controller
     public RiskImpactsController(AppDbContext db) => _db = db;
 
     public async Task<IActionResult> Index()
-        => View(await _db.RiskImpactLevels.OrderBy(r => r.Level).ToListAsync());
+    {
+        var levels = await _db.RiskImpactLevels.OrderBy(r => r.Level).ToListAsync();
+        ViewBag.UsageCounts = await LookupUsage.RiskLevelsAsync(
+            _db, i => i.RiskImpactLevel, levels, l => l.Level, l => l.Label);
+        return View(levels);
+    }
 
     public IActionResult Create() => View("Form", new RiskImpactLevel());
 
@@ -53,12 +58,21 @@ public class RiskImpactsController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         var model = await _db.RiskImpactLevels.FindAsync(id);
-        if (model is not null)
+        if (model is null) return RedirectToAction(nameof(Index));
+
+        // 風險自評存的是文字而不是外鍵，資料庫不會擋。既有資料有「2：中等」與只存
+        // 「2」兩種寫法，兩種都要算成使用中，否則會誤判成沒人用而放行刪除。
+        var items = await _db.InventoryItems.Select(i => i.RiskImpactLevel).ToListAsync();
+        var used = items.Count(v => v == model.Label || v == model.Level.ToString());
+        if (used > 0)
         {
-            _db.RiskImpactLevels.Remove(model);
-            await _db.SaveChangesAsync();
-            TempData["Message"] = $"已刪除影響程度「{model.Label}」";
+            TempData["Error"] = $"「{model.Label}」還被 {used} 筆風險自評使用中，請先改掉那些資料再刪除。";
+            return RedirectToAction(nameof(Index));
         }
+
+        _db.RiskImpactLevels.Remove(model);
+        await _db.SaveChangesAsync();
+        TempData["Message"] = $"已刪除影響程度「{model.Label}」";
         return RedirectToAction(nameof(Index));
     }
 

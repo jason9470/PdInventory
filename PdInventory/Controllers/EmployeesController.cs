@@ -36,6 +36,7 @@ public class EmployeesController : Controller
                                   || e.Remark.Contains(q));
 
         ViewBag.Query = q;
+        ViewBag.UsageCounts = await LookupUsage.EmployeesAsync(_db);
         // 組別待補的排在最後：那些是資料裡有、名冊沒有的，等甲方補
         return View(await query.OrderBy(e => e.TeamName == "")
                                .ThenBy(e => e.TeamName)
@@ -53,15 +54,31 @@ public class EmployeesController : Controller
         await ValidateUniqueNameAsync(model);
         if (!ModelState.IsValid) return View("Form", model);
 
-        _db.Employees.Add(model);
+        // 同一個員編以前被停用過：復原原本那筆並套上新填的內容，
+        // 而不是再插一筆同員編的——否則人員表會出現一停用、一有效的兩列。
+        var revived = string.IsNullOrWhiteSpace(model.EmpNo)
+            ? null
+            : await _provisioning.FindDeactivatedEmployeeAsync(model.EmpNo);
+
+        if (revived is not null)
+        {
+            UserProvisioning.RestoreEmployee(revived);
+            InfoSystemBlocks.Copy(revived, model);
+            model = revived;
+        }
+        else
+        {
+            _db.Employees.Add(model);
+        }
         // 建人員的同時把使用者帳號也建起來，管理者接著到權限設定調角色即可；
         // 那個人之後登入就直接對應到已經設好的權限，不必等他先登入一次。
         var user = await _provisioning.EnsureUserForEmployeeAsync(model);
         await _db.SaveChangesAsync();
 
+        var verb = revived is null ? "已新增" : "已復原先前刪除的";
         TempData["Message"] = user is null
-            ? $"已新增人員「{model.Label}」。因為沒有填員編，沒有一併建立可登入的帳號。"
-            : $"已新增人員「{model.Label}」，並在權限設定建立帳號（預設為資產負責人）。";
+            ? $"{verb}人員「{model.Label}」。因為沒有填員編，沒有一併建立可登入的帳號。"
+            : $"{verb}人員「{model.Label}」，權限設定的帳號也一併可用了。";
         return RedirectToAction(nameof(Index));
     }
 
@@ -101,6 +118,14 @@ public class EmployeesController : Controller
         if (used > 0)
         {
             TempData["Error"] = $"「{model.Name}」還被 {used} 筆資料使用中，請先改掉那些資料再刪除。";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // 從人員表刪除會繞過權限設定畫面的兩道保護，這裡補上
+        var blocked = await _provisioning.DeactivateBlockReason(model, _currentUser.EmpNo);
+        if (blocked is not null)
+        {
+            TempData["Error"] = blocked;
             return RedirectToAction(nameof(Index));
         }
 

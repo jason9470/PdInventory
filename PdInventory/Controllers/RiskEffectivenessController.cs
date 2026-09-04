@@ -53,12 +53,21 @@ public class RiskEffectivenessController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         var model = await _db.RiskEffectivenessLevels.FindAsync(id);
-        if (model is not null)
+        if (model is null) return RedirectToAction(nameof(Index));
+
+        // 風險自評存的是文字而不是外鍵，資料庫不會擋。這一欄的既有資料只存「2」，
+        // 畫面上選的卻是「2：普通」，兩種寫法都要算成使用中。
+        var items = await _db.InventoryItems.Select(i => i.RiskEffectivenessLevel).ToListAsync();
+        var used = items.Count(v => v == model.Label || v == model.Level.ToString());
+        if (used > 0)
         {
-            _db.RiskEffectivenessLevels.Remove(model);
-            await _db.SaveChangesAsync();
-            TempData["Message"] = $"已刪除有效性等級「{model.Label}」";
+            TempData["Error"] = $"「{model.Label}」還被 {used} 筆風險自評使用中，請先改掉那些資料再刪除。";
+            return RedirectToAction(nameof(Index));
         }
+
+        _db.RiskEffectivenessLevels.Remove(model);
+        await _db.SaveChangesAsync();
+        TempData["Message"] = $"已刪除有效性等級「{model.Label}」";
         return RedirectToAction(nameof(Index));
     }
 

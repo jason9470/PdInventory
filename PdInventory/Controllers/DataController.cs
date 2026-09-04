@@ -136,7 +136,10 @@ public class DataController : Controller
             // 沒有關連 SW 的資料資產無人可認領，只有主管以上能刪
             if (!await _access.CanModifyAsync(asset.SystemCode)) return Forbid();
 
-            _db.DataAssets.Remove(asset);
+            // 軟刪除：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失
+            asset.IsDeleted = true;
+            asset.DeletedAt = DateTime.Now;
+            asset.DeletedBy = _currentUser.Name;
             await _db.SaveChangesAsync();
             TempData["Message"] = $"已刪除資料資產「{asset.DaAssetCode}」";
         }

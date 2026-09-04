@@ -24,6 +24,7 @@ public class DepartmentsController : Controller
                                   || d.Remark.Contains(q));
 
         ViewBag.Query = q;
+        ViewBag.UsageCounts = await LookupUsage.DepartmentsAsync(_db);
         // 代號留空的排在最後：它們是資料裡有、甲方清單沒有的，待補
         return View(await query.OrderBy(d => d.CostCenter == "")
                                .ThenBy(d => d.CostCenter)

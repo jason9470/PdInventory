@@ -185,7 +185,10 @@ public class SystemsController : Controller
         {
             if (!await _access.CanModifyAsync(inventory.SystemCode)) return Forbid();
 
-            _db.SystemInventories.Remove(inventory);
+            // 軟刪除：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失
+            inventory.IsDeleted = true;
+            inventory.DeletedAt = DateTime.Now;
+            inventory.DeletedBy = _currentUser.Name;
             await _db.SaveChangesAsync();
             TempData["Message"] = $"已刪除系統盤點「{inventory.SystemCode}」";
         }

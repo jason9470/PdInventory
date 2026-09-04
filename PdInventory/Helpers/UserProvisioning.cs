@@ -68,6 +68,17 @@ public sealed class UserProvisioning
     }
 
     /// <summary>
+    /// 人員表裡這個員工編號是不是已經停用過了。管理者「刪除後再新增同一個人」時，
+    /// 應該把原本那筆復原（連同組別、科別、備註），而不是再插一筆同員編的。
+    /// </summary>
+    public Task<Employee?> FindDeactivatedEmployeeAsync(string empNo) => _db.Employees
+        .IgnoreQueryFilters()
+        .FirstOrDefaultAsync(e => e.EmpNo == empNo && e.IsDeleted);
+
+    /// <summary>停用過的人員復原。</summary>
+    public static void RestoreEmployee(Employee employee) => Restore(employee);
+
+    /// <summary>
     /// 登入時確保人員表有這個人。已停用回傳 null，呼叫端要拒絕登入。
     /// </summary>
     public async Task<Employee?> EnsureEmployeeForLoginAsync(EmployeeInfo info)
@@ -121,6 +132,30 @@ public sealed class UserProvisioning
         };
         _db.Employees.Add(employee);
         return employee;
+    }
+
+    /// <summary>
+    /// 停用前的把關。回傳 null 代表允許，否則回傳要顯示給使用者的原因。
+    ///
+    /// 權限設定畫面本來就擋著「降自己的角色」與「降掉最後一位管理者」，但從人員表
+    /// 刪除是另一條路、繞過了那兩道檢查——而管理者通常不會出現在應用系統主管、
+    /// 維護人員那些欄位裡，引用數是 0，刪除鈕根本不會擋他。只剩一位管理者又被刪掉，
+    /// 就再也沒有人進得了權限設定了。
+    /// </summary>
+    public async Task<string?> DeactivateBlockReason(Employee employee, string currentEmpNo)
+    {
+        if (string.IsNullOrWhiteSpace(employee.EmpNo)) return null;
+
+        if (string.Equals(employee.EmpNo, currentEmpNo, StringComparison.Ordinal))
+            return "不能刪除自己，請由另一位管理者操作。";
+
+        var user = await FindUserAsync(employee.EmpNo);
+        if (user is null || user.IsDeleted || user.Role != UserRole.Admin) return null;
+
+        var admins = await _db.AppUsers.CountAsync(u => u.Role == UserRole.Admin);
+        return admins <= 1
+            ? "系統至少要保留一位管理者，無法刪除這個人員——請先指派另一位管理者。"
+            : null;
     }
 
     /// <summary>

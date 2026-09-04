@@ -1,5 +1,6 @@
 @model List<PdInventory.Models.Department>
 @{
+    var usage = (Dictionary<string, int>)ViewBag.UsageCounts;
     ViewData["Title"] = "部門";
     var pending = Model.Count(d => string.IsNullOrWhiteSpace(d.CostCenter));
 }
@@ -40,6 +41,7 @@
                 <th style="min-width: 110px">利潤中心</th>
                 <th style="min-width: 260px">部門</th>
                 <th style="min-width: 240px">備註</th>
+                <th style="width: 110px">使用中</th>
                 <th style="min-width: 120px" data-nosort>操作</th>
             </tr>
         </thead>
@@ -59,12 +61,25 @@
                     </td>
                     <td class="text-break">@d.Name</td>
                     <td class="text-break"><small>@d.Remark</small></td>
+                    @{ var used = usage.GetValueOrDefault(d.Name); }
+                    <td>
+                        @if (used > 0)
+                        {
+                            <span class="badge text-bg-primary">@used 筆</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">未使用</span>
+                        }
+                    </td>
                     <td>
                         <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@d.Id">編輯</a>
                         <form method="post" asp-action="Delete" asp-route-id="@d.Id" class="d-inline"
                               onsubmit="return confirm('確定刪除部門「@d.Name」？');">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    disabled="@(used > 0)"
+                                    title="@(used > 0 ? "還被資料使用中，不能刪除" : "刪除")">刪除</button>
                         </form>
                     </td>
                 </tr>

@@ -76,6 +76,11 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<InventoryItem>().HasQueryFilter(i => !i.IsDeleted);
         modelBuilder.Entity<TransferRecord>().HasQueryFilter(t => !t.IsDeleted);
 
+        // DA 與盤點表是 0902 拆表時新建的，當時沿用硬刪除；其餘業務資料陸續改成
+        // 軟刪除之後只剩它們沒跟上，這裡補齊——同樣是甲方的稽核資料。
+        modelBuilder.Entity<DataAsset>().HasQueryFilter(d => !d.IsDeleted);
+        modelBuilder.Entity<SystemInventory>().HasQueryFilter(i => !i.IsDeleted);
+
         // 唯一索引同時排除已刪除，否則刪掉 SW-027 之後就再也不能建立同編號的資料
         modelBuilder.Entity<InfoSystem>().HasIndex(s => s.SystemCode).IsUnique()
             .HasFilter("\"SystemCode\" <> '' AND \"IsDeleted\" = 0");
@@ -86,7 +91,7 @@ public class AppDbContext : DbContext
 
         // 一套系統只會有一份盤點表；空字串排除在外的寫法同上
         modelBuilder.Entity<SystemInventory>().HasIndex(i => i.SystemCode).IsUnique()
-            .HasFilter("\"SystemCode\" <> ''");
+            .HasFilter("\"SystemCode\" <> '' AND \"IsDeleted\" = 0");
 
         // 共用維護資料：名稱是各表單存進欄位的值，必須唯一，否則下拉會出現兩個一模一樣的選項。
         // 代號（利潤中心／組別）刻意不設唯一——資料裡有、甲方清單沒有的先留空，會有一批空值。

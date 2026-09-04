@@ -24,6 +24,7 @@ public class OpsStaffController : Controller
                                   || o.Remark.Contains(q));
 
         ViewBag.Query = q;
+        ViewBag.UsageCounts = await LookupUsage.OpsStaffAsync(_db);
         // 組別留空的排在最後：它們是資料裡有、甲方清單沒有的，待補
         return View(await query.OrderBy(o => o.TeamName == "")
                                .ThenBy(o => o.TeamName)

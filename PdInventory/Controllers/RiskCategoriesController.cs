@@ -24,6 +24,7 @@ public class RiskCategoriesController : Controller
                                   || r.EventDescription.Contains(q));
 
         ViewBag.Query = q;
+        ViewBag.UsageCounts = await LookupUsage.RiskCategoriesAsync(_db);
         return View(await query.OrderBy(r => r.Code).ToListAsync());
     }
 
@@ -63,12 +64,20 @@ public class RiskCategoriesController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         var model = await _db.RiskCategories.FindAsync(id);
-        if (model is not null)
+        if (model is null) return RedirectToAction(nameof(Index));
+
+        // 風險自評存的是文字而不是外鍵，資料庫不會擋——刪掉還在用的分類，
+        // 那些資料就變成查不到來源的孤兒值，畫面上還不會有任何警告
+        var used = await _db.InventoryItems.CountAsync(i => i.RiskCategoryCode == model.Code);
+        if (used > 0)
         {
-            _db.RiskCategories.Remove(model);
-            await _db.SaveChangesAsync();
-            TempData["Message"] = $"已刪除風險分類「{model.Label}」";
+            TempData["Error"] = $"「{model.Label}」還被 {used} 筆風險自評使用中，請先改掉那些資料再刪除。";
+            return RedirectToAction(nameof(Index));
         }
+
+        _db.RiskCategories.Remove(model);
+        await _db.SaveChangesAsync();
+        TempData["Message"] = $"已刪除風險分類「{model.Label}」";
         return RedirectToAction(nameof(Index));
     }
 

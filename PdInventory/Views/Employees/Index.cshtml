@@ -1,5 +1,6 @@
 @model List<PdInventory.Models.Employee>
 @{
+    var usage = (Dictionary<string, int>)ViewBag.UsageCounts;
     ViewData["Title"] = "人員";
     var pending = Model.Count(e => string.IsNullOrWhiteSpace(e.TeamName));
     var managers = Model.Count(e => e.Section == PdInventory.Models.Employee.ManagerSection);
@@ -47,6 +48,7 @@
                 <th style="min-width: 110px">組別</th>
                 <th style="min-width: 130px">科別</th>
                 <th style="min-width: 200px">備註</th>
+                <th style="width: 110px">使用中</th>
                 <th style="min-width: 120px" data-nosort>操作</th>
             </tr>
         </thead>
@@ -78,12 +80,25 @@
                         }
                     </td>
                     <td class="text-break"><small>@e.Remark</small></td>
+                    @{ var used = usage.GetValueOrDefault(e.Name); }
+                    <td>
+                        @if (used > 0)
+                        {
+                            <span class="badge text-bg-primary">@used 筆</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">未使用</span>
+                        }
+                    </td>
                     <td>
                         <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@e.Id">編輯</a>
                         <form method="post" asp-action="Delete" asp-route-id="@e.Id" class="d-inline"
                               onsubmit="return confirm('確定刪除人員「@e.Name」？');">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    disabled="@(used > 0)"
+                                    title="@(used > 0 ? "還被資料使用中，不能刪除" : "刪除")">刪除</button>
                         </form>
                     </td>
                 </tr>

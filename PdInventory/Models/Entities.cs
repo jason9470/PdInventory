@@ -712,7 +712,7 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
 /// （各組的 PC / NB）根本沒有對應的軟體資產，那種資料在「一列 = 一套系統」的模型裡
 /// 無處可放，因此獨立成表。
 /// </summary>
-public class DataAsset : IAuditable, IConcurrencyAware
+public class DataAsset : IAuditable, IConcurrencyAware, ISoftDeletable
 {
     public int Id { get; set; }
 
@@ -771,6 +771,14 @@ public class DataAsset : IAuditable, IConcurrencyAware
     public string UpdatedBy { get; set; } = "";
     public DateTime? UpdatedAt { get; set; }
     public Guid RowVersion { get; set; }
+
+    // ── 軟刪除 ──────────────────────────────────────────────
+    // 與 InfoSystem 同一套：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失。
+    // 這是甲方的稽核資料，誤刪之後救不回來比留一列註記麻煩得多。
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    [StringLength(100)]
+    public string DeletedBy { get; set; } = "";
 }
 
 /// <summary>
@@ -779,7 +787,7 @@ public class DataAsset : IAuditable, IConcurrencyAware
 /// 與 DA 不同，這張表記錄的是某一套系統的伺服器與備份配置，
 /// 依業務端確認一定依附於某個軟體資產，因此資產編號必填。
 /// </summary>
-public class SystemInventory : IAuditable, IConcurrencyAware
+public class SystemInventory : IAuditable, IConcurrencyAware, ISoftDeletable
 {
     public int Id { get; set; }
 
@@ -832,6 +840,14 @@ public class SystemInventory : IAuditable, IConcurrencyAware
     public string UpdatedBy { get; set; } = "";
     public DateTime? UpdatedAt { get; set; }
     public Guid RowVersion { get; set; }
+
+    // ── 軟刪除 ──────────────────────────────────────────────
+    // 與 InfoSystem 同一套：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失。
+    // 這是甲方的稽核資料，誤刪之後救不回來比留一列註記麻煩得多。
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    [StringLength(100)]
+    public string DeletedBy { get; set; } = "";
 }
 
 /// <summary>
