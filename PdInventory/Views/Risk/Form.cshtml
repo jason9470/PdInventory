@@ -72,6 +72,15 @@
                 <label asp-for="RiskCategoryCode" class="form-label">風險分類編號</label>
                 <select asp-for="RiskCategoryCode" class="form-select" id="riskCategoryCode">
                     <option value="">-- 請選擇 --</option>
+                    @* 這個下拉的選項帶 data-name 供連動用，不能交給 asp-items，
+                       因此自己補一個「目前值不在選項中」的選項 *@
+                    @if (!string.IsNullOrWhiteSpace(Model.RiskCategoryCode)
+                         && !riskCategoryOptions.Any(o => (string)o.Code == Model.RiskCategoryCode))
+                    {
+                        <option value="@Model.RiskCategoryCode" selected>
+                            @Model.RiskCategoryCode（目前值，不在選項中）
+                        </option>
+                    }
                     @foreach (var opt in riskCategoryOptions)
                     {
                         <option value="@opt.Code" data-name="@opt.CategoryName">@opt.Code（@opt.CategoryName）</option>
@@ -81,12 +90,9 @@
             </div>
             <div class="col-md-6">
                 <label asp-for="RiskCategoryName" class="form-label">風險描述分類</label>
-                <select asp-for="RiskCategoryName" class="form-select" id="riskCategoryName">
+                <select asp-for="RiskCategoryName" class="form-select" id="riskCategoryName"
+                        asp-items="Lookup.ItemsFor(categoryNames, Model.RiskCategoryName)">
                     <option value="">-- 請選擇 --</option>
-                    @foreach (var c in categoryNames)
-                    {
-                        <option value="@c">@c</option>
-                    }
                 </select>
             </div>
             <div class="col-12">
@@ -101,32 +107,32 @@
         <div class="card-body row g-3">
             <div class="col-md-4">
                 <label asp-for="RiskImpactLevel" class="form-label">影響程度評估</label>
-                <select asp-for="RiskImpactLevel" class="form-select risk-level">
+                @* ItemsFor：目前值不在選項中時會多一個標示過的選項並選中它。
+                   少了它，值對不上選項的資料會顯示空白，一按儲存就被清掉——
+                   控制有效性等級就踩過這個坑（既有資料存「2」，選項是「2：良好」）。 *@
+                <select asp-for="RiskImpactLevel" class="form-select risk-level"
+                        asp-items="Lookup.ItemsFor(impactLevels, Model.RiskImpactLevel)">
                     <option value="">-- 請選擇 --</option>
-                    @foreach (var l in impactLevels)
-                    {
-                        <option value="@l">@l</option>
-                    }
                 </select>
             </div>
             <div class="col-md-4">
                 <label asp-for="RiskLikelihoodLevel" class="form-label">發生可能性評估</label>
-                <select asp-for="RiskLikelihoodLevel" class="form-select risk-level">
+                @* ItemsFor：目前值不在選項中時會多一個標示過的選項並選中它。
+                   少了它，值對不上選項的資料會顯示空白，一按儲存就被清掉——
+                   控制有效性等級就踩過這個坑（既有資料存「2」，選項是「2：良好」）。 *@
+                <select asp-for="RiskLikelihoodLevel" class="form-select risk-level"
+                        asp-items="Lookup.ItemsFor(likelihoodLevels, Model.RiskLikelihoodLevel)">
                     <option value="">-- 請選擇 --</option>
-                    @foreach (var l in likelihoodLevels)
-                    {
-                        <option value="@l">@l</option>
-                    }
                 </select>
             </div>
             <div class="col-md-4">
                 <label asp-for="RiskEffectivenessLevel" class="form-label">控制有效性等級</label>
-                <select asp-for="RiskEffectivenessLevel" class="form-select risk-level">
+                @* ItemsFor：目前值不在選項中時會多一個標示過的選項並選中它。
+                   少了它，值對不上選項的資料會顯示空白，一按儲存就被清掉——
+                   控制有效性等級就踩過這個坑（既有資料存「2」，選項是「2：良好」）。 *@
+                <select asp-for="RiskEffectivenessLevel" class="form-select risk-level"
+                        asp-items="Lookup.ItemsFor(effectivenessLevels, Model.RiskEffectivenessLevel)">
                     <option value="">-- 請選擇 --</option>
-                    @foreach (var l in effectivenessLevels)
-                    {
-                        <option value="@l">@l</option>
-                    }
                 </select>
             </div>
             <div class="col-md-8">
