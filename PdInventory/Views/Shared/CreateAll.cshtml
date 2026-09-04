@@ -275,10 +275,10 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-12"><h6 class="text-muted border-bottom pb-1 mb-0">I. 系統基本資訊</h6></div>
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <label asp-for="Sheet3.DbName" class="form-label"></label>
-                    <textarea asp-for="Sheet3.DbName" class="form-control" rows="4"
-                              placeholder="例：Oracle DB Server：FEDB"></textarea>
+                    <input asp-for="Sheet3.DbName" class="form-control"
+                           placeholder="例：Oracle DB Server：FEDB" />
                 </div>
 
                 <div class="col-12 mt-4"><h6 class="text-muted border-bottom pb-1 mb-0">II. 備份</h6></div>
@@ -289,7 +289,8 @@
                 </div>
                 <div class="col-md-6">
                     <label asp-for="Sheet3.BackupCycle" class="form-label"></label>
-                    <input asp-for="Sheet3.BackupCycle" class="form-control" placeholder="例：每天、每週" />
+                    <textarea asp-for="Sheet3.BackupCycle" class="form-control" rows="3"
+                              placeholder="例：每天、每週"></textarea>
                 </div>
 
                 <div class="col-12 mt-4">
