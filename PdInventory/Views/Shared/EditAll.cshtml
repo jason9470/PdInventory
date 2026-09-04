@@ -305,24 +305,24 @@
                     <input asp-for="Software.SystemName" class="form-control" placeholder="例：經紀帳務系統" form="swBlockForm" />
                     <span asp-validation-for="Software.SystemName" class="text-danger"></span>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label asp-for="Software.Description" class="form-label"></label>
                     <textarea asp-for="Software.Description" class="form-control" rows="4" form="swBlockForm"
                               placeholder="使用部門、使用人員、主要功能"></textarea>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label asp-for="Sheet3.DbName" class="form-label"></label>
                     <textarea asp-for="Sheet3.DbName" class="form-control" rows="4"
                               placeholder="例：Oracle DB Server：FEDB"></textarea>
                 </div>
 
                 <div class="col-12 mt-4"><h6 class="text-muted border-bottom pb-1 mb-0">II. 備份</h6></div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label asp-for="Sheet3.BackupLocation" class="form-label"></label>
                     <textarea asp-for="Sheet3.BackupLocation" class="form-control" rows="2"
                               placeholder="例：同地:信義機房 異地:板橋機房"></textarea>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label asp-for="Sheet3.BackupCycle" class="form-label"></label>
                     <input asp-for="Sheet3.BackupCycle" class="form-control" placeholder="例：每天、每週" />
                 </div>
