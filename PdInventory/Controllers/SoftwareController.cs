@@ -95,6 +95,13 @@ public class SoftwareController : Controller
             return View("EditAll", reload);
         }
 
+        // 編號／資產編號／資產名稱在編輯畫面是唯讀的，一律以資料庫現值為準。
+        // readonly 只是操作防呆，改個表單欄位就繞過去了——而資產編號串起六張表、
+        // 又是權限判斷的依據，在這裡被改掉會讓那些關聯瞬間斷開。
+        model.SeqNo = existing.SeqNo;
+        model.SystemCode = existing.SystemCode;
+        model.SystemName = existing.SystemName;
+
         InfoSystemBlocks.Copy(existing, model);
         // 以畫面載入當下的權杖比對：若這筆在期間內被他人存過，擋下並要求重新載入，
         // 不做靜默覆蓋。權杖由 AppDbContext 於每次存檔換新。

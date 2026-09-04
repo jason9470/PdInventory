@@ -28,6 +28,31 @@
 
 <p class="text-muted small">三個區塊各自獨立儲存，按下區塊下方的[儲存]只會寫入該區塊的欄位。</p>
 
+@* 位置與新增畫面一致，但編輯時不開放改動：這三個欄位是全站的識別鍵——
+   資產編號串起 SW／DA／盤點表／個資盤點／拋轉／風險自評六張表，還是權限判斷的依據，
+   在這裡改掉會讓那些關聯瞬間斷開。要改請走匯入或直接處理資料。
+   唯讀只是操作防呆，SoftwareController.Edit 存檔時一律以資料庫現值為準。 *@
+<div class="card mb-3">
+    <div class="card-header fw-bold">基本資訊</div>
+    <div class="card-body row g-3">
+        <div class="col-md-2">
+            <label asp-for="Software.SeqNo" class="form-label"></label>
+            <input asp-for="Software.SeqNo" class="form-control" form="swBlockForm"
+                   readonly title="識別欄位，不開放編輯" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Software.SystemCode" class="form-label"></label>
+            <input asp-for="Software.SystemCode" class="form-control" form="swBlockForm"
+                   readonly title="識別欄位，不開放編輯" />
+        </div>
+        <div class="col-md-7">
+            <label asp-for="Software.SystemName" class="form-label"></label>
+            <input asp-for="Software.SystemName" class="form-control" form="swBlockForm"
+                   readonly title="識別欄位，不開放編輯" />
+        </div>
+    </div>
+</div>
+
 @* ─────────────────────────── 資訊資產清單－軟體(SW) ─────────────────────────── *@
 <form id="swBlockForm" method="post" class="pd-form" asp-controller="Software" asp-action="Edit" asp-route-id="@Model.Asset.Id">
     <input type="hidden" name="Software.Id" value="@Model.Asset.Id" />
@@ -286,24 +311,9 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-12"><h6 class="text-muted border-bottom pb-1 mb-0">I. 系統基本資訊</h6>
-                    @* 這四個欄位版面上在盤點表這張卡，資料卻屬於 SW。用 HTML 的 form 屬性
-                       掛回上面那張 SW 表單，按盤點表的[儲存]不會動到它們，按 SW 的[儲存]才會。 *@
-                    <div class="form-text">編號、資產編號、資產名稱、資產說明屬於上方的 SW 區塊，請按 SW 的[儲存]。</div>
-                </div>
-                <div class="col-md-2">
-                    <label asp-for="Software.SeqNo" class="form-label"></label>
-                    <input asp-for="Software.SeqNo" class="form-control" form="swBlockForm" />
-                    <span asp-validation-for="Software.SeqNo" class="text-danger"></span>
-                </div>
-                <div class="col-md-3">
-                    <label asp-for="Software.SystemCode" class="form-label"></label>
-                    <input asp-for="Software.SystemCode" class="form-control" placeholder="例：SW-108" form="swBlockForm" />
-                    <span asp-validation-for="Software.SystemCode" class="text-danger"></span>
-                </div>
-                <div class="col-md-7">
-                    <label asp-for="Software.SystemName" class="form-label"></label>
-                    <input asp-for="Software.SystemName" class="form-control" placeholder="例：經紀帳務系統" form="swBlockForm" />
-                    <span asp-validation-for="Software.SystemName" class="text-danger"></span>
+                    @* 資產說明版面上在盤點表這張卡，資料卻屬於 SW。用 HTML 的 form 屬性
+                       掛回上面那張 SW 表單，按盤點表的[儲存]不會動到它，按 SW 的[儲存]才會。 *@
+                    <div class="form-text">資產說明屬於上方的 SW 區塊，請按 SW 的[儲存]。</div>
                 </div>
                 <div class="col-md-6">
                     <label asp-for="Software.Description" class="form-label"></label>
