@@ -29,6 +29,7 @@ public class AppDbContext : DbContext
     public DbSet<OpsStaff> OpsStaffs => Set<OpsStaff>();
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<FieldOptionItem> FieldOptionItems => Set<FieldOptionItem>();
+    public DbSet<InventoryNote> InventoryNotes => Set<InventoryNote>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -115,6 +116,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<InventoryItem>().Property(e => e.RowVersion).IsConcurrencyToken();
         modelBuilder.Entity<TransferRecord>().Property(e => e.RowVersion).IsConcurrencyToken();
         modelBuilder.Entity<AppUser>().Property(e => e.RowVersion).IsConcurrencyToken();
+        modelBuilder.Entity<InventoryNote>().Property(e => e.RowVersion).IsConcurrencyToken();
 
         modelBuilder.Entity<InventoryItem>()
             .HasMany(i => i.Categories)

@@ -1,0 +1,28 @@
+@model List<PdInventory.Models.InventoryNote>
+@{
+    var isAdmin = CurrentUser.IsAdmin;
+}
+
+<div class="pd-note-list">
+    @foreach (var note in Model)
+    {
+        <button type="button" class="pd-note-item" data-note-id="@note.Id">
+            <span class="pd-note-title">@note.Title</span>
+            <span class="pd-note-date">@(note.DisplayAt?.ToString("yyyy/MM/dd") ?? "")</span>
+        </button>
+    }
+    @if (Model.Count == 0)
+    {
+        <p class="text-muted text-center my-4">
+            還沒有任何盤點重點。@(isAdmin ? "按[新增]開始記錄。" : "")
+        </p>
+    }
+</div>
+
+<div class="d-flex justify-content-end gap-2 mt-3">
+    @if (isAdmin)
+    {
+        <button type="button" class="btn btn-outline-primary" data-note-action="form">＋ 新增</button>
+    }
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">返回</button>
+</div>

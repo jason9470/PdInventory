@@ -1,0 +1,25 @@
+@model PdInventory.Models.InventoryNote
+
+<div class="pd-note-detail">
+    <div class="pd-note-date mb-1">@(Model.DisplayAt?.ToString("yyyy/MM/dd") ?? "")</div>
+    <h5 class="pd-note-title mb-3">@Model.Title</h5>
+    @* white-space: pre-wrap：內容是多行純文字，換行要留著 *@
+    <div class="pd-note-content">@Model.Content</div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <small class="text-muted">
+        @if (!string.IsNullOrWhiteSpace(Model.UpdatedBy))
+        {
+            <text>最後修改：@Model.UpdatedBy</text>
+        }
+    </small>
+    <div class="d-flex gap-2">
+        @if (CurrentUser.IsAdmin)
+        {
+            <button type="button" class="btn btn-outline-primary"
+                    data-note-action="form" data-note-id="@Model.Id">編輯</button>
+        }
+        <button type="button" class="btn btn-outline-secondary" data-note-action="list">返回</button>
+    </div>
+</div>

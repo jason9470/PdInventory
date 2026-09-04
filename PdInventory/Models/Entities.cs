@@ -851,6 +851,45 @@ public class SystemInventory : IAuditable, IConcurrencyAware, ISoftDeletable
 }
 
 /// <summary>
+/// 盤點重點：管理者記錄每次系統盤點的重點，全站的「?」按鈕點開就看得到。
+///
+/// 與各表單的資料無關，純粹是給人看的筆記——因此不掛在任何一張清單底下，
+/// 也沒有資產編號之類的關聯欄位。
+/// </summary>
+public class InventoryNote : IAuditable, IConcurrencyAware
+{
+    public int Id { get; set; }
+
+    [Display(Name = "標題")]
+    [Required(ErrorMessage = "標題必填"), StringLength(200)]
+    public string Title { get; set; } = "";
+
+    [Display(Name = "內容")]
+    public string Content { get; set; } = "";
+
+    // ── 系統軌跡（由 AppDbContext 自動寫入）────────────────────────────
+    [Display(Name = "建立者")]
+    [StringLength(100)]
+    public string CreatedBy { get; set; } = "";
+
+    [Display(Name = "建立時間")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Display(Name = "最後修改者")]
+    [StringLength(100)]
+    public string UpdatedBy { get; set; } = "";
+
+    [Display(Name = "最後修改時間")]
+    public DateTime? UpdatedAt { get; set; }
+
+    [Display(Name = "並行控制標記")]
+    public Guid RowVersion { get; set; }
+
+    /// <summary>清單上顯示的時間：改過就看修改時間，沒改過就看建立時間。</summary>
+    public DateTime? DisplayAt => UpdatedAt ?? CreatedAt;
+}
+
+/// <summary>
 /// 可維護的欄位選項。一列就是某個欄位的一個選項。
 ///
 /// 與 <see cref="Helpers.FieldOptions"/> 的分工：那裡寫死的是本質上不會變的

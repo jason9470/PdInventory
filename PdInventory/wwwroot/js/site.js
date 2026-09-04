@@ -304,3 +304,79 @@
     // 每次點擊才取高度：表格排序或收合側邊欄都會改變頁面總高
     bind('backToBottom', function () { return document.documentElement.scrollHeight; });
 })();
+
+// 盤點重點（導覽列的「?」）。同一個彈跳視窗裡換三個畫面：清單 → 內容 → 編輯，
+// 內容都由 NotesController 以部分檢視回傳，這裡只負責抓回來換進去。
+//
+// 為什麼不做成三個頁面：這個功能要能從任何一頁打開，看完關掉就回到原本的工作；
+// 導頁會把使用者手上的搜尋條件與捲動位置弄丟。
+(function () {
+    var toggle = document.getElementById('noteToggle');
+    var modalEl = document.getElementById('noteModal');
+    var body = document.getElementById('noteModalBody');
+    if (!toggle || !modalEl || !body) return;
+
+    var modal = new bootstrap.Modal(modalEl);
+
+    function show(html) {
+        body.innerHTML = html;
+        body.scrollTop = 0;
+    }
+
+    function load(url) {
+        body.innerHTML = '<div class="text-center text-muted py-4">載入中…</div>';
+        return fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (response) {
+                if (!response.ok) throw new Error(response.status);
+                return response.text();
+            })
+            .then(show)
+            .catch(function () {
+                show('<div class="alert alert-danger mb-0">載入失敗，請關掉視窗再試一次。</div>');
+            });
+    }
+
+    var urls = {
+        list: function () { return '/Notes/List'; },
+        detail: function (id) { return '/Notes/Detail/' + id; },
+        form: function (id) { return id ? '/Notes/Form/' + id : '/Notes/Form'; }
+    };
+
+    toggle.addEventListener('click', function () {
+        modal.show();
+        load(urls.list());
+    });
+
+    // 視窗裡的按鈕都是後端送來的，事件掛在容器上才不必每次重綁
+    body.addEventListener('click', function (event) {
+        var item = event.target.closest('[data-note-id]:not([data-note-action])');
+        if (item) { load(urls.detail(item.dataset.noteId)); return; }
+
+        var action = event.target.closest('[data-note-action]');
+        if (!action) return;
+
+        var name = action.dataset.noteAction;
+        if (urls[name]) load(urls[name](action.dataset.noteId));
+    });
+
+    // 編輯與新增：用 fetch 送出，成功就直接換成該筆的內容畫面
+    body.addEventListener('submit', function (event) {
+        var form = event.target.closest('form.pd-note-form');
+        if (!form) return;
+
+        event.preventDefault();
+        fetch(form.getAttribute('action') || '/Notes/Save', {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(function (response) {
+                if (!response.ok) throw new Error(response.status);
+                return response.text();
+            })
+            .then(show)   // 存檔成功回內容畫面；驗證沒過回的是帶錯誤訊息的表單
+            .catch(function () {
+                show('<div class="alert alert-danger mb-0">儲存失敗，請關掉視窗再試一次。</div>');
+            });
+    });
+})();

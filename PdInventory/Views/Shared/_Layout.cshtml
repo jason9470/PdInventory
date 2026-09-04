@@ -26,7 +26,17 @@
                         class="btn btn-sm btn-outline-light me-2 d-none d-lg-inline-block"
                         aria-controls="appSidebar" aria-label="收合/展開左側清單" title="收合/展開左側清單">☰</button>
                 @* me-auto：navbar 的 container 是 space-between，移除選單後只剩兩個子元素會被推到兩端 *@
-                <a class="navbar-brand me-auto" asp-controller="Home" asp-action="Index">個資盤點管理系統</a>
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">個資盤點管理系統</a>
+                @if (CurrentUser.IsAuthenticated)
+                {
+                    @* 盤點重點：任何一頁都打得開，看完關掉就回到原本的工作 *@
+                    <button id="noteToggle" type="button" class="btn btn-sm btn-light rounded-circle ms-2 me-auto"
+                            aria-label="盤點重點" title="盤點重點">?</button>
+                }
+                else
+                {
+                    <span class="me-auto"></span>
+                }
                 @if (CurrentUser.IsAuthenticated)
                 {
                     <div class="d-flex align-items-center">
@@ -160,6 +170,22 @@
             </svg>
         </button>
     </div>
+
+    @if (CurrentUser.IsAuthenticated)
+    {
+        <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="noteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header py-2">
+                        <h2 class="modal-title h6 mb-0" id="noteModalLabel">盤點重點</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+                    </div>
+                    @* 三個畫面（清單／內容／編輯）都由 NotesController 以部分檢視回傳，換進這裡 *@
+                    <div class="modal-body" id="noteModalBody"></div>
+                </div>
+            </div>
+        </div>
+    }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,0 +1,29 @@
+@model PdInventory.Models.InventoryNote
+@{
+    var isNew = Model.Id == 0;
+}
+
+<form method="post" asp-action="Save" class="pd-note-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    @* 並行控制：帶回載入當下的權杖，存檔時比對是否已被其他管理者改過 *@
+    <input type="hidden" asp-for="RowVersion" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" placeholder="例：2026 年第三季盤點重點" />
+        <span asp-validation-for="Title" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label"></label>
+        <textarea asp-for="Content" class="form-control" rows="10"></textarea>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
+        <button type="button" class="btn btn-outline-secondary"
+                data-note-action="@(isNew ? "list" : "detail")" data-note-id="@Model.Id">取消</button>
+    </div>
+</form>
