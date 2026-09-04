@@ -117,7 +117,9 @@
             <div class="col-md-6"><label asp-for="Software.SwDevMode" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwDevMode", Model.Software.SwDevMode, Lookup.OptionsFor(nameof(InfoSystem.SwDevMode)))' /></div>
-            <div class="col-md-3"><label asp-for="Software.SwMaintMode" class="form-label"></label><input asp-for="Software.SwMaintMode" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Software.SwMaintMode" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Software.SwMaintMode", Model.Software.SwMaintMode, Lookup.OptionsFor(nameof(InfoSystem.SwMaintMode)))' /></div>
             <div class="col-md-3"><label asp-for="Software.SwVendor" class="form-label"></label><input asp-for="Software.SwVendor" class="form-control" /></div>
             <div class="col-md-6"><label asp-for="Software.SwLanguage" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(

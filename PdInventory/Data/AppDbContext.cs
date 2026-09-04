@@ -180,6 +180,7 @@ public class AppDbContext : DbContext
             system.SwRiskOwner = FieldOptions.FixedRiskOwner;
 
             system.SwDevMode = MultiValue.Normalize(system.SwDevMode);
+            system.SwMaintMode = MultiValue.Normalize(system.SwMaintMode);
             system.SwLocation = MultiValue.Normalize(system.SwLocation);
             system.SwLanguage = MultiValue.Normalize(system.SwLanguage);
         }

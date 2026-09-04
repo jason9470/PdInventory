@@ -31,6 +31,7 @@ public static class OptionCatalog
         new(nameof(InfoSystem.SwOwnerUnit), "SW-權責單位", "Software", IsMultiple: false),
         new(nameof(InfoSystem.SwLocation), "SW-位置", "Software", IsMultiple: true),
         new(nameof(InfoSystem.SwDevMode), "SW-自行/委外開發", "Software", IsMultiple: true),
+        new(nameof(InfoSystem.SwMaintMode), "SW-自行/委外維護", "Software", IsMultiple: true),
         new(nameof(InfoSystem.SwLanguage), "SW-使用語言種類", "Software", IsMultiple: true),
         new(nameof(InfoSystem.SwTrailStorage), "SW-軌跡留存方式", "Software", IsMultiple: false),
         new(nameof(DataAsset.DaHasSensitiveData), "DA-有無機敏資料", "Data", IsMultiple: true),
