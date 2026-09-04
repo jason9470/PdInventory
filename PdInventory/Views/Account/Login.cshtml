@@ -78,15 +78,6 @@
                             }
                         </div>
                     </div>
-                    @if (!requiresPassword)
-                    {
-                        @* 姓名只有「名冊裡還沒有這個人」時才用得到，平常留空即可 *@
-                        <div class="mb-3">
-                            <label class="form-label" for="displayName">姓名<span class="text-muted">（選填）</span></label>
-                            <input id="displayName" name="displayName" class="form-control"
-                                   placeholder="名冊裡還沒有的新帳號才需要填" />
-                        </div>
-                    }
                     <button type="submit" class="btn btn-primary w-100">登入</button>
                 </form>
 
