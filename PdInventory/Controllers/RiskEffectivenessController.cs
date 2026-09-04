@@ -15,7 +15,12 @@ public class RiskEffectivenessController : Controller
     public RiskEffectivenessController(AppDbContext db) => _db = db;
 
     public async Task<IActionResult> Index()
-        => View(await _db.RiskEffectivenessLevels.OrderBy(r => r.Level).ToListAsync());
+    {
+        var levels = await _db.RiskEffectivenessLevels.OrderBy(r => r.Level).ToListAsync();
+        ViewBag.UsageCounts = await LookupUsage.RiskLevelsAsync(
+            _db, i => i.RiskEffectivenessLevel, levels, l => l.Level, l => l.Label);
+        return View(levels);
+    }
 
     public IActionResult Create() => View("Form", new RiskEffectivenessLevel());
 
