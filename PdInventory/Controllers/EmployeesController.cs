@@ -38,11 +38,13 @@ public class EmployeesController : Controller
         ViewBag.Query = q;
         ViewBag.UsageCounts = await LookupUsage.EmployeesAsync(_db);
         // 組別待補的排在最後：那些是資料裡有、名冊沒有的，等甲方補
-        return View(await query.OrderBy(e => e.TeamName == "")
-                               .ThenBy(e => e.TeamName)
-                               .ThenBy(e => e.Section != Employee.ManagerSection)
-                               .ThenBy(e => e.Name)
-                               .ToListAsync());
+        // IsManager 是算出來的（看備註），不能翻成 SQL，因此先取回再排
+        var rows = await query.ToListAsync();
+        return View(rows.OrderBy(e => e.TeamName == "")
+                        .ThenBy(e => e.TeamName)
+                        .ThenBy(e => !e.IsManager)
+                        .ThenBy(e => e.Name)
+                        .ToList());
     }
 
     public IActionResult Create() => View("Form", new Employee());

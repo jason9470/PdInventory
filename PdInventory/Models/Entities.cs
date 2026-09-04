@@ -974,16 +974,26 @@ public class Employee : ISoftDeletable
     [StringLength(50)]
     public string TeamName { get; set; } = "";
 
-    /// <summary>科別。值為「組長」者才會出現在「SW-應用系統主管」的下拉。</summary>
+    /// <summary>
+    /// 科別。0904 之後的名冊來源不再提供這一欄，既有的值（前台核心科、創新研發科…）
+    /// 予以保留，但已經沒有任何邏輯依賴它——主管的判斷改看 <see cref="Remark"/>。
+    /// </summary>
     [Display(Name = "科別")]
     [StringLength(50)]
     public string Section { get; set; } = "";
 
+    /// <summary>
+    /// 備註。名冊用這一欄標職務：「組長」或「科長」。
+    /// 「SW-應用系統主管」的下拉只列這兩種人（見 <see cref="IsManager"/>）。
+    /// </summary>
     [Display(Name = "備註")]
     public string Remark { get; set; } = "";
 
-    /// <summary>「SW-應用系統主管」的下拉只列這些人。</summary>
-    public const string ManagerSection = "組長";
+    /// <summary>備註填這些職務的人才會出現在「SW-應用系統主管」的下拉。</summary>
+    public static readonly string[] ManagerRemarks = ["組長", "科長"];
+
+    /// <summary>是不是主管（組長或科長）。</summary>
+    public bool IsManager => ManagerRemarks.Contains(Remark.Trim());
 
     /// <summary>使用者第一次登入自動建檔時填的部門。</summary>
     public const string DefaultDepartment = "資訊系統開發一部";

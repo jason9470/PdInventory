@@ -44,16 +44,20 @@ public sealed class LookupOptions
         .Select(e => e.Name)
         .ToList();
 
-    /// <summary>只有科別是「組長」的人。「SW-應用系統主管」的下拉吃這一份。</summary>
+    /// <summary>備註是「組長」或「科長」的人。「SW-應用系統主管」的下拉吃這一份。</summary>
     public IReadOnlyList<string> EmployeeManagers => _employeeManagers ??= OrderedEmployees()
-        .Where(e => e.Section == Employee.ManagerSection)
+        .Where(e => e.IsManager)
         .Select(e => e.Name)
         .ToList();
 
+    /// <summary>
+    /// 組別、主管在前、姓名。IsManager 是依備註算出來的、不是資料庫欄位，
+    /// EF 翻不成 SQL，因此先 ToList() 取回再排序。
+    /// </summary>
     private IEnumerable<Employee> OrderedEmployees() => _db.Employees
+        .ToList()
         .OrderBy(e => e.TeamName == "").ThenBy(e => e.TeamName)
-        .ThenBy(e => e.Section != Employee.ManagerSection).ThenBy(e => e.Name)
-        .ToList();
+        .ThenBy(e => !e.IsManager).ThenBy(e => e.Name);
 
     /// <summary>
     /// 委外廠商的建議清單。業務端決定廠商不進維護表——可以下拉也可以自行輸入，

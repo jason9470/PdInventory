@@ -3,12 +3,12 @@
     var usage = (Dictionary<string, int>)ViewBag.UsageCounts;
     ViewData["Title"] = "人員";
     var pending = Model.Count(e => string.IsNullOrWhiteSpace(e.TeamName));
-    var managers = Model.Count(e => e.Section == PdInventory.Models.Employee.ManagerSection);
+    var managers = Model.Count(e => e.IsManager);
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>
-        人員 <small class="text-muted fs-6">(共 @Model.Count 人，其中組長 @managers 人)</small>
+        人員 <small class="text-muted fs-6">(共 @Model.Count 人，其中主管 @managers 人)</small>
     </h2>
     <a class="btn btn-primary" asp-action="Create">＋ 新增人員</a>
 </div>
@@ -16,7 +16,7 @@
 <p class="text-muted small">
     對照欄位：SW-應用系統維護人員（多選）、SW-程式設計人員（多選）、
     SW-115上檢視人員（單選）、DA-115檢視人員（單選）——這四個列出全部的人；
-    <strong>SW-應用系統主管（單選）只列科別為「組長」的人</strong>。
+    <strong>SW-應用系統主管（單選）只列備註為「組長」或「科長」的人</strong>。
 </p>
 
 @if (pending > 0)
@@ -69,17 +69,17 @@
                     <td>@e.Name</td>
                     <td class="text-break"><small>@e.DepartmentName</small></td>
                     <td>@e.TeamName</td>
-                    <td>
-                        @if (e.Section == PdInventory.Models.Employee.ManagerSection)
+                    <td>@e.Section</td>
+                    <td class="text-break">
+                        @if (e.IsManager)
                         {
-                            <span class="badge text-bg-primary">@e.Section</span>
+                            <span class="badge text-bg-primary">@e.Remark</span>
                         }
                         else
                         {
-                            @e.Section
+                            <small>@e.Remark</small>
                         }
                     </td>
-                    <td class="text-break"><small>@e.Remark</small></td>
                     @{ var used = usage.GetValueOrDefault(e.Name); }
                     <td>
                         @if (used > 0)

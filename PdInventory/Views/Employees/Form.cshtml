@@ -43,14 +43,15 @@
         <div class="col-md-3">
             <label asp-for="Section" class="form-label"></label>
             <input asp-for="Section" class="form-control" placeholder="例：前台核心科" />
-            <div class="form-text">
-                填「<strong>@PdInventory.Models.Employee.ManagerSection</strong>」這個人才會
-                出現在「SW-應用系統主管」的下拉。
-            </div>
+
         </div>
         <div class="col-12">
             <label asp-for="Remark" class="form-label"></label>
-            <textarea asp-for="Remark" class="form-control" rows="2"></textarea>
+            <input asp-for="Remark" class="form-control" placeholder="組長／科長" />
+            <div class="form-text">
+                填「<strong>@string.Join("」或「", PdInventory.Models.Employee.ManagerRemarks)</strong>」
+                這個人才會出現在「SW-應用系統主管」的下拉。
+            </div>
         </div>
     </div>
 
