@@ -90,7 +90,7 @@ public class DepartmentsController : Controller
     }
 
     /// <summary>
-    /// 有多少筆資料用到這個部門。四個對照欄位裡有三個是多選（以 / 分隔），
+    /// 有多少筆資料用到這個部門。五個對照欄位裡有四個是多選（以 / 分隔），
     /// 因此不能用等號比對，只能先撈回來再依同一套規則切開。
     /// 資料量是幾十筆的等級，這樣做最直接也不會誤判。
     /// </summary>
@@ -101,11 +101,13 @@ public class DepartmentsController : Controller
         var systems = await _db.InfoSystems
             .Select(s => new { s.SwBusinessOwnerUnit, s.SwUserAccountGrant, s.SwUserUnit })
             .ToListAsync();
+        var dataAssets = await _db.DataAssets.Select(d => d.DaUserUnit).ToListAsync();
         var transfers = await _db.TransferRecords.Select(t => t.InternalUnit).ToListAsync();
 
         return systems.Count(s => MultiValue.Contains(s.SwBusinessOwnerUnit, name)
                                || MultiValue.Contains(s.SwUserAccountGrant, name)
                                || MultiValue.Contains(s.SwUserUnit, name))
+             + dataAssets.Count(d => MultiValue.Contains(d, name))
              + transfers.Count(t => MultiValue.Contains(t, name));
     }
 

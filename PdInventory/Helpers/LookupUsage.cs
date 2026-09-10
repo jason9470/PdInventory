@@ -15,12 +15,13 @@ namespace PdInventory.Helpers;
 /// </summary>
 public static class LookupUsage
 {
-    /// <summary>部門：對照 SW 三個欄位與拋轉清單的負責內部單位。</summary>
+    /// <summary>部門：對照 SW 三個欄位、DA 的使用單位與拋轉清單的負責內部單位。</summary>
     public static async Task<Dictionary<string, int>> DepartmentsAsync(AppDbContext db)
     {
         var systems = await db.InfoSystems
             .Select(s => new { s.SwBusinessOwnerUnit, s.SwUserAccountGrant, s.SwUserUnit })
             .ToListAsync();
+        var dataAssets = await db.DataAssets.Select(d => d.DaUserUnit).ToListAsync();
         var transfers = await db.TransferRecords.Select(t => t.InternalUnit).ToListAsync();
         var names = await db.Departments.Select(d => d.Name).ToListAsync();
 
@@ -29,6 +30,7 @@ public static class LookupUsage
             name => systems.Count(s => MultiValue.Contains(s.SwBusinessOwnerUnit, name)
                                     || MultiValue.Contains(s.SwUserAccountGrant, name)
                                     || MultiValue.Contains(s.SwUserUnit, name))
+                  + dataAssets.Count(d => MultiValue.Contains(d, name))
                   + transfers.Count(t => MultiValue.Contains(t, name)));
     }
 

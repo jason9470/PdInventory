@@ -58,6 +58,8 @@ public static class OptionCatalog
     public static readonly IReadOnlyList<OptionField> Fields =
     [
         new(nameof(InfoSystem.SwOwnerUnit), "SW-權責單位", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwCustodianUnit), "SW-保管單位", "Software", IsMultiple: false),
+        new(nameof(InfoSystem.SwRiskOwner), "SW-風險擁有者", "Software", IsMultiple: false),
         new(nameof(InfoSystem.SwLocation), "SW-位置", "Software", IsMultiple: true),
         new(nameof(InfoSystem.SwDevMode), "SW-自行/委外開發", "Software", IsMultiple: true),
         new(nameof(InfoSystem.SwMaintMode), "SW-自行/委外維護", "Software", IsMultiple: true),

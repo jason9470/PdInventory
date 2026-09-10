@@ -20,15 +20,6 @@ namespace PdInventory.Helpers;
 /// </summary>
 public static class FieldOptions
 {
-    /// <summary>
-    /// 保管單位與風險擁有者由業務端指定為固定值，畫面上唯讀、不可更改。
-    ///
-    /// 寫死在程式裡是照業務端的要求；代價是異動（例如風險擁有者換人）要改這裡再重新部署。
-    /// 若之後變成會換的資料，改成維護資料表即可，兩個常數只有這裡與 AppDbContext 兩處引用。
-    /// </summary>
-    public const string FixedCustodianUnit = "資訊系統開發一部";
-    public const string FixedRiskOwner = "陳映玲";
-
     private static readonly string[] YesNo = ["是", "否"];
     private static readonly string[] YesNoNa = ["是", "否", "N/A"];
     private static readonly string[] HasNoneNa = ["有", "無", "N/A"];
