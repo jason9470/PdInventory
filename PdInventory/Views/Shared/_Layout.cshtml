@@ -187,6 +187,23 @@
         </div>
     }
 
+    @* 「使用中」明細。內容由 UsageController 以部分檢視回傳，換進這裡。
+       只有管理者進得了維護畫面，因此這個視窗也只對管理者輸出。 *@
+    @if (CurrentUser.IsAdmin)
+    {
+        <div class="modal fade" id="usageModal" tabindex="-1" aria-labelledby="usageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header py-2">
+                        <h2 class="modal-title h6 mb-0" id="usageModalLabel">使用中的資料</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+                    </div>
+                    <div class="modal-body" id="usageModalBody"></div>
+                </div>
+            </div>
+        </div>
+    }
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

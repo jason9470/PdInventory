@@ -271,6 +271,46 @@
     refresh();
 })();
 
+// 維護畫面的「使用中」：按下「N 筆」開一個彈跳視窗，列出到底是哪些資料在用。
+//
+// 按鈕帶著 data-usage-kind / data-usage-value（必要時再加 data-usage-field 與
+// data-usage-title），這裡只負責把它們轉成查詢字串、把回傳的部分檢視換進視窗。
+// 十個維護畫面共用這一段，各畫面不必自己寫 JavaScript。
+(function () {
+    var modalEl = document.getElementById('usageModal');
+    var body = document.getElementById('usageModalBody');
+    if (!modalEl || !body) return;
+
+    var modal = new bootstrap.Modal(modalEl);
+
+    document.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-usage-kind]');
+        if (!button) return;
+
+        event.preventDefault();
+
+        var query = new URLSearchParams({
+            kind: button.dataset.usageKind,
+            value: button.dataset.usageValue || ''
+        });
+        if (button.dataset.usageField) query.set('field', button.dataset.usageField);
+        if (button.dataset.usageTitle) query.set('title', button.dataset.usageTitle);
+
+        body.innerHTML = '<div class="text-center text-muted py-4">載入中…</div>';
+        modal.show();
+
+        fetch('/Usage/List?' + query.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (response) {
+                if (!response.ok) throw new Error(response.status);
+                return response.text();
+            })
+            .then(function (html) { body.innerHTML = html; body.scrollTop = 0; })
+            .catch(function () {
+                body.innerHTML = '<div class="alert alert-danger mb-0">載入失敗，請關掉視窗再試一次。</div>';
+            });
+    });
+})();
+
 // 清單表格欄位排序：點表頭切換升冪/降冪。
 // 六張主要清單資料量都在 50 筆內且未分頁，故在前端排序即可，不必為每張表
 // 在控制器寫一套欄位對應。標了 data-nosort 的表頭（例如「操作」）不參與。

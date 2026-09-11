@@ -24,7 +24,7 @@ public class OpsStaffController : Controller
                                   || o.Remark.Contains(q));
 
         ViewBag.Query = q;
-        ViewBag.UsageCounts = await LookupUsage.OpsStaffAsync(_db);
+        ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.OpsStaff);
         // 組別留空的排在最後：它們是資料裡有、甲方清單沒有的，待補
         return View(await query.OrderBy(o => o.TeamName == "")
                                .ThenBy(o => o.TeamName)
@@ -92,17 +92,9 @@ public class OpsStaffController : Controller
     /// 有多少筆資產用到這個人。維運人員與程式換版人員都是多選欄位（以 / 分隔），
     /// 不能用等號比對，理由同 DepartmentsController。同一筆兩個欄位都掛他只算一筆。
     /// </summary>
-    private async Task<int> CountUsageAsync(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name)) return 0;
-
-        var rows = await _db.InfoSystems
-            .Select(s => new { s.SwOperator, s.SwDeployer })
-            .ToListAsync();
-
-        return rows.Count(r => MultiValue.Contains(r.SwOperator, name)
-                            || MultiValue.Contains(r.SwDeployer, name));
-    }
+    /// <summary>與清單上的「使用中」和明細視窗走同一支，三處各寫一套遲早會對不上。</summary>
+    private Task<int> CountUsageAsync(string name) =>
+        LookupUsage.CountAsync(_db, UsageKind.OpsStaff, name);
 
     private async Task ValidateUniqueNameAsync(OpsStaff model)
     {

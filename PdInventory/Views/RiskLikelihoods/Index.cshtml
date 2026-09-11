@@ -1,6 +1,7 @@
 @model List<PdInventory.Models.RiskLikelihoodLevel>
 @{
-    var usage = (Dictionary<int, int>)ViewBag.UsageCounts;
+    @* 等級在字典裡以字串當鍵：明細視窗的參數是字串，兩邊用同一種寫法才不會對不上 *@
+    var usage = (Dictionary<string, int>)ViewBag.UsageCounts;
     ViewData["Title"] = "3-3：評估發生可能性";
 }
 
@@ -29,11 +30,15 @@
                     <td class="fw-bold">@r.Name</td>
                     <td class="text-break"><small>@r.Situation</small></td>
                     <td class="text-break"><small style="white-space: pre-line">@r.Frequency</small></td>
-                    @{ var used = usage.GetValueOrDefault(r.Level); }
+                    @{ var used = usage.GetValueOrDefault(r.Level.ToString()); }
                     <td>
                         @if (used > 0)
                         {
-                            <span class="badge text-bg-primary">@used 筆</span>
+                            <button type="button" class="btn btn-sm btn-link p-0 align-baseline"
+                                    data-usage-kind="RiskLikelihood" data-usage-value="@r.Level" data-usage-title="@r.Label"
+                                    title="看看是哪些資料在用">
+                                <span class="badge text-bg-primary">@used 筆</span>
+                            </button>
                         }
                         else
                         {

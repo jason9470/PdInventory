@@ -17,8 +17,7 @@ public class RiskEffectivenessController : Controller
     public async Task<IActionResult> Index()
     {
         var levels = await _db.RiskEffectivenessLevels.OrderBy(r => r.Level).ToListAsync();
-        ViewBag.UsageCounts = await LookupUsage.RiskLevelsAsync(
-            _db, i => i.RiskEffectivenessLevel, levels, l => l.Level, l => l.Label);
+        ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.RiskEffectiveness);
         return View(levels);
     }
 

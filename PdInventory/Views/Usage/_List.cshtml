@@ -1,0 +1,59 @@
+﻿@model PdInventory.Models.ViewModels.UsageListViewModel
+@*
+    「使用中」明細。依來源清單分段，每一段的欄位標題不同——DA 沒有資產名稱、
+    拋轉清單多一個類別——所以標題與內容都由 UsageList 帶著走，這裡不寫死任何一張表。
+
+    每一列連到該筆的檢視畫面，並且**另開分頁**：維護畫面通常已經搜尋過、捲到一半，
+    在原分頁導走會把那些狀態弄丟。
+*@
+
+<p class="mb-3">
+    <strong>@Model.Title</strong> 目前被 <span class="badge text-bg-primary">@Model.Total 筆</span> 資料使用。
+</p>
+
+@if (Model.Total == 0)
+{
+    <div class="alert alert-secondary mb-0">沒有任何資料使用這個值。</div>
+}
+
+@foreach (var (list, rows) in Model.Sections)
+{
+    <h3 class="h6 text-muted border-bottom pb-1 mt-3">@list.Title <span class="fw-normal">（@rows.Count 筆）</span></h3>
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    @foreach (var header in list.Headers)
+                    {
+                        <th class="small text-muted fw-normal">@header</th>
+                    }
+                    <th class="small text-muted fw-normal">使用在哪個欄位</th>
+                    <th style="width: 1%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in rows)
+                {
+                    <tr>
+                        @foreach (var cell in row.Cells)
+                        {
+                            <td class="text-break">@cell</td>
+                        }
+                        <td><span class="badge text-bg-light border fw-normal">@row.Field</span></td>
+                        <td>
+                            @* 主鍵為 0 表示查不到對應的檢視畫面（例如 SW 少了那一列 DA）；
+                               連過去也只會是 404，不如不給連結 *@
+                            @if (row.Id > 0)
+                            {
+                                <a class="btn btn-sm btn-outline-primary text-nowrap"
+                                   asp-controller="@row.List.Controller" asp-action="Details"
+                                   asp-route-id="@row.Id" asp-route-from="@row.List.Key"
+                                   target="_blank" rel="noopener">檢視 ↗</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

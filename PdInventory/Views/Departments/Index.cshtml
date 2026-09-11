@@ -65,7 +65,11 @@
                     <td>
                         @if (used > 0)
                         {
-                            <span class="badge text-bg-primary">@used 筆</span>
+                            <button type="button" class="btn btn-sm btn-link p-0 align-baseline"
+                                    data-usage-kind="Department" data-usage-value="@d.Name" data-usage-title="@d.Name"
+                                    title="看看是哪些資料在用">
+                                <span class="badge text-bg-primary">@used 筆</span>
+                            </button>
                         }
                         else
                         {

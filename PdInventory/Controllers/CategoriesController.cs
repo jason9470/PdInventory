@@ -26,6 +26,9 @@ public class CategoriesController : Controller
                                   || (c.Example != null && c.Example.Contains(q)));
 
         ViewBag.Query = q;
+        // 這兩張是真正的多對多，用不著文字比對；走同一支只是為了讓「使用中」
+        // 的數字與明細視窗出自同一份資料
+        ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.PdCategory);
         return View(await query.OrderBy(c => c.Code).ToListAsync());
     }
 

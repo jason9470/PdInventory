@@ -26,7 +26,7 @@ public class FieldOptionItemsController : Controller
         if (target is null) return NotFound();
 
         ViewBag.Field = target;
-        ViewBag.UsageCounts = await CountUsagesAsync(target);
+        ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.FieldOption, target.Field);
         return View(await ItemsOfAsync(target.Field));
     }
 
@@ -113,7 +113,9 @@ public class FieldOptionItemsController : Controller
             return RedirectToAction(nameof(Index), new { field = item.FieldName });
         }
 
-        var used = target is null ? 0 : await CountUsageAsync(target, item.Value);
+        var used = target is null
+            ? 0
+            : await LookupUsage.CountAsync(_db, UsageKind.FieldOption, item.Value, target.Field);
         if (used > 0)
         {
             // 與部門、人員的維護畫面同一套規則：還被引用就不給刪，
@@ -133,43 +135,4 @@ public class FieldOptionItemsController : Controller
         .OrderBy(o => o.SortOrder).ThenBy(o => o.Id)
         .ToListAsync();
 
-    /// <summary>每個選項各被幾筆資料使用，供畫面顯示與刪除前的檢查。</summary>
-    private async Task<Dictionary<string, int>> CountUsagesAsync(OptionField target)
-    {
-        var stored = await StoredValuesAsync(target);
-        var items = await ItemsOfAsync(target.Field);
-
-        return items.ToDictionary(
-            o => o.Value,
-            o => stored.Count(v => MultiValue.Contains(v, o.Value)));
-    }
-
-    private async Task<int> CountUsageAsync(OptionField target, string value)
-    {
-        var stored = await StoredValuesAsync(target);
-        return stored.Count(v => MultiValue.Contains(v, value));
-    }
-
-    /// <summary>
-    /// 這個欄位目前存了哪些值。屬性名稱是動態的，用 EF.Property 取，
-    /// 這樣 OptionCatalog 多登記一個同表的欄位時這裡不必跟著改。
-    ///
-    /// 以屬性掛在哪個實體上決定要查哪張表。若日後有欄位登記在這三張以外的實體，
-    /// 這裡會擲出例外而不是安靜地算成 0——寧可當場壞掉，也不要讓刪除保護失效。
-    /// </summary>
-    private async Task<List<string>> StoredValuesAsync(OptionField target)
-    {
-        if (typeof(InfoSystem).GetProperty(target.Field) is not null)
-            return await _db.InfoSystems.Select(s => EF.Property<string>(s, target.Field)).ToListAsync();
-
-        if (typeof(DataAsset).GetProperty(target.Field) is not null)
-            return await _db.DataAssets.Select(d => EF.Property<string>(d, target.Field)).ToListAsync();
-
-        if (typeof(InventoryItem).GetProperty(target.Field) is not null)
-            return await _db.InventoryItems.Select(i => EF.Property<string>(i, target.Field)).ToListAsync();
-
-        throw new InvalidOperationException(
-            $"OptionCatalog 登記的欄位 {target.Field} 不屬於 InfoSystem／DataAsset／InventoryItem，"
-            + "請在 StoredValuesAsync 補上對應的資料表。");
-    }
 }

@@ -24,7 +24,7 @@ public class RiskCategoriesController : Controller
                                   || r.EventDescription.Contains(q));
 
         ViewBag.Query = q;
-        ViewBag.UsageCounts = await LookupUsage.RiskCategoriesAsync(_db);
+        ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.RiskCategory);
         return View(await query.OrderBy(r => r.Code).ToListAsync());
     }
 

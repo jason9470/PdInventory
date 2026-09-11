@@ -22,6 +22,7 @@ public class PurposesController : Controller
             query = query.Where(p => p.Code.Contains(q) || p.Name.Contains(q));
 
         ViewBag.Query = q;
+        ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.Purpose);
         return View(await query.OrderBy(p => p.Code).ToListAsync());
     }
 

@@ -36,7 +36,7 @@ public class EmployeesController : Controller
                                   || e.Remark.Contains(q));
 
         ViewBag.Query = q;
-        ViewBag.UsageCounts = await LookupUsage.EmployeesAsync(_db);
+        ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.Employee);
         // 組別待補的排在最後：那些是資料裡有、名冊沒有的，等甲方補
         // IsManager 是算出來的（看備註），不能翻成 SQL，因此先取回再排
         var rows = await query.ToListAsync();
@@ -144,23 +144,9 @@ public class EmployeesController : Controller
     /// 有多少筆資料用到這個人。六個對照欄位裡有三個是多選（以 / 分隔），
     /// 不能用等號比對，理由同 DepartmentsController。同一筆多個欄位都是他只算一筆。
     /// </summary>
-    private async Task<int> CountUsageAsync(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name)) return 0;
-
-        var systems = await _db.InfoSystems
-            .Select(s => new { s.SwAppManager, s.SwAppMaintainer, s.SwAppMaintainerDeputy,
-                               s.SwDeveloper, s.SwReviewer })
-            .ToListAsync();
-        var dataAssets = await _db.DataAssets.Select(d => d.DaReviewer).ToListAsync();
-
-        return systems.Count(s => MultiValue.Contains(s.SwAppManager, name)
-                               || MultiValue.Contains(s.SwAppMaintainer, name)
-                               || MultiValue.Contains(s.SwAppMaintainerDeputy, name)
-                               || MultiValue.Contains(s.SwDeveloper, name)
-                               || MultiValue.Contains(s.SwReviewer, name))
-             + dataAssets.Count(d => MultiValue.Contains(d, name));
-    }
+    /// <summary>與清單上的「使用中」和明細視窗走同一支，三處各寫一套遲早會對不上。</summary>
+    private Task<int> CountUsageAsync(string name) =>
+        LookupUsage.CountAsync(_db, UsageKind.Employee, name);
 
     private async Task ValidateUniqueNameAsync(Employee model)
     {

@@ -24,7 +24,7 @@ public class DepartmentsController : Controller
                                   || d.Remark.Contains(q));
 
         ViewBag.Query = q;
-        ViewBag.UsageCounts = await LookupUsage.DepartmentsAsync(_db);
+        ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.Department);
         // 代號留空的排在最後：它們是資料裡有、甲方清單沒有的，待補
         return View(await query.OrderBy(d => d.CostCenter == "")
                                .ThenBy(d => d.CostCenter)
@@ -90,26 +90,11 @@ public class DepartmentsController : Controller
     }
 
     /// <summary>
-    /// 有多少筆資料用到這個部門。五個對照欄位裡有四個是多選（以 / 分隔），
-    /// 因此不能用等號比對，只能先撈回來再依同一套規則切開。
-    /// 資料量是幾十筆的等級，這樣做最直接也不會誤判。
+    /// 有多少筆資料用到這個部門。與清單上的「使用中」和明細視窗走同一支，
+    /// 三處各寫一套遲早會對不上。
     /// </summary>
-    private async Task<int> CountUsageAsync(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name)) return 0;
-
-        var systems = await _db.InfoSystems
-            .Select(s => new { s.SwBusinessOwnerUnit, s.SwUserAccountGrant, s.SwUserUnit })
-            .ToListAsync();
-        var dataAssets = await _db.DataAssets.Select(d => d.DaUserUnit).ToListAsync();
-        var transfers = await _db.TransferRecords.Select(t => t.InternalUnit).ToListAsync();
-
-        return systems.Count(s => MultiValue.Contains(s.SwBusinessOwnerUnit, name)
-                               || MultiValue.Contains(s.SwUserAccountGrant, name)
-                               || MultiValue.Contains(s.SwUserUnit, name))
-             + dataAssets.Count(d => MultiValue.Contains(d, name))
-             + transfers.Count(t => MultiValue.Contains(t, name));
-    }
+    private Task<int> CountUsageAsync(string name) =>
+        LookupUsage.CountAsync(_db, UsageKind.Department, name);
 
     private async Task ValidateUniqueNameAsync(Department model)
     {

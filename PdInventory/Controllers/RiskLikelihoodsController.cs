@@ -17,8 +17,7 @@ public class RiskLikelihoodsController : Controller
     public async Task<IActionResult> Index()
     {
         var levels = await _db.RiskLikelihoodLevels.OrderBy(r => r.Level).ToListAsync();
-        ViewBag.UsageCounts = await LookupUsage.RiskLevelsAsync(
-            _db, i => i.RiskLikelihoodLevel, levels, l => l.Level, l => l.Label);
+        ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.RiskLikelihood);
         return View(levels);
     }
 
