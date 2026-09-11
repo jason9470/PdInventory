@@ -21,6 +21,10 @@ public interface IEmployeeDirectory
     /// <summary>
     /// 驗證帳號密碼並取得身分。失敗一律回傳 null，不區分「帳號不存在」與「密碼錯誤」——
     /// 兩者若給出不同訊息，等於幫忙確認哪些帳號存在。
+    ///
+    /// <b>回傳的 EmpNo 必須是正規化過的七碼</b>（見 <see cref="Helpers.EmpNo.Normalize"/>）。
+    /// 使用者打 183253 或 0183253 指的是同一個人，沒統一的話會建出兩個帳號，
+    /// 而且兩邊的角色與資產授權互不相干——0904 與 0911 各踩過一次。
     /// </summary>
     Task<EmployeeInfo?> AuthenticateAsync(string account, string? password,
                                           CancellationToken cancellationToken = default);
@@ -231,11 +235,17 @@ public sealed class SimulatedEmployeeDirectory : IEmployeeDirectory
 {
     public bool RequiresPassword => false;
 
-    /// <summary>姓名交由呼叫端從 AppUsers 補齊，這裡只確認編號格式可用。</summary>
+    /// <summary>
+    /// 姓名交由呼叫端從 AppUsers 補齊，這裡只把編號整理成本系統的七碼格式。
+    ///
+    /// 補零不能省：這個模式是人工輸入帳號，打 5784 與 0005784 指的是同一個人，
+    /// 不補零就會建出第二個空白姓名的帳號（0911 實際發生過）。
+    /// Ldap 那個實作在取得 sAMAccountName 之後也做同一件事。
+    /// </summary>
     public Task<EmployeeInfo?> AuthenticateAsync(string account, string? password,
                                                  CancellationToken cancellationToken = default)
     {
-        account = (account ?? "").Trim();
+        account = EmpNo.Normalize(account);
         return Task.FromResult<EmployeeInfo?>(account.Length == 0 ? null : new EmployeeInfo(account, ""));
     }
 }
