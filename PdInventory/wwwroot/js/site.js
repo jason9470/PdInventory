@@ -240,6 +240,37 @@
     });
 })();
 
+// 新增畫面的「無SW資產編號」：勾了就把 SW 與盤點表兩個區塊藏起來，
+// 並停用其中的欄位。
+//
+// 為什麼一定要停用而不是只隱藏：隱藏的欄位照樣會跟著表單送出，後端的
+// 「這個區塊有沒有填」就會判斷成有填，於是建出一筆空的 SW 資產。停用的欄位
+// 瀏覽器根本不會送。
+//
+// 這仍然只是操作防呆——改個表單就繞過去了，真正的把關在
+// DataController.Create：收到勾選時把兩個區塊的內容整個丟掉。
+(function () {
+    var checkbox = document.getElementById('noSoftwareAsset');
+    if (!checkbox) return;
+
+    var blocks = document.querySelectorAll('.pd-sw-only');
+
+    function refresh() {
+        var hide = checkbox.checked;
+
+        blocks.forEach(function (block) {
+            block.hidden = hide;
+
+            block.querySelectorAll('input, select, textarea').forEach(function (field) {
+                field.disabled = hide;
+            });
+        });
+    }
+
+    checkbox.addEventListener('change', refresh);
+    refresh();
+})();
+
 // 清單表格欄位排序：點表頭切換升冪/降冪。
 // 六張主要清單資料量都在 50 筆內且未分頁，故在前端排序即可，不必為每張表
 // 在控制器寫一套欄位對應。標了 data-nosort 的表頭（例如「操作」）不參與。

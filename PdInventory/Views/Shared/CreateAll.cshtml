@@ -21,24 +21,28 @@
     <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
 </div>
 
-<form method="post" class="pd-form" asp-controller="Systems" asp-action="Create">
+<form method="post" class="pd-form" asp-controller="Data" asp-action="Create">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" name="from" value="@from" />
 
     <div class="card mb-3">
         <div class="card-header fw-bold">基本資訊</div>
         <div class="card-body row g-3">
+            @* 編號已停用（甲方 0910：以後不會再有編號），欄位保留是為了既有資料，
+               新資料一律空白。它沒有資料庫唯一索引，空白不會撞號。 *@
+            <input asp-for="Software.SeqNo" type="hidden" />
             <div class="col-md-2">
-                <label asp-for="Software.SeqNo" class="form-label"></label>
-                <input asp-for="Software.SeqNo" class="form-control" />
-                <span asp-validation-for="Software.SeqNo" class="text-danger"></span>
+                <div class="form-check mt-4 pt-2">
+                    <input asp-for="NoSoftwareAsset" class="form-check-input" id="noSoftwareAsset" />
+                    <label class="form-check-label fw-bold" for="noSoftwareAsset">無SW資產編號</label>
+                </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 pd-sw-only">
                 <label asp-for="Software.SystemCode" class="form-label"></label>
                 <input asp-for="Software.SystemCode" class="form-control" placeholder="例：SW-108" />
                 <span asp-validation-for="Software.SystemCode" class="text-danger"></span>
             </div>
-            <div class="col-md-7">
+            <div class="col-md-7 pd-sw-only">
                 <label asp-for="Software.SystemName" class="form-label"></label>
                 <input asp-for="Software.SystemName" class="form-control" placeholder="例：經紀帳務系統" />
                 <span asp-validation-for="Software.SystemName" class="text-danger"></span>
@@ -46,7 +50,10 @@
         </div>
     </div>
 
-    <div class="card mb-3">
+    @* 勾了「無SW資產編號」時，這個區塊與盤點表區塊由 site.js 整塊隱藏並停用其中的欄位。
+       停用是關鍵：只隱藏的話欄位照樣會送出，後端會誤以為使用者填了 SW。
+       但停用只是操作防呆，DataController.Create 收到勾選時一律把兩個區塊的內容丟掉。 *@
+    <div class="card mb-3 pd-sw-only">
         <div class="card-header fw-bold bg-primary text-white">資訊資產清單－軟體(SW)</div>
         <div class="card-body row g-3">
             <div class="col-md-3"><label asp-for="Software.SwStatus" class="form-label"></label><select asp-for="Software.SwStatus" class="form-select"
@@ -283,7 +290,7 @@
         </div>
     </div>
 
-    <div class="card mb-3">
+    <div class="card mb-3 pd-sw-only">
         <div class="card-header fw-bold bg-info text-white">資訊系統／資料庫／伺服器盤點表</div>
         <div class="card-body">
             <div class="row g-3">

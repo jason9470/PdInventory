@@ -12,7 +12,7 @@
     <div>
         @if (AssetAccess.CanCreate)
         {
-            <a class="btn btn-primary" asp-controller="Systems" asp-action="Create"
+            <a class="btn btn-primary" asp-controller="Data" asp-action="Create"
            asp-route-from="Data">＋ 新增資料資產</a>
         }
     </div>
@@ -59,23 +59,18 @@
                     <td><small>@s.DaRetentionPeriod</small></td>
                     <td><small>@s.DaHasSensitiveData</small></td>
                     <td>@asset?.SwRiskOwner</td>
+                    @* DA 就是統一檢視／編輯畫面的主鍵，直接用這一列的 Id；
+                       沒有關連 SW 的資料資產一樣進得去，只是少了 SW 與盤點表兩個區塊 *@
                     <td>
-                        @* 檢視與編輯都要用軟體資產的主鍵；沒有關連 SW 的就沒有這兩個按鈕可按 *@
-                        @if (asset is not null)
-                        {
-                            <a class="btn btn-sm btn-outline-info" asp-controller="Software" asp-action="Details"
-                               asp-route-id="@asset.Id" asp-route-from="Data">檢視</a>
-                        }
+                        <a class="btn btn-sm btn-outline-info" asp-controller="Data" asp-action="Details"
+                           asp-route-id="@s.Id" asp-route-from="Data">檢視</a>
                         @* 資產負責人只在自己負責的資產上看得到這兩個按鈕 *@
                         @if (await AssetAccess.CanModifyAsync(s.SystemCode))
                         {
-                            @if (asset is not null)
-                            {
-                                <a class="btn btn-sm btn-outline-primary" asp-controller="Systems" asp-action="Edit"
-                                   asp-route-id="@asset.Id" asp-route-from="Data">編輯</a>
-                            }
+                            <a class="btn btn-sm btn-outline-primary" asp-controller="Data" asp-action="Edit"
+                               asp-route-id="@s.Id" asp-route-from="Data">編輯</a>
                             <form method="post" asp-action="Delete" asp-route-id="@s.Id" class="d-inline"
-                                  onsubmit="return confirm('確定刪除資料資產「@s.DaAssetCode」？只會刪除這一筆資料資產，不影響軟體資產。');">
+                                  onsubmit="return confirm('@(asset is null ? $"確定刪除資料資產「{s.DaAssetCode}」？" : $"確定刪除資料資產「{s.DaAssetCode}」？此動作會一併刪除同一筆資產的 SW 與盤點表資料。")');">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
                             </form>

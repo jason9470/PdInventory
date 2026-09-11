@@ -1,6 +1,9 @@
 ﻿@model List<PdInventory.Models.InfoSystem>
 @{
     ViewData["Title"] = "資訊資產清單-軟體(SW)";
+    // 統一的檢視／編輯畫面以 DataAssets.Id 為主鍵，由控制器補查後放進 ViewBag
+    var dataAssetIds = ViewBag.DataAssetIds as Dictionary<string, int>
+                       ?? new Dictionary<string, int>();
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -8,7 +11,7 @@
     <div>
         @if (AssetAccess.CanCreate)
         {
-            <a class="btn btn-primary" asp-controller="Systems" asp-action="Create"
+            <a class="btn btn-primary" asp-controller="Data" asp-action="Create"
            asp-route-from="Software">＋ 新增軟體資產</a>
         }
     </div>
@@ -58,16 +61,25 @@
                     <td>@s.SwOwnerUnit</td>
                     <td>@s.SwAppManager</td>
                     <td>@s.SwHandlesPersonalData</td>
+                    @* 統一的檢視／編輯畫面以 DataAssets.Id 為主鍵；每個 SW 都配一列 DA，
+                       真的查不到就不顯示那兩顆按鈕，而不是連到一個開不起來的網址 *@
+                    @{ var dataId = dataAssetIds.GetValueOrDefault(s.SystemCode); }
                     <td>
-                        <a class="btn btn-sm btn-outline-info" asp-action="Details"
-                           asp-route-id="@s.Id" asp-route-from="Software">檢視</a>
+                        @if (dataId > 0)
+                        {
+                            <a class="btn btn-sm btn-outline-info" asp-controller="Data" asp-action="Details"
+                               asp-route-id="@dataId" asp-route-from="Software">檢視</a>
+                        }
                         @* 資產負責人只在自己負責的資產上看得到這兩個按鈕 *@
                         @if (await AssetAccess.CanModifyAsync(s.SystemCode))
                         {
-                            <a class="btn btn-sm btn-outline-primary" asp-controller="Systems" asp-action="Edit"
-                               asp-route-id="@s.Id" asp-route-from="Software">編輯</a>
+                            @if (dataId > 0)
+                            {
+                                <a class="btn btn-sm btn-outline-primary" asp-controller="Data" asp-action="Edit"
+                                   asp-route-id="@dataId" asp-route-from="Software">編輯</a>
+                            }
                             <form method="post" asp-action="Delete" asp-route-id="@s.Id" class="d-inline"
-                                  onsubmit="return confirm('確定刪除軟體資產「@s.SystemCode @s.SystemName」？此動作會一併刪除同筆的 DA 與系統資料。');">
+                                  onsubmit="return confirm('確定刪除軟體資產「@s.SystemCode @s.SystemName」？此動作會一併刪除同一筆資產的 DA 與盤點表資料。');">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
                             </form>

@@ -18,34 +18,52 @@
 *@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>編輯：@Model.Asset.SeqNo @Model.Asset.SystemCode @Model.Asset.SystemName</h2>
+    <h2>
+        @if (Model.NoSoftwareAsset)
+        {
+            @:編輯：@Model.Data.DaAssetCode
+        }
+        else
+        {
+            @:編輯：@Model.Asset.SystemCode @Model.Asset.SystemName
+        }
+    </h2>
     <div>
-        <a class="btn btn-outline-info" asp-controller="Software" asp-action="Details"
-           asp-route-id="@Model.Asset.Id" asp-route-from="@from">檢視</a>
+        <a class="btn btn-outline-info" asp-controller="Data" asp-action="Details"
+           asp-route-id="@Model.DataAssetId" asp-route-from="@from">檢視</a>
         <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
     </div>
 </div>
 
-<p class="text-muted small">三個區塊各自獨立儲存，按下區塊下方的[儲存]只會寫入該區塊的欄位。</p>
+@if (Model.NoSoftwareAsset)
+{
+    <div class="alert alert-secondary">
+        這筆資料資產沒有關連的軟體資產，因此只有 DA 一個區塊。
+        關連在建立時就決定，之後不再更動（甲方 0910 確認）。
+    </div>
+}
+else
+{
+    <p class="text-muted small">三個區塊各自獨立儲存，按下區塊下方的[儲存]只會寫入該區塊的欄位。</p>
+}
 
 @* 位置與新增畫面一致，但編輯時不開放改動：這三個欄位是全站的識別鍵——
    資產編號串起 SW／DA／盤點表／個資盤點／拋轉／風險自評六張表，還是權限判斷的依據，
    在這裡改掉會讓那些關聯瞬間斷開。要改請走匯入或直接處理資料。
    唯讀只是操作防呆，SoftwareController.Edit 存檔時一律以資料庫現值為準。 *@
+@if (!Model.NoSoftwareAsset)
+{
 <div class="card mb-3">
     <div class="card-header fw-bold">基本資訊</div>
     <div class="card-body row g-3">
-        <div class="col-md-2">
-            <label asp-for="Software.SeqNo" class="form-label"></label>
-            <input asp-for="Software.SeqNo" class="form-control" form="swBlockForm"
-                   readonly title="識別欄位，不開放編輯" />
-        </div>
-        <div class="col-md-3">
+        @* 編號已停用（甲方 0910），欄位保留是為了既有資料，畫面上不再出現 *@
+        <input asp-for="Software.SeqNo" type="hidden" form="swBlockForm" />
+        <div class="col-md-4">
             <label asp-for="Software.SystemCode" class="form-label"></label>
             <input asp-for="Software.SystemCode" class="form-control" form="swBlockForm"
                    readonly title="識別欄位，不開放編輯" />
         </div>
-        <div class="col-md-7">
+        <div class="col-md-8">
             <label asp-for="Software.SystemName" class="form-label"></label>
             <input asp-for="Software.SystemName" class="form-control" form="swBlockForm"
                    readonly title="識別欄位，不開放編輯" />
@@ -54,11 +72,11 @@
 </div>
 
 @* ─────────────────────────── 資訊資產清單－軟體(SW) ─────────────────────────── *@
-<form id="swBlockForm" method="post" class="pd-form" asp-controller="Software" asp-action="Edit" asp-route-id="@Model.Asset.Id">
-    <input type="hidden" name="Software.Id" value="@Model.Asset.Id" />
+<form id="swBlockForm" method="post" class="pd-form" asp-controller="Software" asp-action="Edit" asp-route-id="@Model.DataAssetId">
+    <input type="hidden" name="Software.Id" value="@Model.Software.Id" />
     <input type="hidden" name="from" value="@from" />
     @* 並行控制：帶回載入當下的權杖，存檔時比對是否已被他人改過 *@
-    <input type="hidden" name="Software.RowVersion" value="@Model.Asset.RowVersion" />
+    <input type="hidden" name="Software.RowVersion" value="@Model.Software.RowVersion" />
 
     <div class="card mb-3">
         <div class="card-header fw-bold bg-primary text-white">資訊資產清單－軟體(SW)</div>
@@ -270,13 +288,14 @@
         <button type="submit" class="btn btn-primary">儲存 SW</button>
     </div>
 </form>
+}
 
 @* ─────────────────────────── 資訊資產清單－資料(DA) ─────────────────────────── *@
-<form method="post" class="pd-form" asp-controller="Data" asp-action="Edit" asp-route-id="@Model.Asset.Id">
-    <input type="hidden" name="Data.Id" value="@Model.Asset.Id" />
+<form method="post" class="pd-form" asp-controller="Data" asp-action="Edit" asp-route-id="@Model.DataAssetId">
+    <input type="hidden" name="Data.Id" value="@Model.Data.Id" />
     <input type="hidden" name="from" value="@from" />
     @* 並行控制：帶回載入當下的權杖，存檔時比對是否已被他人改過 *@
-    <input type="hidden" name="Data.RowVersion" value="@Model.Asset.RowVersion" />
+    <input type="hidden" name="Data.RowVersion" value="@Model.Data.RowVersion" />
 
     <div class="card mb-3">
         <div class="card-header fw-bold bg-success text-white">資訊資產清單－資料(DA)</div>
@@ -315,12 +334,14 @@
 </form>
 
 @* ──────────────────── 資訊系統、資料庫與檔案伺服器盤點表 ──────────────────── *@
-<form method="post" class="pd-form" asp-controller="Systems" asp-action="Edit" asp-route-id="@Model.Asset.Id">
+@if (!Model.NoSoftwareAsset)
+{
+<form method="post" class="pd-form" asp-controller="Systems" asp-action="Edit" asp-route-id="@Model.DataAssetId">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" name="Sheet3.Id" value="@Model.Asset.Id" />
+    <input type="hidden" name="Sheet3.Id" value="@Model.Sheet3.Id" />
     <input type="hidden" name="from" value="@from" />
     @* 並行控制：帶回載入當下的權杖，存檔時比對是否已被他人改過 *@
-    <input type="hidden" name="Sheet3.RowVersion" value="@Model.Asset.RowVersion" />
+    <input type="hidden" name="Sheet3.RowVersion" value="@Model.Sheet3.RowVersion" />
 
     <div class="card mb-3">
         <div class="card-header fw-bold bg-info text-white">資訊系統／資料庫／伺服器盤點表</div>
@@ -406,6 +427,7 @@
         <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
     </div>
 </form>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

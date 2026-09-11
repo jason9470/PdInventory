@@ -43,44 +43,43 @@ public static class InfoSystemBlocks
     }
 
     /// <summary>
-    /// 組出統一編輯畫面的模型。DA 與盤點表現在是獨立的資料列，可能不存在
-    /// （新資產還沒填、或這個 SW 根本沒有對應的資料資產），此時該區塊呈現空白。
+    /// 組出統一編輯畫面的模型。
+    ///
+    /// DA 一定存在（它就是這個畫面的主鍵），SW 與盤點表都可能沒有：
+    /// 沒有 SW 的是各組的 PC／NB 那類資料資產，兩個區塊整塊不顯示；
+    /// 有 SW 但沒有盤點表的有 29 套，那個區塊呈現空白、存檔時才建出那一列。
     /// </summary>
-    public static InfoSystemEditViewModel ToEditViewModel(
-        InfoSystem system, DataAsset? dataAsset, SystemInventory? inventory)
+    public static InfoSystemEditViewModel ToEditViewModel(AssetGroup group)
     {
         var model = new InfoSystemEditViewModel
         {
-            Asset = system,
-            DataAssetId = dataAsset?.Id,
-            InventoryId = inventory?.Id,
+            Asset = group.System ?? new InfoSystem(),
+            NoSoftwareAsset = !group.HasSoftware,
+            DataAssetId = group.Data.Id,
+            InventoryId = group.Inventory?.Id,
         };
 
-        Copy(model.Software, system);
-        model.Software.Id = system.Id;
-        model.Software.RowVersion = system.RowVersion;
+        Copy(model.Data, group.Data);
+        model.Data.Id = group.Data.Id;
+        model.Data.RowVersion = group.Data.RowVersion;
 
-        if (dataAsset is not null)
+        if (group.System is not null)
         {
-            Copy(model.Data, dataAsset);
-            model.Data.Id = dataAsset.Id;
-            model.Data.RowVersion = dataAsset.RowVersion;
+            Copy(model.Software, group.System);
+            model.Software.Id = group.System.Id;
+            model.Software.RowVersion = group.System.RowVersion;
+        }
+
+        if (group.Inventory is not null)
+        {
+            Copy(model.Sheet3, group.Inventory);
+            model.Sheet3.Id = group.Inventory.Id;
+            model.Sheet3.RowVersion = group.Inventory.RowVersion;
         }
         else
         {
-            // 還沒有 DA 資料時，先把關連編號帶好，存檔就會建出對應的那一列
-            model.Data.SystemCode = system.SystemCode;
-        }
-
-        if (inventory is not null)
-        {
-            Copy(model.Sheet3, inventory);
-            model.Sheet3.Id = inventory.Id;
-            model.Sheet3.RowVersion = inventory.RowVersion;
-        }
-        else
-        {
-            model.Sheet3.SystemCode = system.SystemCode;
+            // 還沒有盤點表時先把關連編號帶好，存檔就會建出對應的那一列
+            model.Sheet3.SystemCode = group.SystemCode;
         }
 
         return model;

@@ -160,11 +160,20 @@ public class SystemEditViewModel : IInfoSystemBlockViewModel
 /// </summary>
 public class InfoSystemEditViewModel
 {
-    /// <summary>畫面標題、[檢視]連結等唯讀用途；新增時為空白實體。</summary>
+    /// <summary>畫面標題等唯讀用途；新增時、或這筆 DA 沒有關連 SW 時為空白實體。</summary>
     [BindNever, ValidateNever]
     public InfoSystem Asset { get; set; } = new();
 
-    /// <summary>對應的 DataAssets 主鍵；null 表示這個資產還沒有 DA 資料。</summary>
+    /// <summary>
+    /// 沒有關連的軟體資產：SW 與盤點表兩個區塊在畫面上整塊不顯示，存檔也不會建那兩列。
+    ///
+    /// 新增畫面由使用者勾選「無SW資產編號」決定，因此這個屬性要能被繫結；
+    /// 編輯畫面由 <see cref="AssetGroup.HasSoftware"/> 反推，那條路徑不繫結整個模型
+    /// （三個區塊各自只繫結自己那一份 ViewModel），沒有被竄改的空間。
+    /// </summary>
+    public bool NoSoftwareAsset { get; set; }
+
+    /// <summary>對應的 DataAssets 主鍵，也是統一編輯／檢視畫面的網址參數；新增時為 null。</summary>
     public int? DataAssetId { get; set; }
 
     /// <summary>對應的 SystemInventories 主鍵；null 表示還沒有盤點表資料。</summary>

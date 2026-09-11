@@ -1,24 +1,46 @@
 ﻿@model PdInventory.Models.InfoSystem
 @{
-    // DA 與盤點表已獨立成表，可能不存在；用空實體代替，畫面就是一片空白而不會出錯
+    // 這個畫面的主鍵是 DataAssets.Id：有 DA 不一定有 SW（各組的 PC／NB 就沒有），
+    // 沒有 SW 時 Model 是一個空的 InfoSystem，SW 與盤點表兩個區塊整塊不顯示。
     var da = ViewBag.DataAsset as PdInventory.Models.DataAsset ?? new PdInventory.Models.DataAsset();
     var inv = ViewBag.Inventory as PdInventory.Models.SystemInventory ?? new PdInventory.Models.SystemInventory();
-    ViewData["Title"] = $"系統 {Model.SeqNo}";
+    var hasSoftware = (bool)(ViewBag.HasSoftware ?? true);
+    var dataAssetId = (int)(ViewBag.DataAssetId ?? 0);
+    ViewData["Title"] = hasSoftware ? $"系統 {Model.SystemCode}" : $"資料資產 {da.DaAssetCode}";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>系統：@Model.SeqNo @Model.SystemCode @Model.SystemName</h2>
+    <h2>
+        @if (hasSoftware)
+        {
+            @:系統：@Model.SystemCode @Model.SystemName
+        }
+        else
+        {
+            @:資料資產：@da.DaAssetCode
+        }
+    </h2>
     <div>
         @if (await AssetAccess.CanModifyAsync(Model.SystemCode))
         {
-            <a class="btn btn-primary" asp-controller="Systems" asp-action="Edit"
-               asp-route-id="@Model.Id" asp-route-from="@ViewBag.From">編輯</a>
+            <a class="btn btn-primary" asp-controller="Data" asp-action="Edit"
+               asp-route-id="@dataAssetId" asp-route-from="@ViewBag.From">編輯</a>
         }
         <a class="btn btn-outline-secondary" asp-route-clear="1"
            asp-controller="@ViewBag.From" asp-action="Index">回列表</a>
     </div>
 </div>
 
+@if (!hasSoftware)
+{
+    <div class="alert alert-secondary">
+        這筆資料資產沒有關連的軟體資產，因此沒有 SW 與系統盤點兩個區塊。
+        關連在建立時就決定，之後不再更動。
+    </div>
+}
+
+@if (hasSoftware)
+{
 <div class="card mb-3">
     <div class="card-header fw-bold bg-primary text-white">資訊資產清單－軟體(SW)</div>
     <div class="card-body pd-body">
@@ -87,6 +109,7 @@
         </dl>
     </div>
 </div>
+}
 
 <div class="card mb-3">
     <div class="card-header fw-bold bg-success text-white">資訊資產清單－資料(DA)</div>
@@ -108,6 +131,8 @@
     </div>
 </div>
 
+@if (hasSoftware)
+{
 <div class="card mb-3">
     <div class="card-header fw-bold">I. 系統基本資訊</div>
     <div class="card-body pd-body">
@@ -166,3 +191,4 @@
         <p class="mb-0">@inv.Remark</p>
     </div>
 </div>
+}

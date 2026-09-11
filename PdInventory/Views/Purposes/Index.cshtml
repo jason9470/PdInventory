@@ -25,7 +25,7 @@
             <tr>
                 <th style="width: 90px">代號</th>
                 <th>特定目的名稱</th>
-                <th style="width: 100px">使用次數</th>
+                <th style="width: 110px">使用中</th>
                 <th style="width: 140px" data-nosort>操作</th>
             </tr>
         </thead>
@@ -35,14 +35,15 @@
                 <tr>
                     <td><code>@p.Code</code></td>
                     <td>@p.Name</td>
+                    @{ var used = p.InventoryItems.Count; }
                     <td>
-                        @if (p.InventoryItems.Count > 0)
+                        @if (used > 0)
                         {
-                            <span class="badge bg-primary">@p.InventoryItems.Count</span>
+                            <span class="badge text-bg-primary">@used 筆</span>
                         }
                         else
                         {
-                            <span class="text-muted">0</span>
+                            <span class="text-muted small">未使用</span>
                         }
                     </td>
                     <td>
@@ -51,8 +52,8 @@
                               onsubmit="return confirm('確定刪除特定目的「@p.Code @p.Name」？');">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-sm btn-outline-danger"
-                                    disabled="@(p.InventoryItems.Count > 0)"
-                                    title="@(p.InventoryItems.Count > 0 ? "仍被盤點項目使用，無法刪除" : "")">刪除</button>
+                                    disabled="@(used > 0)"
+                                    title="@(used > 0 ? "仍被盤點項目使用，無法刪除" : "刪除")">刪除</button>
                         </form>
                     </td>
                 </tr>

@@ -33,8 +33,12 @@ public class SoftwareController : Controller
             query = query.Where(s => s.SystemCode.Contains(q)
                                   || s.SystemName.Contains(q));
 
+        var rows = await query.OrderBy(s => s.SystemCode).ToListAsync();
+
         ViewBag.Query = q;
-        return View(await query.OrderBy(s => s.SystemCode).ToListAsync());
+        // [檢視]與[編輯]連到統一畫面，而它的主鍵是 DataAssets.Id
+        ViewBag.DataAssetIds = await AssetGroups.DataAssetIdsAsync(_db, rows.Select(s => s.SystemCode));
+        return View(rows);
     }
 
     /// <summary>匯出目前搜尋結果。q 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
@@ -50,36 +54,20 @@ public class SoftwareController : Controller
         return File(content, ExcelExporter.ContentType, fileName);
     }
 
-    /// <summary>
-    /// SW / DA / 系統盤點三張清單共用的檢視畫面。放在 Software 是因為 SW 才是主表。
-    /// </summary>
-    /// <param name="from">來源清單頁，供[回列表]回到原處。</param>
-    public async Task<IActionResult> Details(int id, string? from)
-    {
-        var system = await _db.InfoSystems.FindAsync(id);
-        if (system is null) return NotFound();
-        // 記住這筆的資產編號，之後進到任一清單頁都會自動帶入搜尋欄
-        this.RememberSearch(system.SystemCode);
-        ViewBag.From = ListSource.Resolve(from);
-        // DA 與盤點表已是獨立的資料列，檢視頁要另外查出來；沒有就那一區塊留空
-        ViewBag.DataAsset = await _db.DataAssets
-            .FirstOrDefaultAsync(d => d.SystemCode == system.SystemCode);
-        ViewBag.Inventory = await _db.SystemInventories
-            .FirstOrDefaultAsync(i => i.SystemCode == system.SystemCode);
-        return View(system);
-    }
+    // 新增、編輯與檢視畫面都整併在 DataController（統一畫面的主鍵是 DataAssets.Id），
+    // 故此處只保留清單、SW 區塊的送出目標與刪除。
 
-    // 新增與編輯畫面已整併到 Views/Shared 的 CreateAll / EditAll（由 SystemsController 提供），
-    // 故此處只保留清單、編輯的 POST 與刪除；Edit 的 POST 仍是統一編輯畫面該區塊的送出目標。
-
+    /// <param name="id">DataAssets 的主鍵，也是統一編輯畫面的網址參數。</param>
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, [Bind(Prefix = "Software")] SoftwareEditViewModel model, string? from)
     {
-        if (id != model.Id) return BadRequest();
         ViewBag.From = ListSource.Resolve(from);
 
-        var existing = await _db.InfoSystems.FindAsync(id);
-        if (existing is null) return NotFound();
+        var group = await AssetGroups.LoadAsync(_db, id);
+        // 沒有關連 SW 的資料資產根本不會顯示這個區塊，送過來就是不該發生的事
+        if (group?.System is null) return NotFound();
+
+        var existing = group.System;
 
         // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
         if (!await _access.CanModifyAsync(existing.SystemCode)) return Forbid();
@@ -87,10 +75,7 @@ public class SoftwareController : Controller
         if (!ModelState.IsValid)
         {
             // 統一編輯畫面要三個區塊都在，另外兩塊取資料庫現值，這一塊保留使用者剛才輸入的內容
-            var reload = InfoSystemBlocks.ToEditViewModel(
-                existing,
-                await _db.DataAssets.FirstOrDefaultAsync(d => d.SystemCode == existing.SystemCode),
-                await _db.SystemInventories.FirstOrDefaultAsync(i => i.SystemCode == existing.SystemCode));
+            var reload = InfoSystemBlocks.ToEditViewModel(group);
             reload.Software = model;
             return View("EditAll", reload);
         }
@@ -113,29 +98,48 @@ public class SoftwareController : Controller
         catch (DbUpdateConcurrencyException)
         {
             TempData["Error"] = "這筆資料在你編輯期間已被其他人修改，畫面已重新載入最新內容，請確認後再存一次。";
-            return RedirectToAction("Edit", "Systems", new { id, from });
+            return RedirectToAction("Edit", "Data", new { id, from });
         }
         TempData["Message"] = $"已更新軟體資產「{existing.SystemCode} {existing.SystemName}」";
         // 統一編輯畫面：存完留在原畫面，方便接著編其他區塊（from 要一起帶著，[取消]才知道回哪）
-        return RedirectToAction("Edit", "Systems", new { id, from });
+        return RedirectToAction("Edit", "Data", new { id, from });
     }
 
+    /// <summary>
+    /// SW／DA／盤點表三列一起軟刪除。三張清單是同一筆資產的三個面，從這裡刪掉它
+    /// 就是整筆不要了（業務端 0910 確認）。只刪 SW 也不可行：DA 會變成指向一個
+    /// 已刪除的資產編號，統一編輯畫面會顯示一個不存在的 SW 區塊。
+    ///
+    /// 軟刪除：只加註記，資料仍留在資料庫，但被全域查詢篩選排除，
+    /// 因此三張清單與匯出都不會再出現。
+    /// </summary>
+    /// <param name="id">InfoSystems 的主鍵（這是 SW 清單，列的就是 InfoSystems）。</param>
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         var system = await _db.InfoSystems.FindAsync(id);
-        if (system is not null)
+        if (system is null) return RedirectToAction(nameof(Index));
+
+        // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
+        if (!await _access.CanModifyAsync(system.SystemCode)) return Forbid();
+
+        var data = await _db.DataAssets.FirstOrDefaultAsync(d => d.SystemCode == system.SystemCode);
+        var inventory = await _db.SystemInventories.FirstOrDefaultAsync(i => i.SystemCode == system.SystemCode);
+
+        // 每個 SW 都配一列 DA，但真的缺了也不該炸掉刪除動作——沒有就只刪剩下的
+        if (data is not null)
         {
-            // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
-            if (!await _access.CanModifyAsync(system.SystemCode)) return Forbid();
-            // 軟刪除：只加註記，資料仍留在資料庫，但被全域查詢篩選排除，
-            // 因此 SW／DA／系統盤點三張清單與匯出都不會再出現。
+            AssetGroups.SoftDelete(new AssetGroup(data, system, inventory), _currentUser.Name);
+        }
+        else
+        {
             system.IsDeleted = true;
             system.DeletedAt = DateTime.Now;
             system.DeletedBy = _currentUser.Name;
-            await _db.SaveChangesAsync();
-            TempData["Message"] = $"已刪除軟體資產「{system.SystemCode} {system.SystemName}」";
         }
+
+        await _db.SaveChangesAsync();
+        TempData["Message"] = $"已刪除資訊資產「{system.SystemCode} {system.SystemName}」的 SW、DA 與盤點表資料";
         return RedirectToAction(nameof(Index));
     }
 }

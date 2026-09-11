@@ -109,6 +109,13 @@ public class AppDbContext : DbContext
         // ——權限判斷、下拉選單與各處的關聯都靠它——這種情況拆成兩列，
         // 因此同一個 DaAssetCode 會出現不只一次。
 
+        // 但 SystemCode 必須唯一：0910 起 DA 是統一新增／編輯／檢視畫面的主鍵
+        // （/Data/Edit/{DataAssets.Id}），同一個 SW 有兩列 DA 就會有兩個網址指向同一套系統，
+        // 而畫面只找得到其中一列，另一列的內容會安靜地編不到。
+        // 空字串排除在外：沒有關連 SW 的資料資產（各組的 PC／NB）本來就有一批。
+        modelBuilder.Entity<DataAsset>().HasIndex(d => d.SystemCode).IsUnique()
+            .HasFilter("\"SystemCode\" <> '' AND \"IsDeleted\" = 0");
+
         // SQLite 沒有原生 rowversion，改以 Guid 當並行權杖，於 SaveChanges 換新值
         modelBuilder.Entity<InfoSystem>().Property(e => e.RowVersion).IsConcurrencyToken();
         modelBuilder.Entity<DataAsset>().Property(e => e.RowVersion).IsConcurrencyToken();

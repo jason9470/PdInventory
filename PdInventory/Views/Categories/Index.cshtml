@@ -28,7 +28,7 @@
                 <th>類別名稱</th>
                 <th>分類</th>
                 <th style="max-width: 420px">例示</th>
-                <th>使用次數</th>
+                <th style="width: 110px">使用中</th>
                 <th style="min-width: 120px" data-nosort>操作</th>
             </tr>
         </thead>
@@ -41,14 +41,15 @@
                     <td>@c.Name</td>
                     <td><span class="badge bg-light text-dark border">@c.GroupName</span></td>
                     <td class="text-break" style="max-width: 420px"><small>@c.Example</small></td>
+                    @{ var used = c.InventoryItems.Count; }
                     <td>
-                        @if (c.InventoryItems.Count > 0)
+                        @if (used > 0)
                         {
-                            <span class="badge bg-primary">@c.InventoryItems.Count</span>
+                            <span class="badge text-bg-primary">@used 筆</span>
                         }
                         else
                         {
-                            <span class="text-muted">0</span>
+                            <span class="text-muted small">未使用</span>
                         }
                     </td>
                     <td>
@@ -57,8 +58,8 @@
                               onsubmit="return confirm('確定刪除個資類別「@c.DisplayCode @c.Name」？');">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-sm btn-outline-danger"
-                                    disabled="@(c.InventoryItems.Count > 0)"
-                                    title="@(c.InventoryItems.Count > 0 ? "仍被盤點項目使用，無法刪除" : "")">刪除</button>
+                                    disabled="@(used > 0)"
+                                    title="@(used > 0 ? "仍被盤點項目使用，無法刪除" : "刪除")">刪除</button>
                         </form>
                     </td>
                 </tr>
