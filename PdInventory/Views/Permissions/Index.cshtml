@@ -13,11 +13,24 @@
 <div class="row g-4">
     <div class="col-lg-5 col-xl-4">
         <div class="card">
-            <div class="card-header py-2 fw-bold small">使用者</div>
+            <div class="card-header py-2 fw-bold small d-flex justify-content-between align-items-center">
+                <span>使用者</span>
+                <span class="fw-normal text-muted" id="userFilterCount"></span>
+            </div>
+            <div class="card-body py-2">
+                <div class="input-group input-group-sm">
+                    <input type="search" id="userFilter" class="form-control"
+                           placeholder="輸入姓名或員編快速篩選" autocomplete="off" />
+                    <button type="button" class="btn btn-outline-secondary" id="userFilterClear">清除</button>
+                </div>
+            </div>
             <div class="list-group list-group-flush small pd-user-list">
                 @foreach (var user in Model.Users)
                 {
+                    @* data-search：篩選比對的來源。姓名與員編都放進來，
+                       使用者打哪一個都找得到 *@
                     <a class="list-group-item list-group-item-action @(selected?.Id == user.Id ? "active" : "")"
+                       data-search="@(user.EmpNo + " " + user.EmpName)"
                        asp-action="Index" asp-route-userId="@user.Id">
                         <div class="d-flex justify-content-between align-items-center">
                             <span>
@@ -140,6 +153,49 @@
 
 @section Scripts {
 <script>
+    // 使用者清單的即時篩選。
+    //
+    // 為什麼在前端做而不是比照六張清單的 ?q=：這個畫面點一位使用者就會整頁重載
+    // （網址帶 userId），伺服器端篩選要把 q 一路帶進每個連結與存檔後的導回，
+    // 而 135 位使用者本來就全部已經印在畫面上了，直接藏起來最單純。
+    //
+    // 條件記在 sessionStorage：挑了一位使用者之後畫面會重載，不記的話
+    // 剛打的字就沒了，等於每次都要重打。
+    (function () {
+        var input = document.getElementById('userFilter');
+        var clear = document.getElementById('userFilterClear');
+        var count = document.getElementById('userFilterCount');
+        var list = document.querySelector('.pd-user-list');
+        if (!input || !list) return;
+
+        var KEY = 'pd:permissions:filter';
+        var items = Array.prototype.slice.call(list.querySelectorAll('[data-search]'));
+
+        function refresh() {
+            var keyword = input.value.trim().toLowerCase();
+            var shown = 0;
+
+            items.forEach(function (item) {
+                var hit = !keyword || item.dataset.search.toLowerCase().indexOf(keyword) >= 0;
+                item.hidden = !hit;
+                if (hit) shown++;
+            });
+
+            count.textContent = keyword ? shown + ' / ' + items.length : '';
+
+            try {
+                if (keyword) sessionStorage.setItem(KEY, input.value);
+                else sessionStorage.removeItem(KEY);
+            } catch (e) { /* 隱私模式下不能寫，篩選本身照樣可用 */ }
+        }
+
+        try { input.value = sessionStorage.getItem(KEY) || ''; } catch (e) { /* 同上 */ }
+
+        input.addEventListener('input', refresh);
+        clear.addEventListener('click', function () { input.value = ''; refresh(); input.focus(); });
+        refresh();
+    })();
+
     (function () {
         var picker = document.querySelector('.pd-asset-picker');
         if (!picker) return;
