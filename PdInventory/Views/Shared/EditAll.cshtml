@@ -39,7 +39,7 @@
 {
     <div class="alert alert-secondary">
         這筆資料資產沒有關連的軟體資產，因此只有 DA 一個區塊。
-        關連在建立時就決定，之後不再更動（甲方 0910 確認）。
+        關連在建立時就決定，之後不再更動。
     </div>
 }
 else
@@ -56,7 +56,7 @@ else
 <div class="card mb-3">
     <div class="card-header fw-bold">基本資訊</div>
     <div class="card-body row g-3">
-        @* 編號已停用（甲方 0910），欄位保留是為了既有資料，畫面上不再出現 *@
+        @* 編號已停用（0910 起不再使用），欄位保留是為了既有資料，畫面上不再出現 *@
         <input asp-for="Software.SeqNo" type="hidden" form="swBlockForm" />
         <div class="col-md-4">
             <label asp-for="Software.SystemCode" class="form-label"></label>
@@ -272,14 +272,11 @@ else
                         asp-items="Lookup.ItemsFor(Lookup.Employees, Model.Software.SwReviewer)">
                     <option value="">-- 請選擇 --</option>
                 </select></div>
-            <div class="col-md-3"><label asp-for="Software.SwModifiedBy" class="form-label"></label>
-                @* 存檔時由 AppDbContext 寫入目前登入者，畫面唯讀 *@
-                <input asp-for="Software.SwModifiedBy" class="form-control" readonly title="存檔時自動寫入，不可更改" />
-                <div class="form-text">存檔時自動填入目前登入者。</div></div>
-            <div class="col-md-3"><label asp-for="Software.SwModifiedTime" class="form-label"></label>
-                @* 存檔時由 AppDbContext 寫入，畫面唯讀 *@
-                <input asp-for="Software.SwModifiedTime" class="form-control" readonly title="存檔時自動寫入，不可更改" />
-                <div class="form-text">存檔時自動填入現在時間。</div></div>
+            @* 修改者與修改時間由 AppDbContext.StampSourceSheetModifiedFields 於存檔時寫入。
+               既然畫面上改不了，業務端決定乾脆不要顯示；欄位保留是為了把現值帶回去，
+               真正的把關在後端（送假值進來也會被蓋掉）。 *@
+            <input asp-for="Software.SwModifiedBy" type="hidden" />
+            <input asp-for="Software.SwModifiedTime" type="hidden" />
             <div class="col-12"><label asp-for="Software.SwRemark" class="form-label"></label><textarea asp-for="Software.SwRemark" class="form-control" rows="2"></textarea></div>
         </div>
     </div>
@@ -320,10 +317,8 @@ else
                         asp-items="Lookup.ItemsFor(Lookup.Employees, Model.Data.DaReviewer)">
                     <option value="">-- 請選擇 --</option>
                 </select></div>
-            <div class="col-md-3"><label asp-for="Data.DaModifiedTime" class="form-label"></label>
-                @* 存檔時由 AppDbContext 寫入，畫面唯讀 *@
-                <input asp-for="Data.DaModifiedTime" class="form-control" readonly title="存檔時自動寫入，不可更改" />
-                <div class="form-text">存檔時自動填入現在時間。</div></div>
+            @* 同 SW 的修改者／修改時間：存檔時自動寫入，畫面上不顯示 *@
+            <input asp-for="Data.DaModifiedTime" type="hidden" />
             <div class="col-md-3"><label asp-for="Data.DaRemark" class="form-label"></label><textarea asp-for="Data.DaRemark" class="form-control" rows="2"></textarea></div>
         </div>
     </div>
