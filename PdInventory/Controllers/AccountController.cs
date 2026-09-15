@@ -79,9 +79,23 @@ public class AccountController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
+        ForgetSessionState();
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction(nameof(Login));
     }
+
+    /// <summary>
+    /// 清掉 Session。目前裡面只有清單頁的搜尋記憶（見 <see cref="SearchMemory"/>），
+    /// 記的是「這個人剛剛看到哪一筆資產」。
+    ///
+    /// 登出與登入都要清：SignOutAsync 只處理驗證 Cookie，不會動到 Session，
+    /// 因此不清的話，下一個在同一台機器登入的人一進清單頁，搜尋欄就已經填著
+    /// 前一個人看過的資產編號。
+    ///
+    /// 整個清掉而不是只移除那一個鍵：Session 放的都是「這次操作到哪裡」這類東西，
+    /// 換身分時一律作廢，日後多放別的也不必回來補這一行。
+    /// </summary>
+    private void ForgetSessionState() => HttpContext.Session.Clear();
 
     /// <summary>已登入但角色不足時的畫面。</summary>
     public IActionResult Denied() => View();
@@ -97,6 +111,9 @@ public class AccountController : Controller
     /// </summary>
     private async Task SignInAsync(EmployeeInfo info)
     {
+        // 上一個人沒按登出就直接換人登入時，這裡把殘留的記憶清掉（理由見 ForgetSessionState）
+        ForgetSessionState();
+
         var user = await _db.AppUsers.FirstOrDefaultAsync(u => u.EmpNo == info.EmpNo);
         var isNew = user is null;
         user ??= new AppUser { EmpNo = info.EmpNo, Role = UserRole.AssetOwner };
