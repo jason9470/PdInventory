@@ -128,6 +128,10 @@ public class RiskController : Controller
         existing.SystemCode = model.SystemCode;
         existing.SystemName = await AssetPicker.ResolveNameAsync(_db, model.SystemCode) ?? existing.SystemName;
 
+        // 個資文件/檔案名稱同樣可以在這裡改。它是 InventoryItems 的欄位，個資盤點表
+        // 也看得到同一格——兩張清單本來就是同一批資料的兩個面，改這裡那邊會跟著變。
+        existing.DocumentName = model.DocumentName;
+
         existing.RiskDataSeqNo = model.RiskDataSeqNo;
         existing.RiskCategoryCode = model.RiskCategoryCode;
         existing.RiskCategoryName = model.RiskCategoryName;
