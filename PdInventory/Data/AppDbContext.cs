@@ -209,6 +209,7 @@ public class AppDbContext : DbContext
 
             entry.Entity.DaHasSensitiveData = MultiValue.Normalize(entry.Entity.DaHasSensitiveData);
             entry.Entity.DaUserUnit = MultiValue.Normalize(entry.Entity.DaUserUnit);
+            entry.Entity.DaBackupConfirm = MultiValue.Normalize(entry.Entity.DaBackupConfirm);
         }
     }
 

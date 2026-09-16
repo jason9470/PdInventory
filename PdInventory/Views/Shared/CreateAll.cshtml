@@ -273,7 +273,9 @@
             <div class="col-md-3"><label asp-for="Data.DaUserUnit" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Data.DaUserUnit", Model.Data.DaUserUnit, Lookup.Departments)' /></div>
-            <div class="col-md-3"><label asp-for="Data.DaBackupConfirm" class="form-label"></label><input asp-for="Data.DaBackupConfirm" class="form-control" /></div>
+            <div class="col-md-3"><label asp-for="Data.DaBackupConfirm" class="form-label"></label>
+                <partial name="_MultiCheckList" model='new MultiCheckListModel(
+                    "Data.DaBackupConfirm", Model.Data.DaBackupConfirm, Lookup.OptionsFor(nameof(DataAsset.DaBackupConfirm)))' /></div>
             <div class="col-md-3"><label asp-for="Data.DaReviewer" class="form-label"></label>
                 <select asp-for="Data.DaReviewer" class="form-select"
                         asp-items="Lookup.ItemsFor(Lookup.Employees, Model.Data.DaReviewer)">

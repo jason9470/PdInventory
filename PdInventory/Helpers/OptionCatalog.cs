@@ -75,6 +75,8 @@ public static class OptionCatalog
         new(nameof(InfoSystem.SwRpo), "SW-回復資料目標(RPO)", "Software", IsMultiple: false),
 
         new(nameof(DataAsset.DaHasSensitiveData), "DA-有無機敏資料", "Data", IsMultiple: true),
+        // 多選：既有資料有 15 筆是「資料庫同地備份/異地抄寫」這種組合
+        new(nameof(DataAsset.DaBackupConfirm), "DA-確認-資料備份方式", "Data", IsMultiple: true),
 
         new(nameof(InventoryItem.SubjectType), "個資當事人類別", "Inventory", IsMultiple: false),
         new(nameof(InventoryItem.TransferMethod), "傳輸：對外傳遞方式", "Inventory", IsMultiple: false),
