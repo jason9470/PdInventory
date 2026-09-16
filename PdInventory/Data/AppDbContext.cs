@@ -140,6 +140,7 @@ public class AppDbContext : DbContext
     {
         StampAuditFields();
         StampSourceSheetModifiedFields();
+        ProtectAdminOnlyFields();
         RecalculateAssetValues();
         NormalizeMultiValueFields();
         return base.SaveChanges();
@@ -149,6 +150,7 @@ public class AppDbContext : DbContext
     {
         StampAuditFields();
         StampSourceSheetModifiedFields();
+        ProtectAdminOnlyFields();
         RecalculateAssetValues();
         NormalizeMultiValueFields();
         return base.SaveChangesAsync(cancellationToken);
@@ -243,6 +245,36 @@ public class AppDbContext : DbContext
         {
             if (entry.State is not (EntityState.Added or EntityState.Modified)) continue;
             entry.Entity.DaModifiedTime = now;
+        }
+    }
+
+    /// <summary>
+    /// 只有管理者能改的欄位（目前只有 DA-管理員註記）。非管理者存檔時：
+    /// 修改的一律還原成資料庫原值，新增的一律清空。
+    ///
+    /// 放在這裡而不是控制器：DA 的新增與編輯分散在兩條路徑、之後也可能多出別的，
+    /// 集中處理才不會有某一條忘了擋。畫面上給非管理者的是唯讀欄位，
+    /// 但唯讀只是操作防呆，改個表單就繞過去了。
+    ///
+    /// 沒有登入者（種子匯入）時不介入，理由同 <see cref="StampSourceSheetModifiedFields"/>。
+    /// </summary>
+    private void ProtectAdminOnlyFields()
+    {
+        if (!_currentUser.IsAuthenticated || _currentUser.IsAdmin) return;
+
+        foreach (var entry in ChangeTracker.Entries<DataAsset>())
+        {
+            var note = entry.Property(e => e.DaAdminNote);
+
+            if (entry.State == EntityState.Added)
+            {
+                note.CurrentValue = "";
+            }
+            else if (entry.State == EntityState.Modified && note.IsModified)
+            {
+                note.CurrentValue = note.OriginalValue;
+                note.IsModified = false;
+            }
         }
     }
 

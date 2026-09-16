@@ -341,6 +341,51 @@ body {
   color: #495057;
 }
 
+/* 不能編輯的欄位要一眼看得出來。
+   Bootstrap 對 [readonly] 幾乎不加任何樣式，看起來跟能打字的欄位一模一樣，
+   使用者得點進去、打不了字才發現改不了。這裡給它灰底、虛線框、右側鎖頭，
+   滑鼠移上去是「禁止」游標，聚焦時也不發藍光，避免看起來像可以輸入。
+   規則掛在全站：新增／編輯畫面裡凡是唯讀的欄位都套用，不必逐一加 class。 */
+.form-control[readonly] {
+  background-color: #eceff2;
+  border-style: dashed;
+  border-color: #adb5bd;
+  color: #5c636a;
+  cursor: not-allowed;
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236c757d'%3E%3Cpath d='M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .6rem center;
+  background-size: .85rem;
+}
+
+/* 多行欄位的鎖頭放右上角，不要跟著高度掉到中間 */
+textarea.form-control[readonly] {
+  background-position: right .6rem top .55rem;
+}
+
+.form-control[readonly]:focus {
+  background-color: #eceff2;
+  border-color: #adb5bd;
+  box-shadow: none;
+}
+
+/* 標籤後面再加一個「唯讀」小標籤，欄位一多時掃一眼就知道哪些不用填。
+   :has() 不支援的舊瀏覽器只是少了這個小標籤，欄位本身的樣式照樣有。 */
+div:has(> .form-control[readonly]) > .form-label::after,
+div:has(> .input-group > .form-control[readonly]) > .form-label::after {
+  content: "唯讀";
+  display: inline-block;
+  margin-left: .4rem;
+  padding: 0 .4rem;
+  border-radius: .25rem;
+  background-color: #6c757d;
+  color: #fff;
+  font-size: .6875rem;
+  line-height: 1.35;
+  vertical-align: .1em;
+}
+
 /* 匯出欄位維護：沿用清單的斑馬紋與 hover */
 .export-column-list .list-group-item:nth-of-type(odd) {
   background-color: #f8f9fa;

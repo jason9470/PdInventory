@@ -116,6 +116,7 @@ public class DataEditViewModel : IInfoSystemBlockViewModel
     public string DaHasSensitiveData { get; set; } = "";
     public string DaUserUnit { get; set; } = "";
     public string DaRemark { get; set; } = "";
+    public string DaAdminNote { get; set; } = "";
     public string DaBackupConfirm { get; set; } = "";
     public string DaReviewer { get; set; } = "";
     public string DaModifiedTime { get; set; } = "";

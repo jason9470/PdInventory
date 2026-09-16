@@ -744,6 +744,13 @@ public class DataAsset : IAuditable, IConcurrencyAware, ISoftDeletable
     public string DaUserUnit { get; set; } = "";
     [Display(Name = "DA-備註")]
     public string DaRemark { get; set; } = "";
+
+    /// <summary>
+    /// 管理員註記。只有管理者能改，其他角色看得到但改不了。
+    /// 畫面上的唯讀只是操作防呆，真正的把關在 AppDbContext.ProtectAdminOnlyFields。
+    /// </summary>
+    [Display(Name = "DA-管理員註記")]
+    public string DaAdminNote { get; set; } = "";
     [Display(Name = "DA-確認-資料備份方式")]
     [StringLength(300)]
     public string DaBackupConfirm { get; set; } = "";
