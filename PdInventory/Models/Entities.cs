@@ -744,7 +744,7 @@ public class DataAsset : IAuditable, IConcurrencyAware, ISoftDeletable
     public string DaUserUnit { get; set; } = "";
     [Display(Name = "DA-備註")]
     public string DaRemark { get; set; } = "";
-    [Display(Name = "DA-確認-資料備份與保存方式")]
+    [Display(Name = "DA-確認-資料備份方式")]
     [StringLength(300)]
     public string DaBackupConfirm { get; set; } = "";
     [Display(Name = "DA-115檢視人員")]
