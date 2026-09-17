@@ -5,18 +5,22 @@ namespace PdInventory.Helpers;
 /// <summary>角色的中文名稱與說明。畫面上多處要顯示，集中一份避免各處寫法不一致。</summary>
 public static class RoleDisplay
 {
+    /// <summary>
+    /// 「資產負責人」0917 改稱「一般使用者」：原本的意思是「名下有資產的人」，
+    /// 改成依科別授權之後已經沒有「名下」這回事。列舉值 AssetOwner 不動，既有資料不必轉換。
+    /// </summary>
     public static string Name(UserRole role) => role switch
     {
         UserRole.Admin => "管理者",
         UserRole.Manager => "主管",
-        _ => "資產負責人",
+        _ => "一般使用者",
     };
 
     public static string Description(UserRole role) => role switch
     {
-        UserRole.Admin => "所有畫面與功能，含維護資料、維護匯出與權限設定。",
-        UserRole.Manager => "六張主要清單可新增／修改／刪除，不能使用維護資料、維護匯出與權限設定。",
-        _ => "六張主要清單皆可檢視；只有名下資產可以修改／刪除，且不能新增。",
+        UserRole.Admin => "所有畫面與功能：全部系統都能新增、修改、刪除，含維護資料、維護匯出與權限設定。",
+        UserRole.Manager => "目前與一般使用者相同。保留這個角色是為了日後可以單獨開放新增等權限。",
+        _ => "六張清單都可檢視；只能修改自己科別負責的系統（組長為全組），不能新增或刪除。",
     };
 
     /// <summary>下拉選單用。順序由高到低，管理者排最前面。</summary>

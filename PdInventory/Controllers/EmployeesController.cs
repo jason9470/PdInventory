@@ -23,38 +23,62 @@ public class EmployeesController : Controller
         _provisioning = provisioning;
     }
 
-    public async Task<IActionResult> Index(string? q)
+    /// <param name="section">只看某個科別的人（科別畫面的「N 人」連過來）。</param>
+    public async Task<IActionResult> Index(string? q, int? section)
     {
-        var query = _db.Employees.AsQueryable();
+        var query = _db.Employees.Include(e => e.Section).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(e => e.EmpNo.Contains(q)
                                   || e.Name.Contains(q)
                                   || e.DepartmentName.Contains(q)
                                   || e.TeamName.Contains(q)
-                                  || e.Section.Contains(q)
+                                  || (e.Section != null && e.Section.Name.Contains(q))
                                   || e.Remark.Contains(q));
 
+        if (section is not null)
+            query = query.Where(e => e.SectionId == section);
+
         ViewBag.Query = q;
+        ViewBag.SectionFilter = section;
         ViewBag.UsageCounts = await LookupUsage.CountsAsync(_db, UsageKind.Employee);
-        // 組別待補的排在最後：那些是資料裡有、名冊沒有的，等甲方補
+        ViewBag.Scope = await SectionScope.LoadAsync(_db);
+        ViewBag.Sections = await OrderedSectionsAsync();
+
+        // 「可修改系統」那一欄要分得出管理者（不受科別限制），也要能連到權限設定畫面
+        var users = await _db.AppUsers.Select(u => new { u.EmpNo, u.Id, u.Role }).ToListAsync();
+        ViewBag.UserIds = users.ToDictionary(u => u.EmpNo, u => u.Id);
+        ViewBag.Admins = users.Where(u => u.Role == UserRole.Admin).Select(u => u.EmpNo).ToHashSet();
+
+        // 依科別的排序（組在前、各科在後）；沒有科別的排在最後。
         // IsManager 是算出來的（看備註），不能翻成 SQL，因此先取回再排
         var rows = await query.ToListAsync();
-        return View(rows.OrderBy(e => e.TeamName == "")
-                        .ThenBy(e => e.TeamName)
+        return View(rows.OrderBy(e => e.Section is null)
+                        .ThenBy(e => e.Section?.SortOrder ?? int.MaxValue)
                         .ThenBy(e => !e.IsManager)
                         .ThenBy(e => e.Name)
                         .ToList());
     }
 
-    public IActionResult Create() => View("Form", new Employee());
+    public async Task<IActionResult> Create()
+    {
+        ViewBag.Sections = await OrderedSectionsAsync();
+        ViewBag.Scope = await SectionScope.LoadAsync(_db);
+        return View("Form", new Employee());
+    }
 
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Employee model)
     {
         model.EmpNo = EmpNo.Normalize(model.EmpNo);
         await ValidateUniqueNameAsync(model);
-        if (!ModelState.IsValid) return View("Form", model);
+        await ApplySectionAsync(model);
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Sections = await OrderedSectionsAsync();
+            ViewBag.Scope = await SectionScope.LoadAsync(_db);
+            return View("Form", model);
+        }
 
         // 同一個員編以前被停用過：復原原本那筆並套上新填的內容，
         // 而不是再插一筆同員編的——否則人員表會出現一停用、一有效的兩列。
@@ -89,6 +113,8 @@ public class EmployeesController : Controller
         var model = await _db.Employees.FindAsync(id);
         if (model is null) return NotFound();
         ViewBag.UsedBy = await CountUsageAsync(model.Name);
+        ViewBag.Sections = await OrderedSectionsAsync();
+        ViewBag.Scope = await SectionScope.LoadAsync(_db);
         return View("Form", model);
     }
 
@@ -99,9 +125,12 @@ public class EmployeesController : Controller
         // 手動輸入 183253 也要存成 0183253，維護畫面不該是格式不一致的來源
         model.EmpNo = EmpNo.Normalize(model.EmpNo);
         await ValidateUniqueNameAsync(model);
+        await ApplySectionAsync(model);
         if (!ModelState.IsValid)
         {
             ViewBag.UsedBy = await CountUsageAsync(model.Name);
+            ViewBag.Sections = await OrderedSectionsAsync();
+            ViewBag.Scope = await SectionScope.LoadAsync(_db);
             return View("Form", model);
         }
         _db.Update(model);
@@ -147,6 +176,28 @@ public class EmployeesController : Controller
     /// <summary>與清單上的「使用中」和明細視窗走同一支，三處各寫一套遲早會對不上。</summary>
     private Task<int> CountUsageAsync(string name) =>
         LookupUsage.CountAsync(_db, UsageKind.Employee, name);
+
+    /// <summary>
+    /// 組別跟著科別走：選了科別就以科別表上的組別為準，畫面送來的值不採信。
+    /// 兩者分開填遲早會出現「科別在開發一組、組別卻寫開發二組」。
+    /// 沒選科別的（還沒分派、或自動建檔的人）組別維持原值。
+    /// </summary>
+    private async Task ApplySectionAsync(Employee model)
+    {
+        if (model.SectionId is null) return;
+
+        var section = await _db.Sections.FindAsync(model.SectionId);
+        if (section is null)
+        {
+            ModelState.AddModelError(nameof(Employee.SectionId), "選擇的科別已不存在，請重新選擇。");
+            return;
+        }
+
+        model.TeamName = section.TeamName;
+    }
+
+    private Task<List<Section>> OrderedSectionsAsync() =>
+        _db.Sections.OrderBy(s => s.SortOrder).ThenBy(s => s.Name).ToListAsync();
 
     private async Task ValidateUniqueNameAsync(Employee model)
     {

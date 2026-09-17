@@ -55,6 +55,7 @@ public static class MaintenanceCatalog
         new(SharedKey, "共用",
         [
             new("Departments", "部門"),
+            new("Sections", "科別"),
             new("Employees", "人員"),
             new("OpsStaff", "資管維運"),
         ]),

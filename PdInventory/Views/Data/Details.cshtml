@@ -6,6 +6,7 @@
     var inv = ViewBag.Inventory as PdInventory.Models.SystemInventory ?? new PdInventory.Models.SystemInventory();
     var hasSoftware = (bool)(ViewBag.HasSoftware ?? true);
     var dataAssetId = (int)(ViewBag.DataAssetId ?? 0);
+    var sections = ViewBag.Sections as List<string> ?? new List<string>();
     ViewData["Title"] = hasSoftware ? $"系統 {Model.SystemCode}" : $"資料資產 {da.DaAssetCode}";
 }
 
@@ -58,6 +59,17 @@
             <dt>@Html.DisplayNameFor(m => m.SwRiskOwner)</dt><dd>@Model.SwRiskOwner</dd>
             <dt>@Html.DisplayNameFor(m => m.SwLocation)</dt><dd>@Model.SwLocation</dd>
             <dt>@Html.DisplayNameFor(m => m.SwOwnerUnit)</dt><dd>@Model.SwOwnerUnit</dd>
+            <dt>負責科別</dt>
+            <dd>
+                @if (sections.Count == 0)
+                {
+                    <span class="text-muted">未指定（只有管理者能修改）</span>
+                }
+                else
+                {
+                    @string.Join("、", sections)
+                }
+            </dd>
             <dt>@Html.DisplayNameFor(m => m.SwCustodianUnit)</dt><dd>@Model.SwCustodianUnit</dd>
             <dt>@Html.DisplayNameFor(m => m.SwUserUnit)</dt><dd>@Model.SwUserUnit</dd>
             <dt>@Html.DisplayNameFor(m => m.SwConfidentiality)</dt><dd>@Model.SwConfidentiality</dd>

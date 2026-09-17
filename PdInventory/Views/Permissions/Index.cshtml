@@ -29,8 +29,10 @@
                 {
                     @* data-search：篩選比對的來源。姓名與員編都放進來，
                        使用者打哪一個都找得到 *@
+                    var person = Model.EmployeeOf(user);
+                    var editable = Model.EditableCount(user);
                     <a class="list-group-item list-group-item-action @(selected?.Id == user.Id ? "active" : "")"
-                       data-search="@(user.EmpNo + " " + user.EmpName)"
+                       data-search="@(user.EmpNo + " " + user.EmpName + " " + person?.Section?.Name + " " + person?.TeamName)"
                        asp-action="Index" asp-route-userId="@user.Id">
                         <div class="d-flex justify-content-between align-items-center">
                             <span>
@@ -42,12 +44,16 @@
                                                : "text-bg-secondary")">@RoleDisplay.Name(user.Role)</span>
                         </div>
                         <div class="text-muted mt-1" style="font-size: .75rem">
-                            @{ var person = Model.EmployeeOf(user); }
-                            @if (person is not null && !string.IsNullOrWhiteSpace(person.TeamName))
+                            @if (person?.Section is not null)
                             {
-                                <span>@person.TeamName @person.Section ・ </span>
+                                <span>@person.Section.OptionLabel ・ </span>
                             }
-                            最後登入：@(user.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "尚未登入")
+                            else
+                            {
+                                <span>未指定科別 ・ </span>
+                            }
+                            @(editable is null ? "全部系統" : $"可修改 {editable} 套")
+                            ・ 最後登入：@(user.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "尚未登入")
                         </div>
                     </a>
                 }
@@ -56,14 +62,17 @@
         <p class="text-muted small mt-2 mb-0">
             使用者不在這裡新增或刪除，兩者都跟著<a asp-controller="Employees" asp-action="Index">人員表</a>走：
             管理者在人員表建檔時會一併建立帳號，那個人第一次登入時也會自動建檔，
-            預設都是資產負責人且名下沒有資產；從人員表刪除時，這裡的帳號會一起停用並且不能再登入。
+            預設是一般使用者；從人員表刪除時，這裡的帳號會一起停用並且不能再登入。
+            <br />
+            <strong>能修改哪些系統不在這裡設定</strong>：由人員表的科別決定，
+            各科負責哪些系統在<a asp-controller="Sections" asp-action="Index">科別</a>設定。
         </p>
     </div>
 
     <div class="col-lg-7 col-xl-8">
         @if (selected is null)
         {
-            <div class="alert alert-secondary mb-0">請從左邊點選一位使用者，以調整他的角色與負責的資產。</div>
+            <div class="alert alert-secondary mb-0">請從左邊點選一位使用者，以調整他的角色、查看他能修改哪些系統。</div>
         }
         else
         {
@@ -104,46 +113,94 @@
                     </div>
                 </div>
 
+                @{
+                    var selectedPerson = Model.EmployeeOf(selected);
+                    var breakdown = Model.Scope.BreakdownOf(selectedPerson?.SectionId);
+                    var total = breakdown.SelectMany(b => b.Systems).DistinctBy(s => s.Id).Count();
+                }
                 <div class="card mb-3">
                     <div class="card-header py-2 d-flex justify-content-between align-items-center">
-                        <span class="fw-bold small">負責的資產
-                            <span class="text-muted fw-normal">
-                                （已勾選 <span id="pickedCount">@Model.OwnedAssetIds.Count</span> / @Model.Assets.Count 項）
-                            </span>
+                        <span class="fw-bold small">可修改的系統
+                            <span class="text-muted fw-normal">（唯讀，由科別決定）</span>
                         </span>
-                        <span>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" data-pick="all">全選</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" data-pick="none">全不選</button>
-                        </span>
+                        @if (selectedPerson is not null)
+                        {
+                            <a class="btn btn-sm btn-outline-secondary" asp-controller="Employees" asp-action="Edit"
+                               asp-route-id="@selectedPerson.Id">到人員表修改科別 →</a>
+                        }
                     </div>
                     <div class="card-body">
-                        @if (selected.Role != UserRole.AssetOwner)
+                        <dl class="row small mb-3">
+                            <dt class="col-sm-2">科別</dt>
+                            <dd class="col-sm-10 mb-0">
+                                @(selectedPerson?.Section?.OptionLabel ?? "未指定")
+                                @if (selectedPerson?.Section is not null)
+                                {
+                                    <span class="text-muted">（@selectedPerson.Section.TeamName）</span>
+                                }
+                            </dd>
+                        </dl>
+
+                        @if (selected.Role == UserRole.Admin)
                         {
-                            <div class="alert alert-info small py-2">
-                                @RoleDisplay.Name(selected.Role)不受資產授權限制，六張清單全部可以操作，
-                                底下的勾選現在不會生效。勾選內容仍會保存，日後角色改回資產負責人時直接沿用。
+                            <div class="alert alert-info small py-2 mb-0">
+                                管理者不受科別限制，<strong>全部 @Model.TotalSystems 套系統</strong>都能新增、修改、刪除。
                             </div>
                         }
-                        <div class="pd-asset-picker">
-                            @foreach (var asset in Model.Assets)
-                            {
-                                <label class="pd-asset-item">
-                                    <input class="form-check-input me-2" type="checkbox" name="assetIds"
-                                           value="@asset.Id" checked="@Model.IsOwned(asset.Id)" />
-                                    <span class="pd-code">@asset.SystemCode</span>
-                                    <span class="pd-asset-name">@asset.SystemName</span>
-                                </label>
-                            }
-                        </div>
-                        @if (Model.Assets.Count == 0)
+                        else if (selectedPerson is null)
                         {
-                            <div class="text-muted small">目前沒有任何資訊資產可以指派。</div>
+                            <div class="alert alert-warning small py-2 mb-0">
+                                人員表查不到這個帳號（員工編號 @selected.EmpNo），因此不能修改任何系統。
+                            </div>
+                        }
+                        else if (selectedPerson.Section is null)
+                        {
+                            <div class="alert alert-warning small py-2 mb-0">
+                                這個人還沒有指定科別，因此不能修改任何系統。
+                            </div>
+                        }
+                        else if (selectedPerson.Section.Kind == SectionKind.Office)
+                        {
+                            <div class="alert alert-warning small py-2 mb-0">
+                                「@selectedPerson.Section.Name」不負責任何系統，部室的權限要靠管理者角色；
+                                目前的角色是@(RoleDisplay.Name(selected.Role))，因此不能修改任何系統。
+                            </div>
+                        }
+                        else if (total == 0)
+                        {
+                            <div class="alert alert-warning small py-2 mb-0">
+                                「@selectedPerson.Section.Name」目前沒有負責任何系統，因此不能修改任何系統。
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="small text-muted mb-2">
+                                共 <strong class="text-body">@total</strong> 套@(selectedPerson.Section.Kind == SectionKind.Team ? "（全組各科合計）" : "")，
+                                修改時連同這些系統底下的 DA、盤點表、個資盤點、拋轉清單與風險自評。
+                            </p>
+                            @* 變數不能叫 section：Razor 會把 @section 當成版面的 section 指令 *@
+                            @foreach (var (part, systems) in breakdown)
+                            {
+                                @if (breakdown.Count > 1)
+                                {
+                                    <div class="small fw-bold mt-2 mb-1">@part.Name <span class="text-muted fw-normal">（@systems.Count 套）</span></div>
+                                }
+                                <div class="pd-asset-picker">
+                                    @foreach (var sys in systems)
+                                    {
+                                        <div class="pd-asset-item" style="cursor: default">
+                                            <span class="pd-code">@sys.SystemCode</span>
+                                            <span class="pd-asset-name">@sys.SystemName</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
                         }
                     </div>
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">儲存</button>
+                    <button type="submit" class="btn btn-primary">儲存角色</button>
                     <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
                 </div>
             </form>
@@ -196,24 +253,5 @@
         refresh();
     })();
 
-    (function () {
-        var picker = document.querySelector('.pd-asset-picker');
-        if (!picker) return;
-        var boxes = picker.querySelectorAll('input[type=checkbox]');
-        var counter = document.getElementById('pickedCount');
-
-        function refresh() {
-            counter.textContent = picker.querySelectorAll('input[type=checkbox]:checked').length;
-        }
-        picker.addEventListener('change', refresh);
-
-        document.querySelectorAll('[data-pick]').forEach(function (button) {
-            button.addEventListener('click', function () {
-                var checked = button.dataset.pick === 'all';
-                boxes.forEach(function (box) { box.checked = checked; });
-                refresh();
-            });
-        });
-    })();
 </script>
 }

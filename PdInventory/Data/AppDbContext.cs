@@ -24,7 +24,8 @@ public class AppDbContext : DbContext
     public DbSet<RiskEffectivenessLevel> RiskEffectivenessLevels => Set<RiskEffectivenessLevel>();
     public DbSet<ExportColumn> ExportColumns => Set<ExportColumn>();
     public DbSet<AppUser> AppUsers => Set<AppUser>();
-    public DbSet<AssetOwner> AssetOwners => Set<AssetOwner>();
+    public DbSet<Section> Sections => Set<Section>();
+    public DbSet<SectionSystem> SectionSystems => Set<SectionSystem>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<OpsStaff> OpsStaffs => Set<OpsStaff>();
     public DbSet<Employee> Employees => Set<Employee>();
@@ -44,23 +45,30 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<AppUser>().HasIndex(u => u.EmpNo).IsUnique()
             .HasFilter("\"IsDeleted\" = 0");
 
-        // 同一位使用者對同一個資產只會有一筆授權；重複勾選在畫面上看不出來，但會讓
-        // 「取消授權」變成刪一筆留一筆的假象，因此由資料庫直接擋掉。
-        modelBuilder.Entity<AssetOwner>().HasIndex(a => new { a.AppUserId, a.InfoSystemId }).IsUnique();
+        // ── 科別與權限（0917）──────────────────────────────────────────
+        // 科別名稱就是人員表下拉的選項，重複的話下拉會出現兩個一模一樣的
+        modelBuilder.Entity<Section>().HasIndex(s => s.Name).IsUnique();
 
-        modelBuilder.Entity<AssetOwner>()
-            .HasOne(a => a.User).WithMany(u => u.OwnedAssets)
-            .HasForeignKey(a => a.AppUserId).OnDelete(DeleteBehavior.Cascade);
+        // 一個科對同一套系統只會有一筆；複合主鍵同時擋掉重複勾選
+        modelBuilder.Entity<SectionSystem>().HasKey(x => new { x.SectionId, x.InfoSystemId });
 
-        // 資產被刪除時一併移除授權，避免留下指向不存在資產的孤兒列
-        modelBuilder.Entity<AssetOwner>()
-            .HasOne(a => a.InfoSystem).WithMany()
-            .HasForeignKey(a => a.InfoSystemId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<SectionSystem>()
+            .HasOne(x => x.Section).WithMany(s => s.Systems)
+            .HasForeignKey(x => x.SectionId).OnDelete(DeleteBehavior.Cascade);
 
-        // 授權跟著資產走：資產被軟刪除後，授權也不該再出現在權限畫面或權限判斷中。
-        // 若不加這個篩選，EF 會警告「必要導覽指向帶有查詢篩選的實體」，且 Include
-        // 後的 InfoSystem 會變成 null，判斷時要到處補 null 檢查。
-        modelBuilder.Entity<AssetOwner>().HasQueryFilter(a => !a.InfoSystem!.IsDeleted);
+        // 刻意用 WithMany() 不帶反向屬性：InfoSystem 上多一個集合，匯出檔就會多一欄（見 SectionSystem）
+        modelBuilder.Entity<SectionSystem>()
+            .HasOne(x => x.InfoSystem).WithMany()
+            .HasForeignKey(x => x.InfoSystemId).OnDelete(DeleteBehavior.Cascade);
+
+        // 系統被軟刪除後，對照也不該再出現在權限判斷或科別畫面中。
+        // 不加的話 EF 會警告「必要導覽指向帶有查詢篩選的實體」，Include 後的 InfoSystem 會是 null。
+        modelBuilder.Entity<SectionSystem>().HasQueryFilter(x => !x.InfoSystem!.IsDeleted);
+
+        // 還有人掛在底下的科別不能刪：刪了那些人就瞬間失去所有修改權限，而且沒有任何提示
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.Section).WithMany(s => s.Employees)
+            .HasForeignKey(e => e.SectionId).OnDelete(DeleteBehavior.Restrict);
 
         // 主檔識別欄位唯一。SystemCode 是跨表關聯的鍵（DA↔SW、盤點表與拋轉清單的弱關聯、
         // 以及清單頁的搜尋記憶），重複會讓關聯行為變得不可預期。

@@ -1,0 +1,106 @@
+﻿@model List<PdInventory.Models.Section>
+@{
+    ViewData["Title"] = "科別";
+    var scope = (SectionScope)ViewBag.Scope;
+    var people = (Dictionary<int, int>)ViewBag.PeopleCounts;
+    var unassigned = Model.Count(s => s.Kind == SectionKind.Section && scope.SystemsOf(s.Id).Count == 0);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>科別 <small class="text-muted fs-6">(共 @Model.Count 個)</small></h2>
+    <a class="btn btn-primary" asp-action="Create">＋ 新增科別</a>
+</div>
+
+<p class="text-muted small">
+    <strong>人員屬於哪個科別，就能修改那個科別負責的系統</strong>——SW，以及以資產編號掛在它底下的
+    DA、盤點表、個資盤點、拋轉清單與風險自評。「組」是給組長用的，範圍自動等於底下各科的合計；
+    「部室」不負責系統，部室主管與副主管的權限來自管理者角色。
+    沒有任何科負責的系統，只有管理者能修改。
+</p>
+
+@if (unassigned > 0)
+{
+    <div class="alert alert-warning">
+        有 <strong>@unassigned</strong> 個科目前沒有負責任何系統，底下的人一套都不能改。
+    </div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-sm align-middle pd-table table-sortable">
+        <thead class="table-dark">
+            <tr>
+                <th style="min-width: 90px">組別</th>
+                <th style="min-width: 130px">科別</th>
+                <th style="width: 60px">類型</th>
+                <th style="min-width: 320px" data-nosort>負責系統</th>
+                <th style="width: 80px">人數</th>
+                <th style="min-width: 120px" data-nosort>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                var systems = scope.SystemsOf(s.Id);
+                var count = people.GetValueOrDefault(s.Id);
+                // 組的系統是算出來的，本身沒有對照列；只有科的直接對照會擋刪除
+                var hasDirect = s.Kind == SectionKind.Section && systems.Count > 0;
+                var kindCss = s.Kind switch
+                {
+                    SectionKind.Team => "text-bg-primary",
+                    SectionKind.Office => "text-bg-dark",
+                    _ => "text-bg-light border",
+                };
+                <tr>
+                    <td>@s.TeamName</td>
+                    <td class="@(s.Kind == SectionKind.Team ? "fw-bold" : "")">@s.Name</td>
+                    <td>
+                        <span class="badge @kindCss">@s.KindLabel</span>
+                    </td>
+                    <td>
+                        @if (s.Kind == SectionKind.Office)
+                        {
+                            <span class="text-muted small">不負責系統（靠管理者角色）</span>
+                        }
+                        else if (systems.Count == 0)
+                        {
+                            <span class="badge text-bg-warning">尚未指定</span>
+                        }
+                        else
+                        {
+                            @if (s.Kind == SectionKind.Team)
+                            {
+                                <div class="text-muted small mb-1">各科合計 @systems.Count 套</div>
+                            }
+                            @foreach (var sys in systems)
+                            {
+                                <span class="badge text-bg-light border fw-normal me-1 mb-1"
+                                      title="@sys.SystemName">@sys.SystemCode</span>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @if (count > 0)
+                        {
+                            <a asp-controller="Employees" asp-action="Index" asp-route-section="@s.Id"
+                               class="badge text-bg-primary text-decoration-none">@count 人</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">無</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@s.Id">編輯</a>
+                        <form method="post" asp-action="Delete" asp-route-id="@s.Id" class="d-inline"
+                              onsubmit="return confirm('確定刪除科別「@s.Name」？');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    disabled="@(count > 0 || hasDirect)"
+                                    title="@(count > 0 ? "底下還有人，不能刪除" : hasDirect ? "還負責著系統，不能刪除" : "刪除")">刪除</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

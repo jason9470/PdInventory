@@ -25,9 +25,6 @@ public interface ICurrentUser
 
     /// <summary>管理者：所有畫面與功能。</summary>
     bool IsAdmin { get; }
-
-    /// <summary>主管或管理者：六張主要清單可以無條件新增／修改／刪除。</summary>
-    bool IsManagerOrAbove { get; }
 }
 
 /// <summary>Claim 型別名稱。字串只在這裡出現一次，簽發與讀取共用。</summary>
@@ -67,8 +64,6 @@ public sealed class HttpContextCurrentUser : ICurrentUser
             : null;
 
     public bool IsAdmin => Role == UserRole.Admin;
-
-    public bool IsManagerOrAbove => Role is UserRole.Admin or UserRole.Manager;
 
     public string Name
     {

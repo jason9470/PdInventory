@@ -152,7 +152,7 @@ public static class DbSeeder
     ///
     /// 平常這件事由 <see cref="Helpers.UserProvisioning.EnsureUserForEmployeeAsync"/> 處理
     /// （管理者從人員表建檔時一併建立帳號），但名冊是直接匯入資料表的，沒有經過那條路，
-    /// 所以這裡補一次。已經有帳號的不動——角色與名下資產都是設定過的，不能覆蓋。
+    /// 所以這裡補一次。已經有帳號的不動——角色是設定過的，不能覆蓋。
     ///
     /// 沒有員工編號的略過：兩張表以員編相認，沒有編號就無從對應登入身分。
     /// </summary>

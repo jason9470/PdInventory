@@ -69,7 +69,7 @@ public class SoftwareController : Controller
 
         var existing = group.System;
 
-        // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
+        // 只能異動自己科別負責的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
         if (!await _access.CanModifyAsync(existing.SystemCode)) return Forbid();
 
         if (!ModelState.IsValid)
@@ -120,8 +120,9 @@ public class SoftwareController : Controller
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is null) return RedirectToAction(nameof(Index));
 
-        // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
-        if (!await _access.CanModifyAsync(system.SystemCode)) return Forbid();
+        // 刪除只開放給管理者（0917）：這裡刪的是整筆資產連同 DA 與盤點表，
+        // 修改權限依科別開放給所有人之後，連帶開放刪除的風險太大
+        if (!_access.CanDelete) return Forbid();
 
         var data = await _db.DataAssets.FirstOrDefaultAsync(d => d.SystemCode == system.SystemCode);
         var inventory = await _db.SystemInventories.FirstOrDefaultAsync(i => i.SystemCode == system.SystemCode);

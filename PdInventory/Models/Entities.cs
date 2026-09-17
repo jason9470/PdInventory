@@ -977,17 +977,23 @@ public class Employee : ISoftDeletable
     [StringLength(100)]
     public string DepartmentName { get; set; } = "";
 
+    /// <summary>
+    /// 組別。0917 起跟著 <see cref="Section"/> 自動帶出（存檔時由控制器覆寫），
+    /// 不再手動輸入——兩者分開填的話，遲早會出現「科別在開發一組、組別卻寫開發二組」。
+    /// 仍然存一份而不是每次去科別表查，是因為下拉排序與清單顯示都用得到。
+    /// </summary>
     [Display(Name = "組別")]
     [StringLength(50)]
     public string TeamName { get; set; } = "";
 
     /// <summary>
-    /// 科別。0904 之後的名冊來源不再提供這一欄，既有的值（前台核心科、創新研發科…）
-    /// 予以保留，但已經沒有任何邏輯依賴它——主管的判斷改看 <see cref="Remark"/>。
+    /// 科別。<b>決定這個人能修改哪些系統</b>（見 <see cref="Helpers.SectionScope"/>）。
+    /// 沒有科別就一套都不能改，除非角色是管理者。
     /// </summary>
     [Display(Name = "科別")]
-    [StringLength(50)]
-    public string Section { get; set; } = "";
+    public int? SectionId { get; set; }
+
+    public Section? Section { get; set; }
 
     /// <summary>
     /// 備註。名冊用這一欄標職務：「組長」或「科長」。
@@ -1154,25 +1160,30 @@ public class ExportColumn
 }
 
 /// <summary>
-/// 系統角色。數值由小到大代表權限由低到高，判斷時可直接比大小。
-/// 新使用者第一次登入時一律給最低的 AssetOwner，且名下沒有任何資產，
-/// 也就是「只能看、不能改」；要能改什麼由管理者在權限設定畫面指定。
+/// 系統角色。
+///
+/// 0917 起「能修改哪些系統」不再由角色或逐筆授權決定，而是看人員表的科別
+/// （見 <see cref="Helpers.SectionScope"/>）。角色只剩兩件事：是不是管理者，
+/// 以及日後可能要單獨開放給主管的動作（業務端表示新增權限日後可能調整）。
+///
+/// 數值沿用原本的 0／1／2，既有資料不必轉換。
 /// </summary>
 public enum UserRole
 {
-    /// <summary>資產負責人：六張清單都看得到，但只有名下資產可以修改／刪除，不能新增。</summary>
+    /// <summary>一般使用者：六張清單都看得到；只能修改自己科別負責的系統，不能新增或刪除。</summary>
     AssetOwner = 0,
 
-    /// <summary>主管：六張主要清單的新增／修改／刪除都可以，但不能碰維護資料、維護匯出與權限設定。</summary>
+    /// <summary>主管（組長、科長）：目前與一般使用者相同。保留這個角色是為了日後可以單獨調整。</summary>
     Manager = 1,
 
-    /// <summary>管理者：所有畫面與功能。</summary>
+    /// <summary>管理者：所有畫面與功能，全部系統都能新增、修改、刪除。</summary>
     Admin = 2,
 }
 
 /// <summary>
 /// 系統使用者。帳號不自建，一律由公司員工目錄帶入（見 Helpers/IEmployeeDirectory.cs），
-/// 因此這張表只在「某人第一次登入成功」時新增，記錄他的角色與資產授權。
+/// 因此這張表只在「某人第一次登入成功」時新增，記錄他的角色。
+/// 能修改哪些系統由人員表的科別決定，不記在這裡。
 /// </summary>
 public class AppUser : IAuditable, IConcurrencyAware, ISoftDeletable
 {
@@ -1194,9 +1205,6 @@ public class AppUser : IAuditable, IConcurrencyAware, ISoftDeletable
     [Display(Name = "最後登入時間")]
     public DateTime? LastLoginAt { get; set; }
 
-    /// <summary>名下負責的資產。角色是主管或管理者時不看這份清單（他們本來就全部可改）。</summary>
-    public ICollection<AssetOwner> OwnedAssets { get; set; } = new List<AssetOwner>();
-
     public string CreatedBy { get; set; } = "";
     public DateTime? CreatedAt { get; set; }
     public string UpdatedBy { get; set; } = "";
@@ -1216,19 +1224,79 @@ public class AppUser : IAuditable, IConcurrencyAware, ISoftDeletable
     public string Label => string.IsNullOrWhiteSpace(EmpName) ? EmpNo : $"{EmpName}({EmpNo})";
 }
 
+/// <summary>科別的層級。決定這個科別怎麼算出負責的系統。</summary>
+public enum SectionKind
+{
+    /// <summary>科：直接對應負責的系統（<see cref="SectionSystem"/>）。</summary>
+    Section = 0,
+
+    /// <summary>
+    /// 組：組長用。本身不另外對應系統，範圍一律是<b>同組別底下所有科的聯集</b>。
+    /// 業務端提供的對照檔裡，每個組那一列剛好都等於底下各科的聯集，
+    /// 所以用算的而不另存一份——另存的話，科多了一套系統而組那列忘了加，兩邊就對不上了。
+    /// </summary>
+    Team = 1,
+
+    /// <summary>部室：部室主管與副主管。不對應任何系統，權限靠管理者角色取得。</summary>
+    Office = 2,
+}
+
 /// <summary>
-/// 資產授權：某位使用者負責某個資訊資產。
+/// 科別（共用維護資料）。0917 起<b>權限的核心</b>：人員屬於哪個科別，
+/// 就能修改那個科別負責的系統——SW 以及以資產編號掛在它底下的 DA、盤點表、
+/// 個資盤點、拋轉清單與風險自評。
 ///
-/// 授權單位刻意選 InfoSystem（也就是 SW 編號）而不是各張清單各自授權：
-/// SW／DA／系統盤點本來就是同一列資料的三個區塊，而個資盤點與拋轉清單的每一列
-/// 都帶著 SystemCode 指回這裡，所以一次勾選即可涵蓋六張清單，權限畫面也只要一份。
+/// 取代原本逐人逐筆勾選的 AssetOwner。那張表全系統只有 2 筆，而且都落在
+/// 當事人自己的科別裡，沒有真正的例外存在，因此不保留例外授權。
 /// </summary>
-public class AssetOwner
+public class Section
 {
     public int Id { get; set; }
 
-    public int AppUserId { get; set; }
-    public AppUser? User { get; set; }
+    [Display(Name = "科別")]
+    [Required(ErrorMessage = "科別名稱必填"), StringLength(50)]
+    public string Name { get; set; } = "";
+
+    [Display(Name = "組別")]
+    [StringLength(50)]
+    public string TeamName { get; set; } = "";
+
+    [Display(Name = "類型")]
+    public SectionKind Kind { get; set; }
+
+    /// <summary>清單與下拉的排序。組別名稱的「一二三四五六」照字碼排會亂掉，只好明訂。</summary>
+    [Display(Name = "排序")]
+    public int SortOrder { get; set; }
+
+    [Display(Name = "備註")]
+    public string Remark { get; set; } = "";
+
+    /// <summary>直接負責的系統。只有「科」類型會有；組是算出來的，部室沒有。</summary>
+    public ICollection<SectionSystem> Systems { get; set; } = new List<SectionSystem>();
+
+    public ICollection<Employee> Employees { get; set; } = new List<Employee>();
+
+    public string KindLabel => Kind switch
+    {
+        SectionKind.Team => "組",
+        SectionKind.Office => "部室",
+        _ => "科",
+    };
+
+    /// <summary>下拉選單用：組長選的那一項要看得出是整組。</summary>
+    public string OptionLabel => Kind == SectionKind.Team ? $"{Name}（全組）" : Name;
+}
+
+/// <summary>
+/// 某個科負責某套系統。多對多：SW-118 財務會計服務平台同時屬於營運管理科與投資管理科。
+///
+/// 刻意不在 <see cref="InfoSystem"/> 上加反向的導覽屬性：匯出功能會把 InfoSystem 的
+/// 每個公開屬性都當成一個 Excel 欄位，多一個集合屬性就會在匯出檔裡多出一欄亂碼。
+/// </summary>
+public class SectionSystem
+{
+    public int SectionId { get; set; }
+    public Section? Section { get; set; }
 
     public int InfoSystemId { get; set; }
     public InfoSystem? InfoSystem { get; set; }

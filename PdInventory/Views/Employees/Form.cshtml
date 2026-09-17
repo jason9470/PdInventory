@@ -3,6 +3,8 @@
     var isNew = Model.Id == 0;
     ViewData["Title"] = isNew ? "新增人員" : $"編輯人員 {Model.Name}";
     var usedBy = (int)(ViewBag.UsedBy ?? 0);
+    var sections = (List<Section>)ViewBag.Sections;
+    var scope = (SectionScope)ViewBag.Scope;
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -36,14 +38,29 @@
             <label asp-for="DepartmentName" class="form-label"></label>
             <input asp-for="DepartmentName" class="form-control" placeholder="例：資訊系統開發一部" />
         </div>
-        <div class="col-md-3">
-            <label asp-for="TeamName" class="form-label"></label>
-            <input asp-for="TeamName" class="form-control" placeholder="例：開發一組" />
+        <div class="col-md-4">
+            <label asp-for="SectionId" class="form-label"></label>
+            <select asp-for="SectionId" class="form-select" id="sectionSelect">
+                <option value="" data-team="" data-count="">-- 未指定（不能修改任何系統）--</option>
+                @foreach (var team in sections.GroupBy(s => s.TeamName))
+                {
+                    <optgroup label="@team.Key">
+                        @foreach (var s in team)
+                        {
+                            <option value="@s.Id" data-team="@s.TeamName"
+                                    data-count="@scope.SystemsOf(s.Id).Count"
+                                    data-kind="@s.Kind">@s.OptionLabel</option>
+                        }
+                    </optgroup>
+                }
+            </select>
+            <div class="form-text" id="sectionHint">決定這個人能修改哪些系統。</div>
+            <span asp-validation-for="SectionId" class="text-danger"></span>
         </div>
-        <div class="col-md-3">
-            <label asp-for="Section" class="form-label"></label>
-            <input asp-for="Section" class="form-control" placeholder="例：前台核心科" />
-
+        <div class="col-md-2">
+            <label asp-for="TeamName" class="form-label"></label>
+            @* 跟著科別自動帶出，存檔時控制器以科別表為準覆寫 *@
+            <input asp-for="TeamName" class="form-control" id="teamName" readonly />
         </div>
         <div class="col-12">
             <label asp-for="Remark" class="form-label"></label>
@@ -63,4 +80,31 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+<script>
+    (function () {
+        var select = document.getElementById('sectionSelect');
+        var team = document.getElementById('teamName');
+        var hint = document.getElementById('sectionHint');
+        if (!select) return;
+
+        // 選了科別就把組別帶出來，並提示這樣能修改幾套系統
+        function refresh() {
+            var option = select.options[select.selectedIndex];
+            if (!option || !option.value) {
+                hint.textContent = '沒有科別就不能修改任何系統（管理者除外）。';
+                return;
+            }
+            team.value = option.dataset.team;
+            if (option.dataset.kind === 'Office') {
+                hint.textContent = '部室不負責系統，權限來自管理者角色。';
+            } else {
+                hint.textContent = '選這個科別，可以修改 ' + option.dataset.count + ' 套系統'
+                    + (option.dataset.kind === 'Team' ? '（全組合計）。' : '。');
+            }
+        }
+
+        select.addEventListener('change', refresh);
+        refresh();
+    })();
+</script>
 }

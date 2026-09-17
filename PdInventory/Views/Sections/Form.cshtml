@@ -1,0 +1,145 @@
+﻿@model PdInventory.Models.Section
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "新增科別" : $"編輯科別 {Model.Name}";
+    var systems = (List<InfoSystem>)ViewBag.Systems;
+    var checkedIds = (HashSet<int>)ViewBag.CheckedSystemIds;
+    var teamNames = (List<string>)ViewBag.TeamNames;
+    var peopleCount = (int)ViewBag.PeopleCount;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (peopleCount > 0)
+{
+    <div class="alert alert-info">
+        這個科別底下有 <strong>@peopleCount</strong> 個人。
+        在這裡改動負責的系統，<strong>他們能修改的範圍會立刻跟著變</strong>。
+    </div>
+}
+
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" class="pd-form">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="card mb-3">
+        <div class="card-header py-2 fw-bold small">基本資料</div>
+        <div class="card-body row g-3">
+            <div class="col-md-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="例：前台核心科" />
+                <div class="form-text">就是人員表科別下拉裡的選項，不可重複。</div>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="TeamName" class="form-label"></label>
+                <input asp-for="TeamName" class="form-control" list="teamNames" placeholder="例：開發一組" />
+                <datalist id="teamNames">
+                    @foreach (var team in teamNames)
+                    {
+                        <option value="@team"></option>
+                    }
+                </datalist>
+                <div class="form-text">人員選了這個科別，組別就會自動帶這個值。</div>
+            </div>
+            <div class="col-md-2">
+                <label asp-for="Kind" class="form-label"></label>
+                <select asp-for="Kind" class="form-select" id="sectionKind">
+                    @* 值用列舉名稱而不是數字：asp-for 是拿 Kind.ToString() 去比對選項值，
+                       用數字的話永遠選不中目前的值 *@
+                    <option value="@SectionKind.Section">科</option>
+                    <option value="@SectionKind.Team">組（組長用）</option>
+                    <option value="@SectionKind.Office">部室</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <label asp-for="SortOrder" class="form-label"></label>
+                <input asp-for="SortOrder" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="Remark" class="form-label"></label>
+                <input asp-for="Remark" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header py-2 d-flex justify-content-between align-items-center">
+            <span class="fw-bold small">負責的系統
+                <span class="text-muted fw-normal" data-kind-show="Section">
+                    （已勾選 <span id="pickedCount">@checkedIds.Count</span> / @systems.Count 套）
+                </span>
+            </span>
+            <span data-kind-show="Section">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-pick="all">全選</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-pick="none">全不選</button>
+            </span>
+        </div>
+        <div class="card-body">
+            @* 只有「科」直接負責系統。組的範圍自動等於同組別底下各科的合計，部室不負責系統；
+               這兩種類型存檔時控制器會把勾選清空，這裡先把勾選區停用，免得看起來有作用。 *@
+            <div class="alert alert-secondary small py-2" data-kind-show="Team" hidden>
+                「組」不需要勾選：範圍自動等於同一個組別底下所有「科」負責系統的合計。
+                要調整請到各科去改。
+            </div>
+            <div class="alert alert-secondary small py-2" data-kind-show="Office" hidden>
+                「部室」不負責系統。部室主管與副主管的權限來自管理者角色。
+            </div>
+            <div class="pd-asset-picker" data-kind-show="Section">
+                @foreach (var sys in systems)
+                {
+                    <label class="pd-asset-item">
+                        <input class="form-check-input me-2" type="checkbox" name="systemIds"
+                               value="@sys.Id" checked="@checkedIds.Contains(sys.Id)" />
+                        <span class="pd-code">@sys.SystemCode</span>
+                        <span class="pd-asset-name">@sys.SystemName</span>
+                    </label>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mb-4">
+        <button type="submit" class="btn btn-primary">@(isNew ? "新增" : "儲存")</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+<script>
+    (function () {
+        var kind = document.getElementById('sectionKind');
+        var picker = document.querySelector('.pd-asset-picker');
+        var counter = document.getElementById('pickedCount');
+        if (!kind || !picker) return;
+
+        var boxes = picker.querySelectorAll('input[type=checkbox]');
+
+        function refreshCount() {
+            counter.textContent = picker.querySelectorAll('input[type=checkbox]:checked').length;
+        }
+
+        // 切換類型時只顯示對應的說明；非「科」時停用勾選，停用的欄位不會送出
+        function refreshKind() {
+            document.querySelectorAll('[data-kind-show]').forEach(function (el) {
+                el.hidden = el.dataset.kindShow !== kind.value;
+            });
+            boxes.forEach(function (box) { box.disabled = kind.value !== 'Section'; });
+        }
+
+        picker.addEventListener('change', refreshCount);
+        kind.addEventListener('change', refreshKind);
+
+        document.querySelectorAll('[data-pick]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var checked = button.dataset.pick === 'all';
+                boxes.forEach(function (box) { box.checked = checked; });
+                refreshCount();
+            });
+        });
+
+        refreshKind();
+    })();
+</script>
+}

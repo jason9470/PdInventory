@@ -68,8 +68,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(Policies.Admin, policy =>
         policy.RequireRole(nameof(UserRole.Admin)));
 
-    options.AddPolicy(Policies.ManageAssets, policy =>
-        policy.RequireRole(nameof(UserRole.Admin), nameof(UserRole.Manager)));
+    // 0917 起新增只開放給管理者（業務端表示日後可能開放給主管）。
+    // 要調整時這裡與 AssetAccess.CanCreate 一起改：前者擋網址，後者決定按鈕顯不顯示。
+    options.AddPolicy(Policies.CreateAssets, policy =>
+        policy.RequireRole(nameof(UserRole.Admin)));
 
     options.AddPolicy(Policies.ViewAssets, policy =>
         policy.RequireAuthenticatedUser());

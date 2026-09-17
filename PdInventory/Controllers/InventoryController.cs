@@ -71,7 +71,7 @@ public class InventoryController : Controller
         return View(item);
     }
 
-    [Authorize(Policy = Policies.ManageAssets)]
+    [Authorize(Policy = Policies.CreateAssets)]
     public async Task<IActionResult> Create()
     {
         await LoadLookupsAsync();
@@ -79,7 +79,7 @@ public class InventoryController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    [Authorize(Policy = Policies.ManageAssets)]
+    [Authorize(Policy = Policies.CreateAssets)]
     public async Task<IActionResult> Create(InventoryItemEditViewModel model,
                                             int[] categoryIds, int[] purposeIds)
     {
@@ -112,7 +112,7 @@ public class InventoryController : Controller
             .FirstOrDefaultAsync(i => i.Id == id);
         if (item is null) return NotFound();
 
-        // 資產負責人只能異動名下資產底下的資料；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
+        // 只能異動自己科別負責的資產底下的資料；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下
         if (!await _access.CanModifyAsync(item.SystemCode)) return Forbid();
 
         // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
@@ -140,7 +140,7 @@ public class InventoryController : Controller
             .FirstOrDefaultAsync(i => i.Id == id);
         if (existing is null) return NotFound();
 
-        // 原資產與改後的資產都必須在權限範圍內，否則資產負責人可以把不屬於自己的資料
+        // 原資產與改後的資產都必須在權限範圍內，否則使用者可以把不屬於自己科別的資料
         // 改成自己的資產編號、或把自己的資料丟給別人
         if (!await _access.CanModifyAsync(existing.SystemCode)
             || !await _access.CanModifyAsync(model.SystemCode)) return Forbid();
@@ -180,8 +180,9 @@ public class InventoryController : Controller
         var item = await _db.InventoryItems.FindAsync(id);
         if (item is not null)
         {
-            // 資產負責人只能刪除名下資產底下的資料
-            if (!await _access.CanModifyAsync(item.SystemCode)) return Forbid();
+            // 刪除只開放給管理者（0917）：修改權限依科別開放給所有人之後，
+            // 連帶開放刪除的風險太大。清單頁不會顯示按鈕，直接輸入網址也擋下
+            if (!_access.CanDelete) return Forbid();
 
             // 軟刪除：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失
             item.IsDeleted = true;

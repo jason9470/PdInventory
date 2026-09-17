@@ -81,7 +81,7 @@ public class DataController : Controller
     // ── 統一新增畫面 ────────────────────────────────────────────────
 
     /// <param name="from">從哪張清單按的[新增]，決定[取消]與新增後回到哪裡。</param>
-    [Authorize(Policy = Policies.ManageAssets)]
+    [Authorize(Policy = Policies.CreateAssets)]
     public IActionResult Create(string? from)
     {
         ViewBag.From = ListSource.Resolve(from);
@@ -100,7 +100,7 @@ public class DataController : Controller
     /// 這筆 SW 之後就打不開），盤點表則是有填才建——55 套系統裡本來就只有 26 套有。
     /// </summary>
     [HttpPost, ValidateAntiForgeryToken]
-    [Authorize(Policy = Policies.ManageAssets)]
+    [Authorize(Policy = Policies.CreateAssets)]
     public async Task<IActionResult> Create(InfoSystemEditViewModel model, string? from)
     {
         var source = ListSource.Resolve(from);
@@ -190,9 +190,9 @@ public class DataController : Controller
         var group = await AssetGroups.LoadAsync(_db, id);
         if (group is null) return NotFound();
 
-        // 資產負責人只能異動名下的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下。
-        // 沒有關連 SW 的資料資產無人可認領，CanModifyAsync 對空白編號一律回 false，
-        // 因此那些資料只有主管以上進得來——這是業務端 0910 確認的規則。
+        // 只能異動自己科別負責的資產；清單頁雖然不會顯示按鈕，直接輸入網址仍必須擋下。
+        // 沒有關連 SW 的資料資產對不到任何科，CanModifyAsync 對空白編號一律回 false，
+        // 因此那些資料只有管理者進得來——這是業務端 0917 確認的規則。
         if (!await _access.CanModifyAsync(group.SystemCode)) return Forbid();
 
         // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
@@ -262,6 +262,14 @@ public class DataController : Controller
         // 畫面綁的是 InfoSystem（欄位標題都靠它的 [Display] 取），沒有關連 SW 時
         // 餵一個空實體並把 HasSoftware 關掉，那兩個區塊整塊不顯示。
         ViewBag.HasSoftware = group.HasSoftware;
+        // 哪些科負責這套系統，也就是誰能修改它；沒有任何科負責的只有管理者能改
+        ViewBag.Sections = group.System is null
+            ? new List<string>()
+            : await _db.SectionSystems
+                .Where(x => x.InfoSystemId == group.System.Id)
+                .OrderBy(x => x.Section!.SortOrder)
+                .Select(x => x.Section!.Name)
+                .ToListAsync();
         ViewBag.DataAssetId = group.Data.Id;
         ViewBag.DataAsset = group.Data;
         ViewBag.Inventory = group.Inventory;
@@ -284,8 +292,9 @@ public class DataController : Controller
         var group = await AssetGroups.LoadAsync(_db, id);
         if (group is null) return RedirectToAction(nameof(Index));
 
-        // 沒有關連 SW 的資料資產無人可認領，只有主管以上能刪
-        if (!await _access.CanModifyAsync(group.SystemCode)) return Forbid();
+        // 刪除只開放給管理者（0917）：這裡刪的是整筆資產連同 SW 與盤點表，
+        // 修改權限依科別開放給所有人之後，連帶開放刪除的風險太大
+        if (!_access.CanDelete) return Forbid();
 
         AssetGroups.SoftDelete(group, _currentUser.Name);
         await _db.SaveChangesAsync();

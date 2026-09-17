@@ -1,6 +1,11 @@
 @model List<PdInventory.Models.Employee>
 @{
     var usage = (Dictionary<string, int>)ViewBag.UsageCounts;
+    var scope = (SectionScope)ViewBag.Scope;
+    var sections = (List<Section>)ViewBag.Sections;
+    var userIds = (Dictionary<string, int>)ViewBag.UserIds;
+    var admins = (HashSet<string>)ViewBag.Admins;
+    var sectionFilter = (int?)ViewBag.SectionFilter;
     ViewData["Title"] = "人員";
     var pending = Model.Count(e => string.IsNullOrWhiteSpace(e.TeamName));
     var managers = Model.Count(e => e.IsManager);
@@ -13,6 +18,10 @@
     <a class="btn btn-primary" asp-action="Create">＋ 新增人員</a>
 </div>
 
+<p class="text-muted small">
+    <strong>科別決定這個人能修改哪些系統</strong>（各科負責哪些系統在<a asp-controller="Sections" asp-action="Index">科別</a>設定），
+    管理者不受科別限制。組別跟著科別自動帶出。
+</p>
 <p class="text-muted small">
     對照欄位：SW-應用系統維護人員（多選）、SW-程式設計人員（多選）、
     SW-115上檢視人員（單選）、DA-115檢視人員（單選）——這四個列出全部的人；
@@ -33,6 +42,20 @@
                placeholder="搜尋員編/姓名/部門/組別/科別" style="min-width: 320px" />
     </div>
     <div class="col-auto">
+        <select name="section" class="form-select" style="min-width: 200px">
+            <option value="">全部科別</option>
+            @foreach (var team in sections.GroupBy(s => s.TeamName))
+            {
+                <optgroup label="@team.Key">
+                    @foreach (var s in team)
+                    {
+                        <option value="@s.Id" selected="@(s.Id == sectionFilter)">@s.OptionLabel</option>
+                    }
+                </optgroup>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
         <a class="btn btn-outline-secondary" asp-action="Index">清除</a>
     </div>
@@ -47,6 +70,7 @@
                 <th style="min-width: 170px">部門</th>
                 <th style="min-width: 110px">組別</th>
                 <th style="min-width: 130px">科別</th>
+                <th style="width: 110px">可修改系統</th>
                 <th style="min-width: 200px">備註</th>
                 <th style="width: 110px">使用中</th>
                 <th style="min-width: 120px" data-nosort>操作</th>
@@ -69,7 +93,43 @@
                     <td>@e.Name</td>
                     <td class="text-break"><small>@e.DepartmentName</small></td>
                     <td>@e.TeamName</td>
-                    <td>@e.Section</td>
+                    <td>
+                        @if (e.Section is null)
+                        {
+                            <span class="badge text-bg-warning">未指定</span>
+                        }
+                        else
+                        {
+                            @e.Section.OptionLabel
+                        }
+                    </td>
+                    @{
+                        var editable = scope.SystemsOf(e.SectionId);
+                        var isAdmin = admins.Contains(e.EmpNo);
+                        var userId = userIds.GetValueOrDefault(e.EmpNo);
+                    }
+                    <td>
+                        @* 數字連到權限設定畫面，那裡有依科分段的完整清單 *@
+                        @if (isAdmin)
+                        {
+                            <a asp-controller="Permissions" asp-action="Index" asp-route-userId="@userId"
+                               class="badge text-bg-danger text-decoration-none" title="管理者不受科別限制">全部</a>
+                        }
+                        else if (editable.Count > 0 && userId > 0)
+                        {
+                            <a asp-controller="Permissions" asp-action="Index" asp-route-userId="@userId"
+                               class="badge text-bg-primary text-decoration-none"
+                               title="@string.Join("、", editable.Select(x => x.SystemCode))">@editable.Count 套</a>
+                        }
+                        else if (editable.Count > 0)
+                        {
+                            <span class="badge text-bg-secondary" title="沒有員編，無法登入">@editable.Count 套</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">無</span>
+                        }
+                    </td>
                     <td class="text-break">
                         @if (e.IsManager)
                         {

@@ -76,15 +76,18 @@
                     <td>@item.Disposal</td>
                     <td>
                         <a class="btn btn-sm btn-outline-info" asp-action="Details" asp-route-id="@item.Id">檢視</a>
-                        @* 資產負責人只在自己負責的資產上看得到這兩個按鈕 *@
+                        @* 編輯鈕只出現在自己科別負責的資產上；刪除鈕只有管理者看得到 *@
                         @if (await AssetAccess.CanModifyAsync(item.SystemCode))
                         {
                             <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">編輯</a>
-                            <form method="post" asp-action="Delete" asp-route-id="@item.Id" class="d-inline"
-                                  onsubmit="return confirm('確定刪除盤點項目「@item.SeqNo @item.DocumentName」？');">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
-                            </form>
+                            @if (AssetAccess.CanDelete)
+                            {
+                                <form method="post" asp-action="Delete" asp-route-id="@item.Id" class="d-inline"
+                                      onsubmit="return confirm('確定刪除盤點項目「@item.SeqNo @item.DocumentName」？');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                                </form>
+                            }
                         }
                     </td>
                 </tr>

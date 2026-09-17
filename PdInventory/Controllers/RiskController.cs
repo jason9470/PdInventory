@@ -53,7 +53,7 @@ public class RiskController : Controller
         return File(content, ExcelExporter.ContentType, fileName);
     }
 
-    [Authorize(Policy = Policies.ManageAssets)]
+    [Authorize(Policy = Policies.CreateAssets)]
     public async Task<IActionResult> Create()
     {
         await LoadLookupsAsync();
@@ -61,7 +61,7 @@ public class RiskController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    [Authorize(Policy = Policies.ManageAssets)]
+    [Authorize(Policy = Policies.CreateAssets)]
     public async Task<IActionResult> Create(InventoryItem model)
     {
         if (!ModelState.IsValid)
@@ -95,7 +95,7 @@ public class RiskController : Controller
         var item = await _db.InventoryItems.FindAsync(id);
         if (item is null) return NotFound();
 
-        // 資產負責人只能異動名下資產底下的資料；直接輸入網址也必須擋下
+        // 只能異動自己科別負責的資產底下的資料；直接輸入網址也必須擋下
         if (!await _access.CanModifyAsync(item.SystemCode)) return Forbid();
 
         // 記住這筆的資產編號，回到清單頁時自動帶入搜尋欄
@@ -112,7 +112,7 @@ public class RiskController : Controller
         var existing = await _db.InventoryItems.FindAsync(id);
         if (existing is null) return NotFound();
 
-        // 原資產與改後的資產都必須在權限範圍內，否則資產負責人可以把不屬於自己的資料
+        // 原資產與改後的資產都必須在權限範圍內，否則使用者可以把不屬於自己科別的資料
         // 改成自己的資產編號、或把自己的資料丟給別人
         if (!await _access.CanModifyAsync(existing.SystemCode)
             || !await _access.CanModifyAsync(model.SystemCode)) return Forbid();
@@ -159,8 +159,8 @@ public class RiskController : Controller
         var existing = await _db.InventoryItems.FindAsync(id);
         if (existing is not null)
         {
-            // 資產負責人只能清除名下資產底下的風險自評
-            if (!await _access.CanModifyAsync(existing.SystemCode)) return Forbid();
+            // 清除風險自評等同刪除，只開放給管理者（0917），理由同其他清單的刪除
+            if (!_access.CanDelete) return Forbid();
 
             existing.RiskDataSeqNo = "";
             existing.RiskCategoryCode = "";

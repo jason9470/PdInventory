@@ -9,7 +9,11 @@ using PdInventory.Models.ViewModels;
 namespace PdInventory.Controllers;
 
 /// <summary>
-/// 權限設定：調整使用者的角色，以及資產負責人名下的資產。
+/// 權限設定：調整使用者的角色。
+///
+/// 0917 起能修改哪些系統由人員表的科別決定（見 <see cref="SectionScope"/>），
+/// 這裡只唯讀呈現結果。同一件事只有一個地方能改：角色在這裡、人屬於哪個科在人員表、
+/// 科負責哪些系統在科別表。
 ///
 /// 使用者不在這裡新增也不在這裡刪除，兩者都由人員表那一邊帶動
 /// （見 Helpers/UserProvisioning.cs）：管理者在人員表建檔時一併建立帳號，
@@ -29,41 +33,40 @@ public class PermissionsController : Controller
 
     public async Task<IActionResult> Index(int? userId)
     {
+        // 科別在人員表那一邊，畫面要顯示就得補查（以員工編號相認）
+        var employees = await _db.Employees
+            .Include(e => e.Section)
+            .Where(e => e.EmpNo != "")
+            .ToDictionaryAsync(e => e.EmpNo);
+
+        var users = await _db.AppUsers.ToListAsync();
+
         var model = new PermissionsViewModel
         {
-            Users = await _db.AppUsers
-                .OrderByDescending(u => u.Role)
+            // 依科別排，同一個科的人排在一起；科別內管理者在前
+            Users = users
+                .OrderBy(u => employees.GetValueOrDefault(u.EmpNo)?.Section?.SortOrder ?? int.MaxValue)
+                .ThenByDescending(u => u.Role)
                 .ThenBy(u => u.EmpNo)
-                .ToListAsync(),
-            // 組別／科別在人員表那一邊，畫面要顯示就得補查（以員工編號相認）
-            Employees = await _db.Employees
-                .Where(e => e.EmpNo != "")
-                .ToDictionaryAsync(e => e.EmpNo),
-            Assets = await _db.InfoSystems
-                .OrderBy(s => s.SystemCode)
-                .ToListAsync(),
+                .ToList(),
+            Employees = employees,
+            Scope = await SectionScope.LoadAsync(_db),
+            TotalSystems = await _db.InfoSystems.CountAsync(),
         };
 
         if (userId is not null)
         {
             model.Selected = model.Users.FirstOrDefault(u => u.Id == userId);
             if (model.Selected is null) return NotFound();
-
-            model.OwnedAssetIds = await _db.AssetOwners
-                .Where(a => a.AppUserId == userId)
-                .Select(a => a.InfoSystemId)
-                .ToHashSetAsync();
         }
 
         return View(model);
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(int id, UserRole role, int[] assetIds, Guid rowVersion)
+    public async Task<IActionResult> Save(int id, UserRole role, Guid rowVersion)
     {
-        var user = await _db.AppUsers
-            .Include(u => u.OwnedAssets)
-            .FirstOrDefaultAsync(u => u.Id == id);
+        var user = await _db.AppUsers.FirstOrDefaultAsync(u => u.Id == id);
         if (user is null) return NotFound();
 
         var blockReason = await RoleChangeBlockReason(user, role);
@@ -74,7 +77,6 @@ public class PermissionsController : Controller
         }
 
         user.Role = role;
-        ApplyAssetOwnership(user, assetIds);
 
         _db.Entry(user).Property(e => e.RowVersion).OriginalValue = rowVersion;
         try
@@ -87,27 +89,8 @@ public class PermissionsController : Controller
             return RedirectToAction(nameof(Index), new { userId = id });
         }
 
-        TempData["Message"] = $"已更新「{user.Label}」的權限：{RoleDisplay.Name(role)}，負責 {assetIds.Length} 項資產";
+        TempData["Message"] = $"已更新「{user.Label}」的角色：{RoleDisplay.Name(role)}";
         return RedirectToAction(nameof(Index), new { userId = id });
-    }
-
-    /// <summary>
-    /// 把勾選結果套用到授權明細：只加新勾的、只刪取消勾的，
-    /// 不整批刪除重建，這樣未變動的列不會產生無謂的異動。
-    /// </summary>
-    private void ApplyAssetOwnership(AppUser user, int[] assetIds)
-    {
-        var wanted = assetIds.ToHashSet();
-
-        foreach (var existing in user.OwnedAssets.Where(a => !wanted.Contains(a.InfoSystemId)).ToList())
-        {
-            user.OwnedAssets.Remove(existing);
-            _db.AssetOwners.Remove(existing);
-        }
-
-        var current = user.OwnedAssets.Select(a => a.InfoSystemId).ToHashSet();
-        foreach (var assetId in wanted.Where(assetId => !current.Contains(assetId)))
-            user.OwnedAssets.Add(new AssetOwner { AppUserId = user.Id, InfoSystemId = assetId });
     }
 
     /// <summary>
