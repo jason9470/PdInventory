@@ -86,7 +86,8 @@
                             </td>
                             <td>
                                 <form method="post" asp-action="Delete" asp-route-id="@item.Id" class="d-inline"
-                                      onsubmit="return confirm('確定刪除選項「@item.Value」？');">
+                                      data-delete-kind="@field.Title 選項" data-delete-name="@item.Value"
+                                      data-delete-mode="hard">
                                     @Html.AntiForgeryToken()
                                     @{
                                         var reserved = field.IsReserved(item.Value);
@@ -94,7 +95,7 @@
                                                    : used > 0 ? "還被資料使用中，不能刪除"
                                                    : "刪除";
                                     }
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete
                                             disabled="@(used > 0 || reserved)" title="@reason">刪除</button>
                                 </form>
                             </td>

@@ -159,8 +159,10 @@ public class RiskController : Controller
         var existing = await _db.InventoryItems.FindAsync(id);
         if (existing is not null)
         {
-            // 清除風險自評等同刪除，只開放給管理者（0917），理由同其他清單的刪除
-            if (!_access.CanDelete) return Forbid();
+            // 能改就能刪（業務端 0918）。
+            // ⚠ 這裡不是軟刪除：清空的是這一筆的風險自評欄位，清掉就救不回來
+            //   （個資盤點項目本身與風險自評共用同一列，不能對整列加刪除註記）
+            if (!await _access.CanDeleteAsync(existing.SystemCode)) return Forbid();
 
             existing.RiskDataSeqNo = "";
             existing.RiskCategoryCode = "";

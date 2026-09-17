@@ -3,9 +3,9 @@
     var usage = (Dictionary<string, int>)ViewBag.UsageCounts;
     var scope = (SectionScope)ViewBag.Scope;
     var sections = (List<Section>)ViewBag.Sections;
-    var userIds = (Dictionary<string, int>)ViewBag.UserIds;
-    var admins = (HashSet<string>)ViewBag.Admins;
+    var accounts = (Dictionary<string, AppUser>)ViewBag.Accounts;
     var sectionFilter = (int?)ViewBag.SectionFilter;
+    var roleFilter = (UserRole?)ViewBag.RoleFilter;
     ViewData["Title"] = "人員";
     var pending = Model.Count(e => string.IsNullOrWhiteSpace(e.TeamName));
     var managers = Model.Count(e => e.IsManager);
@@ -19,8 +19,9 @@
 </div>
 
 <p class="text-muted small">
-    <strong>科別決定這個人能修改哪些系統</strong>（各科負責哪些系統在<a asp-controller="Sections" asp-action="Index">科別</a>設定），
-    管理者不受科別限制。組別跟著科別自動帶出。
+    一個人的權限在這裡一次設定：<strong>科別決定能修改哪些系統</strong>（各科負責哪些系統在<a asp-controller="Sections" asp-action="Index">科別</a>設定），
+    <strong>角色決定能做哪些動作</strong>，管理者不受科別限制。組別跟著科別自動帶出。
+    新增人員時會一併建立登入帳號（沒有員編的除外），刪除時帳號一起停用。
 </p>
 <p class="text-muted small">
     對照欄位：SW-應用系統維護人員（多選）、SW-程式設計人員（多選）、
@@ -56,6 +57,15 @@
         </select>
     </div>
     <div class="col-auto">
+        <select name="role" class="form-select" style="min-width: 140px">
+            <option value="">全部角色</option>
+            @foreach (var r in RoleDisplay.All)
+            {
+                <option value="@r" selected="@(r == roleFilter)">@RoleDisplay.Name(r)</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
         <a class="btn btn-outline-secondary" asp-action="Index">清除</a>
     </div>
@@ -70,6 +80,7 @@
                 <th style="min-width: 170px">部門</th>
                 <th style="min-width: 110px">組別</th>
                 <th style="min-width: 130px">科別</th>
+                <th style="width: 110px">角色</th>
                 <th style="width: 110px">可修改系統</th>
                 <th style="min-width: 200px">備註</th>
                 <th style="width: 110px">使用中</th>
@@ -105,21 +116,32 @@
                     </td>
                     @{
                         var editable = scope.SystemsOf(e.SectionId);
-                        var isAdmin = admins.Contains(e.EmpNo);
-                        var userId = userIds.GetValueOrDefault(e.EmpNo);
+                        var account = string.IsNullOrWhiteSpace(e.EmpNo) ? null : accounts.GetValueOrDefault(e.EmpNo);
+                        var isAdmin = account?.Role == UserRole.Admin;
                     }
                     <td>
-                        @* 數字連到權限設定畫面，那裡有依科分段的完整清單 *@
+                        @if (account is null)
+                        {
+                            <span class="text-muted small" title="沒有員編就沒有登入帳號">無帳號</span>
+                        }
+                        else
+                        {
+                            <span class="badge @(account.Role == UserRole.Admin ? "text-bg-danger"
+                                               : account.Role == UserRole.Manager ? "text-bg-primary"
+                                               : "text-bg-secondary")"
+                                  title="最後登入：@(account.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "尚未登入")">@RoleDisplay.Name(account.Role)</span>
+                        }
+                    </td>
+                    <td>
+                        @* 依科分段的完整清單在編輯畫面 *@
                         @if (isAdmin)
                         {
-                            <a asp-controller="Permissions" asp-action="Index" asp-route-userId="@userId"
-                               class="badge text-bg-danger text-decoration-none" title="管理者不受科別限制">全部</a>
+                            <span class="badge text-bg-danger" title="管理者不受科別限制">全部</span>
                         }
-                        else if (editable.Count > 0 && userId > 0)
+                        else if (editable.Count > 0 && account is not null)
                         {
-                            <a asp-controller="Permissions" asp-action="Index" asp-route-userId="@userId"
-                               class="badge text-bg-primary text-decoration-none"
-                               title="@string.Join("、", editable.Select(x => x.SystemCode))">@editable.Count 套</a>
+                            <span class="badge text-bg-primary"
+                                  title="@string.Join("、", editable.Select(x => x.SystemCode))">@editable.Count 套</span>
                         }
                         else if (editable.Count > 0)
                         {
@@ -158,9 +180,10 @@
                     <td>
                         <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@e.Id">編輯</a>
                         <form method="post" asp-action="Delete" asp-route-id="@e.Id" class="d-inline"
-                              onsubmit="return confirm('確定刪除人員「@e.Name」？');">
+                              data-delete-kind="人員" data-delete-name="@e.Name"
+                              data-delete-mode="soft" data-delete-detail="登入帳號與權限會一併停用。">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete
                                     disabled="@(used > 0)"
                                     title="@(used > 0 ? "還被資料使用中，不能刪除" : "刪除")">刪除</button>
                         </form>

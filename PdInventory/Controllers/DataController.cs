@@ -292,9 +292,9 @@ public class DataController : Controller
         var group = await AssetGroups.LoadAsync(_db, id);
         if (group is null) return RedirectToAction(nameof(Index));
 
-        // 刪除只開放給管理者（0917）：這裡刪的是整筆資產連同 SW 與盤點表，
-        // 修改權限依科別開放給所有人之後，連帶開放刪除的風險太大
-        if (!_access.CanDelete) return Forbid();
+        // 能改就能刪（業務端 0918）。注意這裡刪的是整筆資產連同 SW 與盤點表（皆為軟刪除）。
+        // 沒有關連 SW 的資料資產對不到任何科，只有管理者能刪
+        if (!await _access.CanDeleteAsync(group.SystemCode)) return Forbid();
 
         AssetGroups.SoftDelete(group, _currentUser.Name);
         await _db.SaveChangesAsync();

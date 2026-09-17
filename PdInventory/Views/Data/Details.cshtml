@@ -115,8 +115,8 @@
             <dt>@Html.DisplayNameFor(m => m.SwTrailStorage)</dt><dd>@Model.SwTrailStorage</dd>
             <dt>@Html.DisplayNameFor(m => m.SwBusinessOwnerUnit)</dt><dd>@Model.SwBusinessOwnerUnit</dd>
             <dt>@Html.DisplayNameFor(m => m.SwReviewer)</dt><dd>@Model.SwReviewer</dd>
-            <dt>@Html.DisplayNameFor(m => m.SwModifiedBy)</dt><dd>@Model.SwModifiedBy</dd>
-            <dt>@Html.DisplayNameFor(m => m.SwModifiedTime)</dt><dd>@Model.SwModifiedTime</dd>
+            <dt>@Html.DisplayNameFor(m => m.UpdatedBy)</dt><dd>@Model.UpdatedBy</dd>
+            <dt>@Html.DisplayNameFor(m => m.UpdatedAt)</dt><dd>@Model.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss")</dd>
             <dt class="pd-full">@Html.DisplayNameFor(m => m.SwRemark)</dt><dd class="pd-full" style="white-space: pre-wrap">@Model.SwRemark</dd>
         </dl>
     </div>
@@ -137,7 +137,8 @@
             <dt>關連SW編號</dt><dd>@Model.SystemCode</dd>
             <dt>@Html.DisplayNameFor(_ => da.DaBackupConfirm)</dt><dd>@da.DaBackupConfirm</dd>
             <dt>@Html.DisplayNameFor(_ => da.DaReviewer)</dt><dd>@da.DaReviewer</dd>
-            <dt>@Html.DisplayNameFor(_ => da.DaModifiedTime)</dt><dd>@da.DaModifiedTime</dd>
+            <dt>@Html.DisplayNameFor(_ => da.UpdatedBy)</dt><dd>@da.UpdatedBy</dd>
+            <dt>@Html.DisplayNameFor(_ => da.UpdatedAt)</dt><dd>@da.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss")</dd>
             <dt>@Html.DisplayNameFor(_ => da.DaRemark)</dt><dd>@da.DaRemark</dd>
             <dt>@Html.DisplayNameFor(_ => da.DaAdminNote)</dt><dd style="white-space: pre-wrap">@da.DaAdminNote</dd>
         </dl>

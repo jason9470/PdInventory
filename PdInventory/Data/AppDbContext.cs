@@ -147,7 +147,6 @@ public class AppDbContext : DbContext
     public override int SaveChanges()
     {
         StampAuditFields();
-        StampSourceSheetModifiedFields();
         ProtectAdminOnlyFields();
         RecalculateAssetValues();
         NormalizeMultiValueFields();
@@ -157,7 +156,6 @@ public class AppDbContext : DbContext
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         StampAuditFields();
-        StampSourceSheetModifiedFields();
         ProtectAdminOnlyFields();
         RecalculateAssetValues();
         NormalizeMultiValueFields();
@@ -224,39 +222,6 @@ public class AppDbContext : DbContext
     }
 
     /// <summary>
-    /// 來源試算表自己就有的「修改者／修改時間」三個欄位（SW 兩個、DA 一個），
-    /// 由系統在存檔時寫入，畫面上是唯讀的。
-    ///
-    /// 這三個欄位跟 CreatedBy/UpdatedAt 那組軌跡欄位長得像但用途不同：軌跡是系統內部用的，
-    /// 這三個要跟著匯出檔回到甲方的 Excel，因此格式必須沿用來源資料的寫法
-    /// （時間 <c>2026/8/28 08:16</c>、修改者只寫姓名），不能直接套軌跡欄位的值。
-    ///
-    /// 唯讀只是操作防呆，改個表單欄位就繞過去了，所以真正的把關在這裡。
-    /// </summary>
-    private void StampSourceSheetModifiedFields()
-    {
-        // 沒有登入者就什麼都不寫：這條路只有種子匯入會走，而匯入的值正是來源試算表
-        // 原本填的修改者與時間，蓋掉就沒了。
-        if (!_currentUser.IsAuthenticated) return;
-
-        var now = DateTime.Now.ToString(SourceSheetTimeFormat);
-        var who = _currentUser.DisplayName;
-
-        foreach (var entry in ChangeTracker.Entries<InfoSystem>())
-        {
-            if (entry.State is not (EntityState.Added or EntityState.Modified)) continue;
-            entry.Entity.SwModifiedBy = who;
-            entry.Entity.SwModifiedTime = now;
-        }
-
-        foreach (var entry in ChangeTracker.Entries<DataAsset>())
-        {
-            if (entry.State is not (EntityState.Added or EntityState.Modified)) continue;
-            entry.Entity.DaModifiedTime = now;
-        }
-    }
-
-    /// <summary>
     /// 只有管理者能改的欄位（目前只有 DA-管理員註記）。非管理者存檔時：
     /// 修改的一律還原成資料庫原值，新增的一律清空。
     ///
@@ -264,7 +229,7 @@ public class AppDbContext : DbContext
     /// 集中處理才不會有某一條忘了擋。畫面上給非管理者的是唯讀欄位，
     /// 但唯讀只是操作防呆，改個表單就繞過去了。
     ///
-    /// 沒有登入者（種子匯入）時不介入，理由同 <see cref="StampSourceSheetModifiedFields"/>。
+    /// 沒有登入者（種子匯入）時不介入：那條路只有種子匯入會走，匯入的值不該被清掉。
     /// </summary>
     private void ProtectAdminOnlyFields()
     {
@@ -286,16 +251,16 @@ public class AppDbContext : DbContext
         }
     }
 
-    /// <summary>來源試算表的時間寫法，例如 <c>2026/8/28 08:16</c>。</summary>
-    private const string SourceSheetTimeFormat = "yyyy/M/d HH:mm";
-
     /// <summary>
     /// 寫入建立／異動軌跡並換發並行權杖。集中在這裡處理，控制器不需要記得做，
     /// 也就不會有「某個動作忘了寫軌跡」的漏洞。
     /// </summary>
     private void StampAuditFields()
     {
+        // 精確到秒：畫面與匯出一律顯示「2026-09-11 14:06:07」，存成帶小數秒的值只會讓
+        // 直接查資料庫的人看到兩種寫法（業務端 0918 指定的格式）
         var now = DateTime.Now;
+        now = now.AddTicks(-(now.Ticks % TimeSpan.TicksPerSecond));
         var user = _currentUser.Name;
 
         foreach (var entry in ChangeTracker.Entries<IAuditable>())
@@ -315,6 +280,13 @@ public class AppDbContext : DbContext
                 entry.Property(e => e.CreatedAt).IsModified = false;
                 entry.Property(e => e.CreatedBy).IsModified = false;
             }
+        }
+
+        // 刪除時間由各處自己寫（DateTime.Now），在這裡統一截到秒，不必每個地方都記得
+        foreach (var entry in ChangeTracker.Entries<ISoftDeletable>())
+        {
+            if (entry.State is EntityState.Added or EntityState.Modified && entry.Entity.DeletedAt is { } deletedAt)
+                entry.Entity.DeletedAt = deletedAt.AddTicks(-(deletedAt.Ticks % TimeSpan.TicksPerSecond));
         }
 
         foreach (var entry in ChangeTracker.Entries<IConcurrencyAware>())

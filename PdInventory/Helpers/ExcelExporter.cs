@@ -64,6 +64,8 @@ public static class ExcelExporter
     {
         null => "",
         bool b => b ? "是" : "否",
+        // 不指定的話會跟著伺服器的地區設定變成「2026/9/11 下午 02:06:07」
+        DateTime dt => dt.ToString("yyyy-MM-dd HH:mm:ss"),
         // 多對多欄位（使用資料(欄位)、特定目的）
         IEnumerable<PdCategory> categories => string.Join("、", categories.Select(c => c.Label)),
         IEnumerable<Purpose> purposes => string.Join("、", purposes.Select(p => p.Label)),

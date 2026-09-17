@@ -92,9 +92,10 @@
                     <td>
                         <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@s.Id">編輯</a>
                         <form method="post" asp-action="Delete" asp-route-id="@s.Id" class="d-inline"
-                              onsubmit="return confirm('確定刪除科別「@s.Name」？');">
+                              data-delete-kind="科別" data-delete-name="@s.Name"
+                              data-delete-mode="hard">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete
                                     disabled="@(count > 0 || hasDirect)"
                                     title="@(count > 0 ? "底下還有人，不能刪除" : hasDirect ? "還負責著系統，不能刪除" : "刪除")">刪除</button>
                         </form>

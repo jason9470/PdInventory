@@ -4,8 +4,9 @@ namespace PdInventory.Models;
 
 /// <summary>
 /// 建立／異動軌跡，由 AppDbContext 於存檔時自動寫入，使用者不需也不應手動填寫。
-/// 注意：InfoSystem 另有 SwReviewer / SwModifiedBy 等欄位，那是來源試算表的
-/// 「盤點檢視人員」欄位，屬於業務流程紀錄，與這裡的系統軌跡是兩回事，故並存。
+/// 來源試算表原本另有「SW-修改者／SW-修改時間／DA-修改時間」，0918 起併入這裡的
+/// UpdatedBy／UpdatedAt（兩套本來就同時寫入同樣內容）。SwReviewer／DaReviewer 則不同：
+/// 那是「誰做了盤點檢視」的業務流程紀錄，由人挑選，與系統軌跡是兩回事，故並存。
 /// </summary>
 public interface IAuditable
 {
@@ -264,11 +265,11 @@ public class InventoryItem : IAuditable, IConcurrencyAware, ISoftDeletable
     [Display(Name = "建立時間")]
     public DateTime? CreatedAt { get; set; }
 
-    [Display(Name = "最後修改者")]
+    [Display(Name = "修改者")]
     [StringLength(100)]
     public string UpdatedBy { get; set; } = "";
 
-    [Display(Name = "最後修改時間")]
+    [Display(Name = "修改時間")]
     public DateTime? UpdatedAt { get; set; }
 
     [Display(Name = "並行控制標記")]
@@ -277,8 +278,13 @@ public class InventoryItem : IAuditable, IConcurrencyAware, ISoftDeletable
     // ── 軟刪除 ──────────────────────────────────────────────
     // 與 InfoSystem 同一套：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失。
     // 盤點資料是稽核用的，誤刪之後查不回來比留著一列註記麻煩得多。
+    [Display(Name = "已刪除")]
     public bool IsDeleted { get; set; }
+
+    [Display(Name = "刪除時間")]
     public DateTime? DeletedAt { get; set; }
+
+    [Display(Name = "刪除者")]
     [StringLength(100)]
     public string DeletedBy { get; set; } = "";
 
@@ -346,11 +352,11 @@ public class TransferRecord : IAuditable, IConcurrencyAware, ISoftDeletable
     [Display(Name = "建立時間")]
     public DateTime? CreatedAt { get; set; }
 
-    [Display(Name = "最後修改者")]
+    [Display(Name = "修改者")]
     [StringLength(100)]
     public string UpdatedBy { get; set; } = "";
 
-    [Display(Name = "最後修改時間")]
+    [Display(Name = "修改時間")]
     public DateTime? UpdatedAt { get; set; }
 
     [Display(Name = "並行控制標記")]
@@ -359,8 +365,13 @@ public class TransferRecord : IAuditable, IConcurrencyAware, ISoftDeletable
     // ── 軟刪除 ──────────────────────────────────────────────
     // 與 InfoSystem 同一套：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失。
     // 盤點資料是稽核用的，誤刪之後查不回來比留著一列註記麻煩得多。
+    [Display(Name = "已刪除")]
     public bool IsDeleted { get; set; }
+
+    [Display(Name = "刪除時間")]
     public DateTime? DeletedAt { get; set; }
+
+    [Display(Name = "刪除者")]
     [StringLength(100)]
     public string DeletedBy { get; set; } = "";
 
@@ -635,32 +646,16 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
     [StringLength(100)]
     public string SwReviewer { get; set; } = "";
 
+    // ── 修改者／修改時間（由 AppDbContext 於存檔時寫入）─────────────────────
+    // 0918 起與來源試算表的「SW-修改者／SW-修改時間」合併成這一組：0910 之後兩套本來就在
+    // 同一刻寫入同樣的內容，只是格式不同。宣告放在原本那兩欄的位置、標題也沿用，
+    // 匯出檔的欄位順序與標題才不會變（匯出依屬性宣告順序排欄）。
     [Display(Name = "SW-修改者")]
     [StringLength(100)]
-    public string SwModifiedBy { get; set; } = "";
+    public string UpdatedBy { get; set; } = "";
 
     [Display(Name = "SW-修改時間")]
-    [StringLength(50)]
-    public string SwModifiedTime { get; set; } = "";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public DateTime? UpdatedAt { get; set; }
 
     // ── 系統軌跡（由 AppDbContext 自動寫入）────────────────────────────
     [Display(Name = "建立者")]
@@ -669,13 +664,6 @@ public class InfoSystem : IAuditable, ISoftDeletable, IConcurrencyAware
 
     [Display(Name = "建立時間")]
     public DateTime? CreatedAt { get; set; }
-
-    [Display(Name = "最後修改者")]
-    [StringLength(100)]
-    public string UpdatedBy { get; set; } = "";
-
-    [Display(Name = "最後修改時間")]
-    public DateTime? UpdatedAt { get; set; }
 
     [Display(Name = "並行控制標記")]
     public Guid RowVersion { get; set; }
@@ -757,21 +745,36 @@ public class DataAsset : IAuditable, IConcurrencyAware, ISoftDeletable
     [Display(Name = "DA-115檢視人員")]
     [StringLength(100)]
     public string DaReviewer { get; set; } = "";
-    [Display(Name = "DA-修改時間")]
-    [StringLength(50)]
-    public string DaModifiedTime { get; set; } = "";
 
-    public string CreatedBy { get; set; } = "";
-    public DateTime? CreatedAt { get; set; }
+    // ── 修改者／修改時間（由 AppDbContext 於存檔時寫入）─────────────────────
+    // 0918 起與來源試算表的「DA-修改時間」合併，理由同 InfoSystem。來源試算表只有時間、
+    // 沒有修改者，合併時修改者留空；之後在系統裡存過檔就會補上。
+    [Display(Name = "DA-修改者")]
     public string UpdatedBy { get; set; } = "";
+
+    [Display(Name = "DA-修改時間")]
     public DateTime? UpdatedAt { get; set; }
+
+    // ── 系統軌跡（由 AppDbContext 自動寫入）────────────────────────────
+    [Display(Name = "建立者")]
+    public string CreatedBy { get; set; } = "";
+
+    [Display(Name = "建立時間")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Display(Name = "並行控制標記")]
     public Guid RowVersion { get; set; }
 
     // ── 軟刪除 ──────────────────────────────────────────────
     // 與 InfoSystem 同一套：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失。
     // 這是甲方的稽核資料，誤刪之後救不回來比留一列註記麻煩得多。
+    [Display(Name = "已刪除")]
     public bool IsDeleted { get; set; }
+
+    [Display(Name = "刪除時間")]
     public DateTime? DeletedAt { get; set; }
+
+    [Display(Name = "刪除者")]
     [StringLength(100)]
     public string DeletedBy { get; set; } = "";
 }
@@ -830,17 +833,32 @@ public class SystemInventory : IAuditable, IConcurrencyAware, ISoftDeletable
     [Display(Name = "備註")]
     public string Remark { get; set; } = "";
 
+    // ── 系統軌跡（由 AppDbContext 自動寫入）────────────────────────────
+    [Display(Name = "建立者")]
     public string CreatedBy { get; set; } = "";
+
+    [Display(Name = "建立時間")]
     public DateTime? CreatedAt { get; set; }
+
+    [Display(Name = "修改者")]
     public string UpdatedBy { get; set; } = "";
+
+    [Display(Name = "修改時間")]
     public DateTime? UpdatedAt { get; set; }
+
+    [Display(Name = "並行控制標記")]
     public Guid RowVersion { get; set; }
 
     // ── 軟刪除 ──────────────────────────────────────────────
     // 與 InfoSystem 同一套：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失。
     // 這是甲方的稽核資料，誤刪之後救不回來比留一列註記麻煩得多。
+    [Display(Name = "已刪除")]
     public bool IsDeleted { get; set; }
+
+    [Display(Name = "刪除時間")]
     public DateTime? DeletedAt { get; set; }
+
+    [Display(Name = "刪除者")]
     [StringLength(100)]
     public string DeletedBy { get; set; } = "";
 }

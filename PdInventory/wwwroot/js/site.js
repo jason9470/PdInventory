@@ -26,6 +26,7 @@
     bind('sidebarToggle', 'sidebar-collapsed', 'pdinv.sidebarCollapsed');
     bind('maintToggle', 'maint-collapsed', 'pdinv.maintCollapsed');
     bind('exportToggle', 'export-collapsed', 'pdinv.exportCollapsed');
+    bind('permToggle', 'perm-collapsed', 'pdinv.permCollapsed');
 })();
 
 // 多選欄位（_MultiCheckList.cshtml）：勾選同步到那個 hidden input。
@@ -449,5 +450,74 @@
             .catch(function () {
                 show('<div class="alert alert-danger mb-0">儲存失敗，請關掉視窗再試一次。</div>');
             });
+    });
+})();
+
+// ── 刪除確認視窗 ─────────────────────────────────────────────────────
+// 清單上的刪除鈕是 type="button"、帶 data-confirm-delete；所屬表單用 data-delete-* 描述要刪什麼：
+//   data-delete-kind   資料種類（軟體資產、部門…）
+//   data-delete-name   這一筆的名稱
+//   data-delete-mode   soft＝軟刪除（可請管理者復原）、hard＝真的刪掉、clear＝清空欄位
+//   data-delete-detail 連帶影響（選填）
+// 內容一律用 textContent 放進去，名稱裡有引號或角括號也不會壞掉。
+(function () {
+    var modalEl = document.getElementById('deleteModal');
+    if (!modalEl) return;
+
+    var modal = new bootstrap.Modal(modalEl);
+    var confirmButton = document.getElementById('deleteModalConfirm');
+    var pendingForm = null;
+
+    var notes = {
+        soft: { css: 'pd-delete-note-soft', text: '刪除後會從清單、檢視與匯出中移除，但資料仍保留在資料庫中，必要時可請系統管理者協助復原。' },
+        hard: { css: 'pd-delete-note-hard', text: '此動作無法復原。' },
+        clear: { css: 'pd-delete-note-hard', text: '清空的內容無法復原。' }
+    };
+
+    function text(id, value) {
+        var el = document.getElementById(id);
+        el.textContent = value || '';
+        el.hidden = !value;
+    }
+
+    document.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-confirm-delete]');
+        if (!button || button.disabled) return;
+
+        var form = button.closest('form');
+        if (!form) return;
+
+        var data = form.dataset;
+        var mode = notes[data.deleteMode] ? data.deleteMode : 'hard';
+        pendingForm = form;
+
+        text('deleteModalLead', mode === 'clear' ? '即將清空以下資料：' : '即將刪除以下資料：');
+        text('deleteModalKind', data.deleteKind);
+        text('deleteModalName', (data.deleteName || '').trim() || '（未命名）');
+        text('deleteModalDetail', data.deleteDetail);
+
+        var note = document.getElementById('deleteModalNote');
+        note.className = 'pd-delete-note ' + notes[mode].css;
+        note.textContent = notes[mode].text;
+
+        document.getElementById('deleteModalLabel').textContent = mode === 'clear' ? '確認清空' : '確認刪除';
+        confirmButton.textContent = mode === 'clear' ? '確定清空' : '確定刪除';
+        confirmButton.disabled = false;
+        modal.show();
+    });
+
+    // 預設焦點放在「取消」：誤按 Enter 不會直接刪掉
+    modalEl.addEventListener('shown.bs.modal', function () {
+        document.getElementById('deleteModalCancel').focus();
+    });
+
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        pendingForm = null;
+    });
+
+    confirmButton.addEventListener('click', function () {
+        if (!pendingForm) return;
+        confirmButton.disabled = true;   // 防止連點送出兩次
+        pendingForm.submit();
     });
 })();

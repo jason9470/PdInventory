@@ -94,8 +94,6 @@ public class SoftwareEditViewModel : IInfoSystemBlockViewModel
     public string SwTrailStorage { get; set; } = "";
     public string SwBusinessOwnerUnit { get; set; } = "";
     public string SwReviewer { get; set; } = "";
-    public string SwModifiedBy { get; set; } = "";
-    public string SwModifiedTime { get; set; } = "";
 }
 
 /// <summary>資訊資產清單－資料(DA)。SystemCode 是關連的 SW 編號，可以留空。</summary>
@@ -119,7 +117,6 @@ public class DataEditViewModel : IInfoSystemBlockViewModel
     public string DaAdminNote { get; set; } = "";
     public string DaBackupConfirm { get; set; } = "";
     public string DaReviewer { get; set; } = "";
-    public string DaModifiedTime { get; set; } = "";
 }
 
 /// <summary>資訊系統、資料庫與檔案伺服器盤點表。SystemCode 必填，一定依附於某個軟體資產。</summary>

@@ -70,7 +70,7 @@
                             <a class="btn btn-sm btn-outline-info" asp-controller="Data" asp-action="Details"
                                asp-route-id="@dataId" asp-route-from="Software">檢視</a>
                         }
-                        @* 編輯鈕只出現在自己科別負責的資產上；刪除鈕只有管理者看得到 *@
+                        @* 編輯與刪除鈕只出現在自己科別負責的資產上（能改就能刪） *@
                         @if (await AssetAccess.CanModifyAsync(s.SystemCode))
                         {
                             @if (dataId > 0)
@@ -78,12 +78,13 @@
                                 <a class="btn btn-sm btn-outline-primary" asp-controller="Data" asp-action="Edit"
                                    asp-route-id="@dataId" asp-route-from="Software">編輯</a>
                             }
-                            @if (AssetAccess.CanDelete)
+                            @if (await AssetAccess.CanDeleteAsync(s.SystemCode))
                             {
                                 <form method="post" asp-action="Delete" asp-route-id="@s.Id" class="d-inline"
-                                      onsubmit="return confirm('確定刪除軟體資產「@s.SystemCode @s.SystemName」？此動作會一併刪除同一筆資產的 DA 與盤點表資料。');">
+                                      data-delete-kind="軟體資產" data-delete-name="@s.SystemCode @s.SystemName"
+                                      data-delete-mode="soft" data-delete-detail="同一筆資產的 DA 與盤點表資料會一併刪除。">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete>刪除</button>
                                 </form>
                             }
                         }

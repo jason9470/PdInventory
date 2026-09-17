@@ -120,9 +120,8 @@ public class SoftwareController : Controller
         var system = await _db.InfoSystems.FindAsync(id);
         if (system is null) return RedirectToAction(nameof(Index));
 
-        // 刪除只開放給管理者（0917）：這裡刪的是整筆資產連同 DA 與盤點表，
-        // 修改權限依科別開放給所有人之後，連帶開放刪除的風險太大
-        if (!_access.CanDelete) return Forbid();
+        // 能改就能刪（業務端 0918）。注意這裡刪的是整筆資產連同 DA 與盤點表（皆為軟刪除）
+        if (!await _access.CanDeleteAsync(system.SystemCode)) return Forbid();
 
         var data = await _db.DataAssets.FirstOrDefaultAsync(d => d.SystemCode == system.SystemCode);
         var inventory = await _db.SystemInventories.FirstOrDefaultAsync(i => i.SystemCode == system.SystemCode);

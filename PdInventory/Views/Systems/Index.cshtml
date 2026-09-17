@@ -65,7 +65,7 @@
                             <a class="btn btn-sm btn-outline-info" asp-controller="Data" asp-action="Details"
                                asp-route-id="@dataId" asp-route-from="Systems">檢視</a>
                         }
-                        @* 編輯鈕只出現在自己科別負責的資產上；刪除鈕只有管理者看得到 *@
+                        @* 編輯與刪除鈕只出現在自己科別負責的資產上（能改就能刪） *@
                         @if (await AssetAccess.CanModifyAsync(s.SystemCode))
                         {
                             @if (dataId > 0)
@@ -74,12 +74,13 @@
                                    asp-route-id="@dataId" asp-route-from="Systems">編輯</a>
                             }
                             @* 只刪盤點表這一列，SW 與 DA 留著 *@
-                            @if (AssetAccess.CanDelete)
+                            @if (await AssetAccess.CanDeleteAsync(s.SystemCode))
                             {
                                 <form method="post" asp-action="Delete" asp-route-id="@s.Id" class="d-inline"
-                                      onsubmit="return confirm('確定刪除「@s.SystemCode」的盤點表資料？只會刪掉盤點表這一列，SW 與 DA 不受影響。');">
+                                      data-delete-kind="盤點表資料" data-delete-name="@s.SystemCode"
+                                      data-delete-mode="soft" data-delete-detail="只會刪除盤點表這一列，SW 與 DA 不受影響。">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete>刪除</button>
                                 </form>
                             }
                         }

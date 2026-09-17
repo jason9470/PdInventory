@@ -80,16 +80,17 @@
                     <td class="text-break" style="max-width: 260px"><small>@t.Remark</small></td>
                     <td>
                         <a class="btn btn-sm btn-outline-info" asp-action="Details" asp-route-id="@t.Id">檢視</a>
-                        @* 編輯鈕只出現在自己科別負責的資產上；刪除鈕只有管理者看得到 *@
+                        @* 編輯與刪除鈕只出現在自己科別負責的資產上（能改就能刪） *@
                         @if (await AssetAccess.CanModifyAsync(t.SystemCode))
                         {
                             <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@t.Id">編輯</a>
-                            @if (AssetAccess.CanDelete)
+                            @if (await AssetAccess.CanDeleteAsync(t.SystemCode))
                             {
                                 <form method="post" asp-action="Delete" asp-route-id="@t.Id" class="d-inline"
-                                      onsubmit="return confirm('確定刪除拋轉紀錄「@t.SeqNo @t.SystemName」？');">
+                                      data-delete-kind="拋轉紀錄" data-delete-name="@t.SeqNo @t.SystemName"
+                                      data-delete-mode="soft">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete>刪除</button>
                                 </form>
                             }
                         }

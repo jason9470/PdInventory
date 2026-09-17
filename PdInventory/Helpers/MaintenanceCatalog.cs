@@ -55,8 +55,8 @@ public static class MaintenanceCatalog
         new(SharedKey, "共用",
         [
             new("Departments", "部門"),
-            new("Sections", "科別"),
-            new("Employees", "人員"),
+            // 科別與人員 0918 起移到側邊欄的「權限設定」底下：兩者決定誰能改哪些系統，屬於權限。
+            // 人員同時也是表單人員欄位的下拉來源，要維護那些選項一樣到權限設定 → 人員
             new("OpsStaff", "資管維運"),
         ]),
     ];

@@ -15,6 +15,7 @@
             if (localStorage.getItem('pdinv.sidebarCollapsed') === '1') d.classList.add('sidebar-collapsed');
             if (localStorage.getItem('pdinv.maintCollapsed') === '1') d.classList.add('maint-collapsed');
             if (localStorage.getItem('pdinv.exportCollapsed') === '1') d.classList.add('export-collapsed');
+            if (localStorage.getItem('pdinv.permCollapsed') === '1') d.classList.add('perm-collapsed');
         } catch (e) { }
     </script>
 </head>
@@ -122,9 +123,20 @@
                         }
                     </div>
 
-                    <div class="list-group list-group-flush small mt-3">
-                        <a class="list-group-item list-group-item-action @NavActive("Permissions")"
-                           asp-controller="Permissions" asp-action="Index">權限設定</a>
+                    @* 權限設定：一個人的科別與角色在「人員」、科負責哪些系統在「科別」。
+                       0918 起兩者從「維護資料-共用」移到這裡，原本的權限設定頁併進人員表單。 *@
+                    <button id="permToggle" type="button"
+                            class="sidebar-heading btn btn-link text-muted small fw-bold text-decoration-none
+                                   d-flex align-items-center justify-content-between w-100 mt-3 mb-1 px-3"
+                            aria-controls="sidebarPerm">
+                        <span>權限設定</span>
+                        <span class="perm-caret" aria-hidden="true">▾</span>
+                    </button>
+                    <div id="sidebarPerm" class="sidebar-perm list-group list-group-flush small">
+                        <a class="list-group-item list-group-item-action @NavActive("Employees")"
+                           asp-controller="Employees" asp-action="Index">人員</a>
+                        <a class="list-group-item list-group-item-action @NavActive("Sections")"
+                           asp-controller="Sections" asp-action="Index">科別</a>
                     </div>
                     }
                 </nav>
@@ -182,6 +194,40 @@
                     </div>
                     @* 三個畫面（清單／內容／編輯）都由 NotesController 以部分檢視回傳，換進這裡 *@
                     <div class="modal-body" id="noteModalBody"></div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* 刪除確認（取代瀏覽器原生的 confirm）。內容由 site.js 依刪除表單上的 data-delete-* 填入。
+       刪除鈕是 type="button"，沒有 JS 就送不出去——寧可刪不了，也不要沒確認就刪掉。 *@
+    @if (CurrentUser.IsAuthenticated)
+    {
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content pd-delete">
+                    <div class="modal-header border-0 pb-0">
+                        <div class="pd-delete-icon" aria-hidden="true">
+                            <svg viewBox="0 0 16 16" width="20" height="20" focusable="false">
+                                <path fill="currentColor" d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                            </svg>
+                        </div>
+                        <h2 class="modal-title h5 mb-0" id="deleteModalLabel">確認刪除</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-2" id="deleteModalLead">即將刪除以下資料：</p>
+                        <div class="pd-delete-target">
+                            <div class="pd-delete-kind" id="deleteModalKind"></div>
+                            <div class="pd-delete-name" id="deleteModalName"></div>
+                        </div>
+                        <p class="pd-delete-detail mb-0" id="deleteModalDetail"></p>
+                        <div class="pd-delete-note" id="deleteModalNote"></div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="deleteModalCancel">取消</button>
+                        <button type="button" class="btn btn-danger" id="deleteModalConfirm">確定刪除</button>
+                    </div>
                 </div>
             </div>
         </div>

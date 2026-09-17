@@ -62,16 +62,17 @@
                     </td>
                     <td>
                         <a class="btn btn-sm btn-outline-info" asp-action="Details" asp-route-id="@item.Id">檢視</a>
-                        @* 編輯鈕只出現在自己科別負責的資產上；刪除鈕只有管理者看得到 *@
+                        @* 編輯與刪除鈕只出現在自己科別負責的資產上（能改就能刪） *@
                         @if (await AssetAccess.CanModifyAsync(item.SystemCode))
                         {
                             <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">編輯</a>
-                            @if (AssetAccess.CanDelete)
+                            @if (await AssetAccess.CanDeleteAsync(item.SystemCode))
                             {
                                 <form method="post" asp-action="Delete" asp-route-id="@item.Id" class="d-inline"
-                                      onsubmit="return confirm('確定刪除「@item.SystemCode @item.DocumentName」的風險自評資料？（不會刪除盤點項目本身）');">
+                                      data-delete-kind="風險自評資料" data-delete-name="@item.SystemCode @item.DocumentName"
+                                      data-delete-mode="clear" data-delete-detail="會清空這一筆的風險自評欄位，個資盤點項目本身不受影響。">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete>刪除</button>
                                 </form>
                             }
                         }

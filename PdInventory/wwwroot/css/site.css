@@ -216,15 +216,23 @@ body {
   .page-jump { display: none !important; }
 }
 
-/* 側邊欄「維護匯出」群組收合 */
-.export-collapsed .sidebar-export {
+/* 人員表單：沒有員編時角色下拉看起來是停用的（仍會送出，只是不生效） */
+.pd-disabled-look {
+  opacity: .55;
+}
+
+/* 側邊欄「維護匯出」「權限設定」群組收合 */
+.export-collapsed .sidebar-export,
+.perm-collapsed .sidebar-perm {
   display: none;
 }
 
-.export-collapsed .export-caret {
+.export-collapsed .export-caret,
+.perm-collapsed .perm-caret {
   transform: rotate(-90deg);
 }
 
+.perm-caret,
 .export-caret {
   display: inline-block;
   transition: transform .15s ease-in-out;
@@ -406,17 +414,6 @@ div:has(> .input-group > .form-control[readonly]) > .form-label::after {
   white-space: nowrap;
 }
 
-/* 選中的使用者是藍底，編號的藍字會看不見 */
-.pd-user-list .list-group-item.active .pd-code,
-.pd-user-list .list-group-item.active .text-muted {
-  color: #fff !important;
-}
-
-.pd-user-list {
-  max-height: 32rem;
-  overflow-y: auto;
-}
-
 /* 資產勾選清單：兩欄排列，33 筆左右一頁看得完 */
 .pd-asset-picker {
   display: grid;
@@ -524,4 +521,67 @@ div:has(> .input-group > .form-control[readonly]) > .form-label::after {
   white-space: pre-wrap;
   word-break: break-word;
   min-height: 12rem;
+}
+
+/* ── 刪除確認視窗 ───────────────────────────────────────────────── */
+.pd-delete .modal-header {
+  gap: .75rem;
+  align-items: center;
+}
+
+.pd-delete .modal-title {
+  flex: 1 1 auto;
+}
+
+.pd-delete-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  color: #b02a37;
+  background-color: #f8d7da;
+}
+
+/* 要刪的那一筆：種類小字、名稱大字，一眼確認沒有點錯列 */
+.pd-delete-target {
+  padding: .6rem .85rem;
+  border: 1px solid #dee2e6;
+  border-left: 4px solid #dc3545;
+  border-radius: .375rem;
+  background-color: #f8f9fa;
+}
+
+.pd-delete-kind {
+  font-size: .8rem;
+  color: #6c757d;
+}
+
+.pd-delete-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  word-break: break-word;
+}
+
+.pd-delete-detail {
+  margin-top: .75rem;
+}
+
+.pd-delete-note {
+  margin-top: .75rem;
+  padding: .5rem .75rem;
+  border-radius: .375rem;
+  font-size: .9rem;
+}
+
+.pd-delete-note-soft {
+  color: #055160;
+  background-color: #cff4fc;
+}
+
+.pd-delete-note-hard {
+  color: #842029;
+  background-color: #f8d7da;
+  font-weight: 700;
 }

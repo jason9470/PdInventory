@@ -20,16 +20,22 @@ namespace PdInventory.Helpers;
 ///   動作            管理者    其他所有人（含主管）
 ///   檢視            全部      全部
 ///   修改            全部      自己科別負責的系統（組長＝全組）
+///   刪除            全部      同修改：能改就能刪（業務端 0918）
 ///   新增            ✔         ✘（業務端表示日後可能開放給主管）
-///   刪除            ✔         ✘
+///
+/// 刪除一律是軟刪除（加 IsDeleted 註記），唯一的例外是風險自評的「刪除」——
+/// 那是清空風險欄位，見 RiskController.Delete。
 /// </summary>
 public interface IAssetAccess
 {
     /// <summary>是否可以新增資料。與 Program.cs 的 <see cref="Policies.CreateAssets"/> 一致。</summary>
     bool CanCreate { get; }
 
-    /// <summary>是否可以刪除資料。刪除 SW 或 DA 會連帶刪掉整筆資產，只開放給管理者。</summary>
-    bool CanDelete { get; }
+    /// <summary>
+    /// 是否可以刪除這個資產編號底下的資料。0918 起與 <see cref="CanModifyAsync"/> 相同：能改就能刪。
+    /// 仍然獨立成一個方法，日後刪除要比修改嚴格時只改這裡，控制器與畫面不必動。
+    /// </summary>
+    Task<bool> CanDeleteAsync(string? systemCode);
 
     /// <summary>是否可以修改這個資產編號底下的資料。</summary>
     Task<bool> CanModifyAsync(string? systemCode);
@@ -55,7 +61,7 @@ public sealed class AssetAccess : IAssetAccess
 
     public bool CanCreate => _currentUser.IsAdmin;
 
-    public bool CanDelete => _currentUser.IsAdmin;
+    public Task<bool> CanDeleteAsync(string? systemCode) => CanModifyAsync(systemCode);
 
     public async Task<bool> CanModifyAsync(string? systemCode)
     {

@@ -14,8 +14,11 @@ namespace PdInventory.Helpers;
 /// 兩種建立途徑都會讓兩邊同時存在：
 ///   (1) 使用者自己先登入 —— 人員表沒有他就自動建一筆（部門與備註填固定值待補），
 ///       帳號給一般使用者。
-///   (2) 管理者先在人員表建檔 —— 這裡同時補上帳號，管理者接著到權限設定調角色；
+///   (2) 管理者先在人員表建檔 —— 這裡同時補上帳號，角色在同一張表單上指定；
 ///       那個人之後登入就直接對應到已經設好的權限。
+///
+/// 0918 起人員與權限設定合併成同一個畫面（權限設定 → 人員），改員編、補員編時
+/// 帳號也在這裡跟著處理（<see cref="SyncUserForEmployeeAsync"/>），不再只靠啟動時補。
 ///
 /// 刪除一律是軟刪除，而且兩邊一起：各表單存的是姓名文字，實體真的消失之後
 /// 那些欄位會變成查不出來源的孤兒值，軌跡欄位也一樣認不出人。
@@ -65,6 +68,69 @@ public sealed class UserProvisioning
         }
 
         return user;
+    }
+
+    /// <summary>
+    /// 人員資料存檔後讓帳號跟上：改了員編、原本沒員編後來補上、姓名改了，都在這裡處理。
+    ///
+    /// 0918 以前人員表改員編不會動到帳號，舊員編的帳號就這樣留著、新員編要等下次啟動才補建，
+    /// 角色也就跟著斷掉（黃鈺棠 0012478 → 0014078 就是這樣多出一個帳號）。
+    ///
+    /// 規則：
+    ///   新員編已經有帳號（含停用過的）→ 沿用那個帳號（停用過的復原），舊員編的帳號停用。
+    ///   新員編沒有帳號、舊員編有       → 舊帳號直接改成新員編，角色與登入紀錄都留著。
+    ///   兩邊都沒有                     → 建一個新帳號。
+    ///   員編被清空                     → 舊帳號停用（沒有編號就無從對應登入身分）。
+    /// </summary>
+    /// <param name="oldEmpNo">存檔前的員編；新增時傳空字串。</param>
+    /// <returns>這個人現在對應的帳號；沒有員編時回傳 null。</returns>
+    public async Task<AppUser?> SyncUserForEmployeeAsync(Employee employee, string oldEmpNo, string actor)
+    {
+        var old = string.IsNullOrWhiteSpace(oldEmpNo) ? null : await FindUserAsync(oldEmpNo);
+
+        if (string.IsNullOrWhiteSpace(employee.EmpNo))
+        {
+            if (old is not null && !old.IsDeleted) Stamp(old, actor);
+            return null;
+        }
+
+        AppUser user;
+        var target = await FindUserAsync(employee.EmpNo);
+        if (target is not null)
+        {
+            if (target.IsDeleted) Restore(target);
+            if (old is not null && old.Id != target.Id && !old.IsDeleted) Stamp(old, actor);
+            user = target;
+        }
+        else if (old is not null)
+        {
+            if (old.IsDeleted) Restore(old);
+            old.EmpNo = employee.EmpNo;
+            user = old;
+        }
+        else
+        {
+            user = new AppUser { EmpNo = employee.EmpNo, Role = UserRole.AssetOwner };
+            _db.AppUsers.Add(user);
+        }
+
+        user.EmpName = employee.Name;
+        return user;
+    }
+
+    /// <summary>
+    /// 改角色前的把關：不能調降自己，也不能調降最後一位管理者——兩種都會讓系統再也沒有人能管理。
+    /// 回傳 null 代表允許，否則回傳要顯示給使用者的原因。
+    /// </summary>
+    public async Task<string?> RoleChangeBlockReason(AppUser user, UserRole role, string currentEmpNo)
+    {
+        if (user.Role != UserRole.Admin || role == UserRole.Admin) return null;
+
+        if (string.Equals(user.EmpNo, currentEmpNo, StringComparison.Ordinal))
+            return "不能調降自己的角色，請由另一位管理者操作。";
+
+        var admins = await _db.AppUsers.CountAsync(u => u.Role == UserRole.Admin);
+        return admins <= 1 ? "系統至少要保留一位管理者，無法調降這個帳號。" : null;
     }
 
     /// <summary>
@@ -137,8 +203,8 @@ public sealed class UserProvisioning
     /// <summary>
     /// 停用前的把關。回傳 null 代表允許，否則回傳要顯示給使用者的原因。
     ///
-    /// 權限設定畫面本來就擋著「降自己的角色」與「降掉最後一位管理者」，但從人員表
-    /// 刪除是另一條路、繞過了那兩道檢查——而管理者通常不會出現在應用系統主管、
+    /// 改角色時擋著「降自己的角色」與「降掉最後一位管理者」（<see cref="RoleChangeBlockReason"/>），
+    /// 但刪除是另一條路、繞過了那兩道檢查——而管理者通常不會出現在應用系統主管、
     /// 維護人員那些欄位裡，引用數是 0，刪除鈕根本不會擋他。只剩一位管理者又被刪掉，
     /// 就再也沒有人進得了權限設定了。
     /// </summary>

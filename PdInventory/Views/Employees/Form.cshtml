@@ -5,6 +5,12 @@
     var usedBy = (int)(ViewBag.UsedBy ?? 0);
     var sections = (List<Section>)ViewBag.Sections;
     var scope = (SectionScope)ViewBag.Scope;
+    var account = (AppUser?)ViewBag.Account;
+    var role = (UserRole)ViewBag.Role;
+    var totalSystems = (int)ViewBag.TotalSystems;
+    var currentSection = (Section?)ViewBag.Section;
+    var roleError = ViewData.ModelState.TryGetValue("role", out var roleState) && roleState.Errors.Count > 0
+        ? roleState.Errors[0].ErrorMessage : null;
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -17,58 +23,165 @@
     </div>
 }
 
-<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" class="pd-form col-lg-9">
+<form method="post" asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" class="pd-form col-xl-10">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
+    @if (account is not null)
+    {
+        <input type="hidden" name="accountRowVersion" value="@account.RowVersion" />
+    }
 
-    <div class="row g-3">
-        <div class="col-md-3">
-            <label asp-for="EmpNo" class="form-label"></label>
-            <input asp-for="EmpNo" class="form-control" placeholder="例：0183253" />
-            <div class="form-text">名冊沒給的可以留空。</div>
-            <span asp-validation-for="EmpNo" class="text-danger"></span>
-        </div>
-        <div class="col-md-3">
-            <label asp-for="Name" class="form-label"></label>
-            <input asp-for="Name" class="form-control" placeholder="例：張瑜玫" />
-            <div class="form-text">這個姓名就是各欄位實際存的值，不可重複。</div>
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
-        <div class="col-md-6">
-            <label asp-for="DepartmentName" class="form-label"></label>
-            <input asp-for="DepartmentName" class="form-control" placeholder="例：資訊系統開發一部" />
-        </div>
-        <div class="col-md-4">
-            <label asp-for="SectionId" class="form-label"></label>
-            <select asp-for="SectionId" class="form-select" id="sectionSelect">
-                <option value="" data-team="" data-count="">-- 未指定（不能修改任何系統）--</option>
-                @foreach (var team in sections.GroupBy(s => s.TeamName))
-                {
-                    <optgroup label="@team.Key">
-                        @foreach (var s in team)
-                        {
-                            <option value="@s.Id" data-team="@s.TeamName"
-                                    data-count="@scope.SystemsOf(s.Id).Count"
-                                    data-kind="@s.Kind">@s.OptionLabel</option>
-                        }
-                    </optgroup>
-                }
-            </select>
-            <div class="form-text" id="sectionHint">決定這個人能修改哪些系統。</div>
-            <span asp-validation-for="SectionId" class="text-danger"></span>
-        </div>
-        <div class="col-md-2">
-            <label asp-for="TeamName" class="form-label"></label>
-            @* 跟著科別自動帶出，存檔時控制器以科別表為準覆寫 *@
-            <input asp-for="TeamName" class="form-control" id="teamName" readonly />
-        </div>
-        <div class="col-12">
-            <label asp-for="Remark" class="form-label"></label>
-            <input asp-for="Remark" class="form-control" placeholder="組長／科長" />
-            <div class="form-text">
-                填「<strong>@string.Join("」或「", PdInventory.Models.Employee.ManagerRemarks)</strong>」
-                這個人才會出現在「SW-應用系統主管」的下拉。
+    <div class="card mb-3">
+        <div class="card-header py-2 fw-bold small">基本資料</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label asp-for="EmpNo" class="form-label"></label>
+                    <input asp-for="EmpNo" class="form-control" placeholder="例：0183253" id="empNo" />
+                    <div class="form-text">名冊沒給的可以留空，但沒有員編就不能登入。</div>
+                    <span asp-validation-for="EmpNo" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" placeholder="例：張瑜玫" />
+                    <div class="form-text">這個姓名就是各欄位實際存的值，不可重複。</div>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DepartmentName" class="form-label"></label>
+                    <input asp-for="DepartmentName" class="form-control" placeholder="例：資訊系統開發一部" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="Remark" class="form-label"></label>
+                    <input asp-for="Remark" class="form-control" placeholder="組長／科長" />
+                    <div class="form-text">
+                        填「<strong>@string.Join("」或「", PdInventory.Models.Employee.ManagerRemarks)</strong>」
+                        這個人才會出現在「SW-應用系統主管」的下拉。
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header py-2 fw-bold small">權限</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label asp-for="SectionId" class="form-label"></label>
+                    <select asp-for="SectionId" class="form-select" id="sectionSelect">
+                        <option value="" data-team="" data-count="">-- 未指定（不能修改任何系統）--</option>
+                        @foreach (var team in sections.GroupBy(s => s.TeamName))
+                        {
+                            <optgroup label="@team.Key">
+                                @foreach (var s in team)
+                                {
+                                    <option value="@s.Id" data-team="@s.TeamName"
+                                            data-count="@scope.SystemsOf(s.Id).Count"
+                                            data-kind="@s.Kind">@s.OptionLabel</option>
+                                }
+                            </optgroup>
+                        }
+                    </select>
+                    <div class="form-text" id="sectionHint">決定這個人能修改哪些系統。</div>
+                    <span asp-validation-for="SectionId" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="TeamName" class="form-label"></label>
+                    @* 跟著科別自動帶出，存檔時控制器以科別表為準覆寫 *@
+                    <input asp-for="TeamName" class="form-control" id="teamName" readonly />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="roleSelect">角色</label>
+                    <select id="roleSelect" name="role" class="form-select @(roleError is null ? "" : "is-invalid")">
+                        @foreach (var r in RoleDisplay.All)
+                        {
+                            <option value="@r" selected="@(r == role)">@RoleDisplay.Name(r)</option>
+                        }
+                    </select>
+                    <div class="form-text" id="roleHint">
+                        @if (account is not null)
+                        {
+                            <text>最後登入：@(account.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "尚未登入")</text>
+                        }
+                        else if (!isNew && !string.IsNullOrWhiteSpace(Model.EmpNo))
+                        {
+                            <text>存檔時會一併建立登入帳號。</text>
+                        }
+                    </div>
+                    @if (roleError is not null)
+                    {
+                        <div class="text-danger small">@roleError</div>
+                    }
+                </div>
+                <div class="col-12">
+                    <ul class="small text-muted mb-0 ps-3" id="roleDescriptions">
+                        @foreach (var r in RoleDisplay.All)
+                        {
+                            <li data-role="@r" class="@(r == role ? "fw-bold text-body" : "")">
+                                @RoleDisplay.Name(r)：@RoleDisplay.Description(r)
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            @* 目前（存檔前）的科別與角色推出來的範圍。改了科別或角色，存檔後這裡才會更新；
+               下拉旁的提示會先即時算出套數。 *@
+            @{
+                var breakdown = scope.BreakdownOf(Model.SectionId);
+                var total = breakdown.SelectMany(b => b.Systems).DistinctBy(s => s.Id).Count();
+            }
+            <hr />
+            <div class="small fw-bold mb-2">
+                可修改的系統 <span class="text-muted fw-normal">（依目前儲存的科別與角色；各科負責哪些系統在<a asp-controller="Sections" asp-action="Index">科別</a>設定）</span>
+            </div>
+            @if (role == UserRole.Admin)
+            {
+                <div class="alert alert-info small py-2 mb-0">
+                    管理者不受科別限制，<strong>全部 @totalSystems 套系統</strong>都能新增、修改、刪除。
+                </div>
+            }
+            else if (currentSection is null)
+            {
+                <div class="alert alert-warning small py-2 mb-0">還沒有指定科別，因此不能修改任何系統。</div>
+            }
+            else if (currentSection.Kind == SectionKind.Office)
+            {
+                <div class="alert alert-warning small py-2 mb-0">
+                    「@currentSection.Name」不負責任何系統，部室的權限要靠管理者角色。
+                </div>
+            }
+            else if (total == 0)
+            {
+                <div class="alert alert-warning small py-2 mb-0">
+                    「@currentSection.Name」目前沒有負責任何系統，因此不能修改任何系統。
+                </div>
+            }
+            else
+            {
+                <p class="small text-muted mb-2">
+                    共 <strong class="text-body">@total</strong> 套@(currentSection.Kind == SectionKind.Team ? "（全組各科合計）" : "")，
+                    修改時連同這些系統底下的 DA、盤點表、個資盤點、拋轉清單與風險自評。
+                </p>
+                @* 變數不能叫 section：Razor 會把 @section 當成版面的 section 指令 *@
+                @foreach (var (part, systems) in breakdown)
+                {
+                    @if (breakdown.Count > 1)
+                    {
+                        <div class="small fw-bold mt-2 mb-1">@part.Name <span class="text-muted fw-normal">（@systems.Count 套）</span></div>
+                    }
+                    <div class="pd-asset-picker">
+                        @foreach (var sys in systems)
+                        {
+                            <div class="pd-asset-item" style="cursor: default">
+                                <span class="pd-code">@sys.SystemCode</span>
+                                <span class="pd-asset-name">@sys.SystemName</span>
+                            </div>
+                        }
+                    </div>
+                }
+            }
         </div>
     </div>
 
@@ -85,11 +198,20 @@
         var select = document.getElementById('sectionSelect');
         var team = document.getElementById('teamName');
         var hint = document.getElementById('sectionHint');
+        var empNo = document.getElementById('empNo');
+        var role = document.getElementById('roleSelect');
+        var roleHint = document.getElementById('roleHint');
+        var roleHintText = roleHint.textContent.trim();
         if (!select) return;
 
         // 選了科別就把組別帶出來，並提示這樣能修改幾套系統
-        function refresh() {
+        function refreshSection() {
             var option = select.options[select.selectedIndex];
+            if (role.value === 'Admin') {
+                hint.textContent = '管理者不受科別限制，全部系統都能修改。';
+                if (option && option.value) team.value = option.dataset.team;
+                return;
+            }
             if (!option || !option.value) {
                 hint.textContent = '沒有科別就不能修改任何系統（管理者除外）。';
                 return;
@@ -103,8 +225,25 @@
             }
         }
 
-        select.addEventListener('change', refresh);
-        refresh();
+        // 沒有員編就沒有登入帳號，角色選了也不會生效：停用下拉並說明，送出時照樣帶預設值
+        function refreshRole() {
+            var noEmpNo = !empNo.value.trim();
+            role.classList.toggle('pd-disabled-look', noEmpNo);
+            role.setAttribute('aria-disabled', noEmpNo ? 'true' : 'false');
+            roleHint.textContent = noEmpNo ? '沒有員編就不能登入，角色不會生效。' : roleHintText;
+
+            document.querySelectorAll('#roleDescriptions [data-role]').forEach(function (li) {
+                var on = li.dataset.role === role.value;
+                li.classList.toggle('fw-bold', on);
+                li.classList.toggle('text-body', on);
+            });
+            refreshSection();
+        }
+
+        select.addEventListener('change', refreshSection);
+        role.addEventListener('change', refreshRole);
+        empNo.addEventListener('input', refreshRole);
+        refreshRole();
     })();
 </script>
 }

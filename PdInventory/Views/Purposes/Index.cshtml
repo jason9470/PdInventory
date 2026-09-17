@@ -53,9 +53,10 @@
                     <td>
                         <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@p.Id">編輯</a>
                         <form method="post" asp-action="Delete" asp-route-id="@p.Id" class="d-inline"
-                              onsubmit="return confirm('確定刪除特定目的「@p.Code @p.Name」？');">
+                              data-delete-kind="特定目的" data-delete-name="@p.Code @p.Name"
+                              data-delete-mode="hard">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete
                                     disabled="@(used > 0)"
                                     title="@(used > 0 ? "仍被盤點項目使用，無法刪除" : "刪除")">刪除</button>
                         </form>

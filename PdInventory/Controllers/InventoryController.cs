@@ -180,9 +180,8 @@ public class InventoryController : Controller
         var item = await _db.InventoryItems.FindAsync(id);
         if (item is not null)
         {
-            // 刪除只開放給管理者（0917）：修改權限依科別開放給所有人之後，
-            // 連帶開放刪除的風險太大。清單頁不會顯示按鈕，直接輸入網址也擋下
-            if (!_access.CanDelete) return Forbid();
+            // 能改就能刪（業務端 0918）。清單頁不會顯示按鈕，直接輸入網址也擋下
+            if (!await _access.CanDeleteAsync(item.SystemCode)) return Forbid();
 
             // 軟刪除：只加註記，全域查詢篩選讓它從清單、檢視與匯出中消失
             item.IsDeleted = true;
