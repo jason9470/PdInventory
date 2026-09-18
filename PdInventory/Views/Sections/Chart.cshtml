@@ -1,0 +1,21 @@
+﻿@model PdInventory.Models.ViewModels.OrgChartViewModel
+@{
+    ViewData["Title"] = "負責系統圖";
+    var total = (int)ViewBag.TotalSystems;
+    var covered = (int)ViewBag.CoveredSystems;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-2 pd-no-print">
+    <h2 class="mb-0">負責系統圖 <small class="text-muted fs-6">(@covered / @total 套系統有科負責)</small></h2>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-secondary" onclick="window.print()">列印</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">回科別</a>
+    </div>
+</div>
+<p class="text-muted small pd-no-print">
+    各科負責哪些系統——<strong>人屬於哪個科，就能修改那個科負責的系統</strong>。
+    組的名牌是底下各科的合計（組長的範圍）；部室不負責系統，權限來自管理者角色。
+    同一套系統由兩個科負責時，兩邊都會出現。要調整請到各科的編輯畫面勾選。
+</p>
+
+<partial name="_OrgTree" model="Model" />

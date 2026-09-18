@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Models.ViewModels;
 using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
@@ -71,6 +72,48 @@ public class EmployeesController : Controller
                         .ThenBy(e => !e.IsManager)
                         .ThenBy(e => e.Name)
                         .ToList());
+    }
+
+    /// <summary>
+    /// 組織圖：部室 → 組 → 科 → 人。全部由科別表與人員表畫出來，不另外維護一份，
+    /// 否則人換了科、圖卻沒跟著改，兩邊很快就對不上。畫法與科別的負責系統圖共用 _OrgTree。
+    /// </summary>
+    public async Task<IActionResult> OrgChart()
+    {
+        var sections = await _db.Sections.OrderBy(s => s.SortOrder).ThenBy(s => s.Name).ToListAsync();
+        // IsManager 是算出來的（看備註），不能翻成 SQL，因此先取回再分組
+        var employees = await _db.Employees.ToListAsync();
+        var people = employees
+            .Where(e => e.SectionId is not null)
+            .GroupBy(e => e.SectionId!.Value)
+            .ToDictionary(g => g.Key, g => g
+                .OrderBy(e => !e.IsManager).ThenBy(e => e.Name)
+                .ToList());
+
+        List<Employee> Of(Section s) => people.GetValueOrDefault(s.Id) ?? [];
+
+        // 部室與組的名牌寫人名（部室主管、組長）；科底下逐一列出，主管排前面、加粗並標上職稱
+        OrgUnit Named(Section s) => new(s.Id, s.Name,
+            Of(s).Count == 0 ? "（未指派）" : string.Join("、", Of(s).Select(e => e.Name)), []);
+        OrgUnit Listed(Section s) => new(s.Id, s.Name, "", Of(s)
+            .Select(e => new OrgItem(e.Name, Badge: e.IsManager ? e.Remark.Trim() : null, Strong: e.IsManager))
+            .ToList());
+
+        var model = new OrgChartViewModel
+        {
+            Offices = sections.Where(s => s.Kind == SectionKind.Office).Select(Named).ToList(),
+            // 組底下的科以 TeamName 對上（與 SectionScope 算組的範圍同一個規則）
+            Teams = sections.Where(s => s.Kind == SectionKind.Team)
+                .Select(t => new OrgTeam(Named(t), sections
+                    .Where(s => s.Kind == SectionKind.Section && s.TeamName == t.TeamName)
+                    .Select(Listed).ToList()))
+                .ToList(),
+            Unassigned = employees.Where(e => e.SectionId is null).Select(e => e.Name).OrderBy(n => n).ToList(),
+            UnassignedLabel = "沒有指定科別的人",
+        };
+
+        ViewBag.TotalPeople = employees.Count;
+        return View(model);
     }
 
     public async Task<IActionResult> Create()

@@ -1,0 +1,104 @@
+﻿@model PdInventory.Models.ViewModels.OrgChartViewModel
+@*
+    階層圖：部室 → 組 → 科 → 項目。人員的組織圖與科別的負責系統圖共用這一份。
+    方塊樣式參考業務端提供的組織圖：深色標題、右下角壓一張白色名牌。
+    連接線全部用 CSS 畫（site.css 的「組織圖」段落），不靠 JavaScript，列印也照樣正確。
+*@
+@{
+    var head = Model.Offices.FirstOrDefault();
+    var deputies = Model.Offices.Skip(1).ToList();
+}
+
+<div class="pd-org-scroll">
+    <div class="pd-org">
+        @if (head is not null)
+        {
+            <div class="pd-org-head">
+                <div class="pd-org-node pd-org-node-lg">
+                    <div class="pd-org-title">@head.Name</div>
+                    @if (!string.IsNullOrEmpty(head.Tag))
+                    {
+                        <div class="pd-org-tag">@head.Tag</div>
+                    }
+                </div>
+            </div>
+
+            @* 主幹：最上層往下接到各組；其餘部室層級從主幹旁接出 *@
+            <div class="pd-org-trunk">
+                @foreach (var deputy in deputies)
+                {
+                    <div class="pd-org-side">
+                        <div class="pd-org-node">
+                            <div class="pd-org-title">@deputy.Name</div>
+                            @if (!string.IsNullOrEmpty(deputy.Tag))
+                            {
+                                <div class="pd-org-tag">@deputy.Tag</div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="pd-org-teams">
+            @foreach (var team in Model.Teams)
+            {
+                <div class="pd-org-team">
+                    <div class="pd-org-node">
+                        <div class="pd-org-title">@team.Team.Name</div>
+                        @if (!string.IsNullOrEmpty(team.Team.Tag))
+                        {
+                            <div class="pd-org-tag">@team.Team.Tag</div>
+                        }
+                    </div>
+
+                    @if (team.Sections.Count > 0)
+                    {
+                        @* 變數不能叫 section：Razor 會把 @section 當成版面的 section 指令 *@
+                        <div class="pd-org-sections">
+                            @foreach (var part in team.Sections)
+                            {
+                                <div class="pd-org-section">
+                                    <div class="pd-org-node pd-org-node-sm">
+                                        <div class="pd-org-title">@part.Name</div>
+                                        @if (!string.IsNullOrEmpty(part.Tag))
+                                        {
+                                            <div class="pd-org-count">@part.Tag</div>
+                                        }
+                                    </div>
+                                    <ul class="pd-org-items">
+                                        @foreach (var item in part.Items)
+                                        {
+                                            <li class="@(item.Strong ? "pd-org-strong" : "")">
+                                                @if (item.Code is not null)
+                                                {
+                                                    <span class="pd-org-code">@item.Code</span>
+                                                }
+                                                @item.Text
+                                                @if (item.Badge is not null)
+                                                {
+                                                    <span class="pd-org-badge">@item.Badge</span>
+                                                }
+                                            </li>
+                                        }
+                                        @if (part.Items.Count == 0)
+                                        {
+                                            <li class="text-muted">（無）</li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (Model.Unassigned.Count > 0)
+{
+    <div class="alert alert-warning small mt-3 pd-no-print">
+        @Model.UnassignedLabel（<strong>@Model.Unassigned.Count</strong>，不在圖上）：@string.Join("、", Model.Unassigned)
+    </div>
+}

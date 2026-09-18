@@ -15,7 +15,10 @@
     <h2>
         人員 <small class="text-muted fs-6">(共 @Model.Count 人，其中主管 @managers 人)</small>
     </h2>
-    <a class="btn btn-primary" asp-action="Create">＋ 新增人員</a>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" asp-action="OrgChart">組織圖</a>
+        <a class="btn btn-primary" asp-action="Create">＋ 新增人員</a>
+    </div>
 </div>
 
 <p class="text-muted small">

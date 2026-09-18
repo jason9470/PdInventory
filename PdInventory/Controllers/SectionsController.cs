@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PdInventory.Data;
 using PdInventory.Models;
+using PdInventory.Models.ViewModels;
 using PdInventory.Helpers;
 
 namespace PdInventory.Controllers;
@@ -24,6 +25,46 @@ public class SectionsController : Controller
         ViewBag.Scope = await SectionScope.LoadAsync(_db);
         ViewBag.PeopleCounts = await PeopleCountsAsync();
         return View(await _db.Sections.OrderBy(s => s.SortOrder).ThenBy(s => s.Name).ToListAsync());
+    }
+
+    /// <summary>
+    /// 負責系統圖：部室 → 組 → 科 → 系統。與人員的組織圖同一套畫法（_OrgTree），
+    /// 範圍一律走 SectionScope，畫面上看到的就是權限實際生效的範圍。
+    /// </summary>
+    public async Task<IActionResult> Chart()
+    {
+        var sections = await _db.Sections.OrderBy(s => s.SortOrder).ThenBy(s => s.Name).ToListAsync();
+        var scope = await SectionScope.LoadAsync(_db);
+        var allSystems = await _db.InfoSystems.OrderBy(s => s.SystemCode).ToListAsync();
+
+        OrgUnit Office(Section s) => new(s.Id, s.Name, "不負責系統", []);
+        // 組的名牌是底下各科的合計（組長能改的範圍）
+        OrgUnit Team(Section s) => new(s.Id, s.Name, $"全組 {scope.SystemsOf(s.Id).Count} 套", []);
+        OrgUnit Part(Section s)
+        {
+            var systems = scope.SystemsOf(s.Id);
+            return new(s.Id, s.Name, $"{systems.Count} 套", systems
+                .Select(x => new OrgItem(x.SystemName, Code: x.SystemCode))
+                .ToList());
+        }
+
+        var parts = sections.Where(s => s.Kind == SectionKind.Section).ToList();
+        var covered = parts.SelectMany(s => scope.CodesOf(s.Id)).ToHashSet();
+
+        var model = new OrgChartViewModel
+        {
+            Offices = sections.Where(s => s.Kind == SectionKind.Office).Select(Office).ToList(),
+            Teams = sections.Where(s => s.Kind == SectionKind.Team)
+                .Select(t => new OrgTeam(Team(t), parts.Where(s => s.TeamName == t.TeamName).Select(Part).ToList()))
+                .ToList(),
+            Unassigned = allSystems.Where(s => !covered.Contains(s.SystemCode))
+                .Select(s => $"{s.SystemCode} {s.SystemName}").ToList(),
+            UnassignedLabel = "沒有任何科負責的系統，只有管理者能修改",
+        };
+
+        ViewBag.TotalSystems = allSystems.Count;
+        ViewBag.CoveredSystems = allSystems.Count(s => covered.Contains(s.SystemCode));
+        return View(model);
     }
 
     public async Task<IActionResult> Create()

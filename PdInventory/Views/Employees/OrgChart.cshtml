@@ -1,0 +1,20 @@
+﻿@model PdInventory.Models.ViewModels.OrgChartViewModel
+@{
+    ViewData["Title"] = "組織圖";
+    var total = (int)ViewBag.TotalPeople;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-2 pd-no-print">
+    <h2 class="mb-0">組織圖 <small class="text-muted fs-6">(共 @total 人)</small></h2>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-secondary" onclick="window.print()">列印</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">回人員</a>
+    </div>
+</div>
+<p class="text-muted small pd-no-print">
+    依人員表的<strong>科別</strong>繪製：組長掛在組上、科長與組員掛在科上，
+    備註是「組長」或「科長」的人排在最前面。要調整誰在哪裡，請到人員畫面修改科別；
+    組與科本身在<a asp-controller="Sections" asp-action="Index">科別</a>畫面維護。
+</p>
+
+<partial name="_OrgTree" model="Model" />

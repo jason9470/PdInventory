@@ -606,3 +606,243 @@ div:has(> .input-group > .form-control[readonly]) > .form-label::after {
 .pd-field-help:focus-visible {
   background-color: #e8590c;
 }
+
+/* ── 組織圖（人員 → [組織圖]）──────────────────────────────────────
+   方塊樣式參考業務端提供的組織圖：深色標題、右下角壓一張白色名牌。
+   連接線全部用框線與偽元素畫，不靠 JavaScript，列印也照樣正確。 */
+.pd-org-scroll {
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.pd-org {
+  --org-node: #185c7c;
+  --org-line: #185c7c;
+  --org-tag-bg: #fff;
+  min-width: 1080px;
+  padding: .5rem 0 1rem;
+}
+
+.pd-org-node {
+  position: relative;
+  background-color: var(--org-node);
+  color: #fff;
+  padding: .7rem .75rem 1.25rem;
+  text-align: center;
+}
+
+.pd-org-title {
+  font-size: 1.15rem;
+  letter-spacing: .08em;
+  line-height: 1.3;
+}
+
+/* 名牌：壓在方塊右下角、往下凸出一點 */
+.pd-org-tag {
+  position: absolute;
+  right: -.5rem;
+  bottom: -.9rem;
+  min-width: 60%;
+  max-width: calc(100% + .25rem);
+  padding: .1rem .6rem;
+  border: 1px solid var(--org-node);
+  background-color: var(--org-tag-bg);
+  color: #212529;
+  font-size: .9rem;
+  letter-spacing: .05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-org-node-lg {
+  width: 13rem;
+  padding-top: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.pd-org-node-lg .pd-org-title {
+  font-size: 1.5rem;
+}
+
+.pd-org-node-sm {
+  padding: .45rem .6rem;
+}
+
+.pd-org-node-sm .pd-org-title {
+  font-size: 1rem;
+}
+
+/* 最上層：部室主管置中 */
+.pd-org-head {
+  display: flex;
+  justify-content: center;
+}
+
+/* 主幹：從部室主管往下，副主管從主幹左側接出 */
+.pd-org-trunk {
+  position: relative;
+  min-height: 5.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .75rem;
+  padding: 1.75rem calc(50% + 1.75rem) 1.25rem 0;
+}
+
+.pd-org-trunk::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  border-left: 2px solid var(--org-line);
+}
+
+.pd-org-side {
+  position: relative;
+}
+
+.pd-org-side .pd-org-node {
+  width: 11rem;
+}
+
+/* 副主管方塊右緣接到主幹的橫線 */
+.pd-org-side::after {
+  content: "";
+  position: absolute;
+  top: 1.2rem;
+  left: 100%;
+  width: 1.75rem;
+  border-top: 2px solid var(--org-line);
+}
+
+/* 各組橫排：頂端一條橫線串起來，每組再往下拉一小段 */
+.pd-org-teams {
+  display: flex;
+  align-items: flex-start;
+}
+
+.pd-org-team {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 10.5rem;
+  padding: 1.25rem .6rem 0;
+}
+
+.pd-org-team::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 1.25rem;
+  border-left: 2px solid var(--org-line);
+}
+
+.pd-org-team::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-top: 2px solid var(--org-line);
+}
+
+.pd-org-team:first-child::after { left: 50%; }
+.pd-org-team:last-child::after { right: 50%; }
+.pd-org-team:only-child::after { display: none; }
+
+/* 組底下的科縱向往下排：左側一條直線，每個科接一小段橫線。
+   14 個科全部橫排會寬到要左右捲動，縱向排 6 組剛好一個畫面放得下 */
+.pd-org-sections {
+  margin: 1.25rem 0 0 1rem;
+}
+
+.pd-org-section {
+  position: relative;
+  padding-left: 1.1rem;
+  margin-top: 1rem;
+}
+
+.pd-org-section::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -2.25rem;
+  height: calc(2.25rem + 1.05rem);
+  border-left: 2px solid var(--org-line);
+}
+
+.pd-org-section:not(:last-child)::before {
+  height: calc(100% + 2.25rem + 1rem);
+}
+
+.pd-org-section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.05rem;
+  width: 1.1rem;
+  border-top: 2px solid var(--org-line);
+}
+
+.pd-org-section:first-child {
+  margin-top: 0;
+}
+
+.pd-org-items {
+  list-style: none;
+  margin: 0;
+  padding: .35rem .6rem;
+  border: 1px solid var(--org-node);
+  border-top: 0;
+  background-color: #fff;
+  font-size: .85rem;
+  line-height: 1.6;
+}
+
+.pd-org-strong {
+  font-weight: 700;
+}
+
+/* 項目前面的代碼（資產編號） */
+.pd-org-code {
+  margin-right: .3rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--org-node);
+}
+
+/* 科方塊裡的小計（例如「3 套」） */
+.pd-org-count {
+  margin-top: .1rem;
+  font-size: .75rem;
+  opacity: .85;
+}
+
+.pd-org-badge {
+  margin-left: .25rem;
+  padding: 0 .3rem;
+  border-radius: .25rem;
+  background-color: #e3eef4;
+  color: var(--org-node);
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+@media print {
+  body:has(.pd-org) .app-sidebar,
+  body:has(.pd-org) header,
+  body:has(.pd-org) .pd-no-print,
+  body:has(.pd-org) .page-jump {
+    display: none !important;
+  }
+
+  .pd-org-scroll { overflow: visible; }
+  .pd-org { min-width: 0; }
+  .pd-org-node, .pd-org-badge {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

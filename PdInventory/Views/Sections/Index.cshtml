@@ -8,7 +8,10 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>科別 <small class="text-muted fs-6">(共 @Model.Count 個)</small></h2>
-    <a class="btn btn-primary" asp-action="Create">＋ 新增科別</a>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" asp-action="Chart">負責系統圖</a>
+        <a class="btn btn-primary" asp-action="Create">＋ 新增科別</a>
+    </div>
 </div>
 
 <p class="text-muted small">
