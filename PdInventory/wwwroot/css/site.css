@@ -585,3 +585,24 @@ div:has(> .input-group > .form-control[readonly]) > .form-label::after {
   background-color: #f8d7da;
   font-weight: 700;
 }
+
+/* 欄位說明：標籤旁的驚嘆號鈕 */
+.pd-field-help {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-left: .35rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: #fd7e14;
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+  line-height: 1.15rem;
+  vertical-align: text-top;
+}
+
+.pd-field-help:hover,
+.pd-field-help:focus-visible {
+  background-color: #e8590c;
+}

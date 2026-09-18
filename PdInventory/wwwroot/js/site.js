@@ -521,3 +521,25 @@
         pendingForm.submit();
     });
 })();
+
+// ── 欄位說明視窗 ─────────────────────────────────────────────────────
+// 標籤旁的驚嘆號鈕（.pd-field-help）帶 data-field-help（說明文字）與
+// data-field-help-title（視窗標題，選填）。內容用 textContent 放進去，不會被當成 HTML。
+(function () {
+    var modalEl = document.getElementById('fieldHelpModal');
+    if (!modalEl) return;
+
+    var modal = new bootstrap.Modal(modalEl);
+    var body = document.getElementById('fieldHelpModalBody');
+    var label = document.getElementById('fieldHelpModalLabel');
+
+    document.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-field-help]');
+        if (!button) return;
+
+        event.preventDefault();
+        label.textContent = button.dataset.fieldHelpTitle || '欄位說明';
+        body.textContent = button.dataset.fieldHelp;
+        modal.show();
+    });
+})();

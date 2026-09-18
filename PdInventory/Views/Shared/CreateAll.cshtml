@@ -261,7 +261,14 @@
             </select></div>
             <div class="col-md-6"><label asp-for="Data.DaDescription" class="form-label">資產說明</label><textarea asp-for="Data.DaDescription" class="form-control" rows="2"></textarea></div>
             <div class="col-md-3"><label asp-for="Data.DaBackupMethod" class="form-label"></label><input asp-for="Data.DaBackupMethod" class="form-control" /></div>
-            <div class="col-md-3"><label asp-for="Data.DaRetentionPeriod" class="form-label"></label><input asp-for="Data.DaRetentionPeriod" class="form-control" /></div>
+            <div class="col-md-3">
+                <label asp-for="Data.DaRetentionPeriod" class="form-label"></label>
+                @* 業務端 0918：這一欄常被填成正式資料的保留期限，加個說明鈕點開講清楚 *@
+                <button type="button" class="pd-field-help" aria-label="欄位說明"
+                        data-field-help-title="DA-資料保留期限"
+                        data-field-help="填寫的「保留期限」是指備份資料保留期限，非正式資料保留期限。">!</button>
+                <input asp-for="Data.DaRetentionPeriod" class="form-control" />
+            </div>
             <div class="col-md-3"><label asp-for="Data.DaHasSensitiveData" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Data.DaHasSensitiveData", Model.Data.DaHasSensitiveData, Lookup.OptionsFor(nameof(DataAsset.DaHasSensitiveData)))' /></div>

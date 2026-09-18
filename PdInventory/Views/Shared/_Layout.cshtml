@@ -203,6 +203,22 @@
        刪除鈕是 type="button"，沒有 JS 就送不出去——寧可刪不了，也不要沒確認就刪掉。 *@
     @if (CurrentUser.IsAuthenticated)
     {
+        @* 欄位說明：標籤旁的驚嘆號鈕點開這個視窗，內容由按鈕的 data-field-help 帶入 *@
+        <div class="modal fade" id="fieldHelpModal" tabindex="-1" aria-labelledby="fieldHelpModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <h2 class="modal-title h6 mb-0" id="fieldHelpModalLabel">欄位說明</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+                    </div>
+                    <div class="modal-body" id="fieldHelpModalBody"></div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">確定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content pd-delete">
