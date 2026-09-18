@@ -45,7 +45,6 @@
                 <th>傳遞內容</th>
                 <th>當事人數量</th>
                 <th>委外合約/法源依據</th>
-                <th>備註</th>
                 <th style="min-width: 180px" data-nosort>操作</th>
             </tr>
         </thead>
@@ -77,7 +76,6 @@
                     <td>@t.ContentDescription</td>
                     <td>@t.SubjectCount</td>
                     <td>@t.Contract</td>
-                    <td class="text-break" style="max-width: 260px"><small>@t.Remark</small></td>
                     <td>
                         <a class="btn btn-sm btn-outline-info" asp-action="Details" asp-route-id="@t.Id">檢視</a>
                         @* 編輯與刪除鈕只出現在自己科別負責的資產上（能改就能刪） *@

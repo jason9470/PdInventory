@@ -1,7 +1,7 @@
 ﻿@model List<PdInventory.Models.DataAsset>
 @{
     ViewData["Title"] = "資訊資產清單-資料(DA)";
-    // 資產狀態、風險擁有者、資產名稱屬於軟體資產那一邊，由控制器補查後放進 ViewBag。
+    // 資產狀態、權責單位、應用系統主管屬於軟體資產那一邊，由控制器補查後放進 ViewBag。
     // 沒有關連 SW 的資料資產（各組的 PC／NB）查不到，那幾欄留空。
     var assets = ViewBag.Assets as Dictionary<string, PdInventory.Models.InfoSystem>
                  ?? new Dictionary<string, PdInventory.Models.InfoSystem>();
@@ -42,7 +42,8 @@
                 <th>資料備份與保存方式</th>
                 <th>資料保留期限</th>
                 <th>有無機敏資料</th>
-                <th>風險擁有者</th>
+                <th>權責單位</th>
+                <th>應用系統主管</th>
                 <th style="min-width: 200px" data-nosort>操作</th>
             </tr>
         </thead>
@@ -58,7 +59,8 @@
                     <td><small>@s.DaBackupMethod</small></td>
                     <td><small>@s.DaRetentionPeriod</small></td>
                     <td><small>@s.DaHasSensitiveData</small></td>
-                    <td>@asset?.SwRiskOwner</td>
+                    <td>@asset?.SwOwnerUnit</td>
+                    <td>@asset?.SwAppManager</td>
                     @* DA 就是統一檢視／編輯畫面的主鍵，直接用這一列的 Id；
                        沒有關連 SW 的資料資產一樣進得去，只是少了 SW 與盤點表兩個區塊 *@
                     <td>

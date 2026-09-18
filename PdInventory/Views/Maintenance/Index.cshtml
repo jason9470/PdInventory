@@ -1,0 +1,131 @@
+﻿@model PdInventory.Helpers.MaintenanceOptions
+@{
+    // 維護期間所有請求都被導到這裡，連 css 也不例外，因此不套版面、樣式全部內嵌
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>網站維護中 - 個資盤點管理系統</title>
+    <style>
+        :root {
+            --bg: #eef1f5;
+            --card: #ffffff;
+            --text: #212529;
+            --muted: #6c757d;
+            --accent: #3b3cc4;
+            --accent-soft: #eef0ff;
+            --border: #dbe0e6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, "Segoe UI", "Microsoft JhengHei", "PingFang TC", sans-serif;
+        }
+
+        header {
+            background: #212529;
+            color: #fff;
+            padding: .85rem 1.25rem;
+            font-size: 1.15rem;
+        }
+
+        main {
+            flex: 1;
+            display: grid;
+            place-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 32rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: .75rem;
+            padding: 2.25rem 2rem 2rem;
+            text-align: center;
+            box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .06);
+        }
+
+        .icon {
+            width: 4.5rem;
+            height: 4.5rem;
+            margin: 0 auto 1.25rem;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        h1 {
+            margin: 0 0 .75rem;
+            font-size: 1.6rem;
+        }
+
+        p {
+            margin: 0 0 .5rem;
+            line-height: 1.7;
+            color: var(--muted);
+        }
+
+        .message {
+            margin: 1.25rem 0 0;
+            padding: .75rem 1rem;
+            border-radius: .5rem;
+            background: var(--accent-soft);
+            color: var(--text);
+            white-space: pre-wrap;
+            text-align: left;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: .55rem 1.5rem;
+            border-radius: .375rem;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .button:hover,
+        .button:focus-visible {
+            background: #2f30a3;
+        }
+    </style>
+</head>
+<body>
+    <header>個資盤點管理系統</header>
+    <main>
+        <div class="card">
+            <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                </svg>
+            </div>
+            <h1>網站維護中</h1>
+            <p>系統正在進行維護，暫時無法使用。</p>
+            <p>造成不便，敬請見諒，請稍後再試。</p>
+            @if (!string.IsNullOrWhiteSpace(Model.Message))
+            {
+                <div class="message">@Model.Message</div>
+            }
+            @* 連到首頁：維護還沒結束會再被導回這裡，結束了就直接進系統 *@
+            <a class="button" href="~/">重新整理</a>
+        </div>
+    </main>
+</body>
+</html>

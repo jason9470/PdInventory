@@ -46,6 +46,13 @@ if (employeeOptions.IsSimulated)
 else
     builder.Services.AddScoped<IEmployeeDirectory, LdapEmployeeDirectory>();
 
+// 網站維護中模式（見 Helpers/MaintenanceMode.cs）。正式環境在 web.config 以環境變數
+// Maintenance__Enabled 切換；web.config 一改 IIS 就會重啟網站，因此啟動時讀一次即可
+var maintenanceOptions = builder.Configuration
+    .GetSection(MaintenanceOptions.SectionName)
+    .Get<MaintenanceOptions>() ?? new MaintenanceOptions();
+builder.Services.AddSingleton(maintenanceOptions);
+
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -109,6 +116,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// 維護中：除了維護畫面本身，所有請求一律導過去。放在路由與驗證之前
+app.UseMaintenanceMode(maintenanceOptions);
 app.UseRouting();
 
 app.UseSession();
