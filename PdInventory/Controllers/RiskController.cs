@@ -20,24 +20,21 @@ public class RiskController : Controller
         _access = access;
     }
 
-    public async Task<IActionResult> Index(string? q)
+    /// <param name="team">只看某個組別（SW-權責單位）的資產。與 q 共用同一顆[搜尋]與[清除]。</param>
+    public async Task<IActionResult> Index(string? q, string? team)
     {
-        var query = _db.InventoryItems.AsQueryable();
-
         q = this.ResolveSearch(q);
-
-        if (!string.IsNullOrWhiteSpace(q))
-            query = query.Where(i => i.DocumentName.Contains(q)
-                                  || i.SystemCode.Contains(q)
-                                  || i.SystemName.Contains(q));
+        team = this.ResolveTeam(team);
 
         ViewBag.Query = q;
-        return View(await query.OrderBy(i => i.SystemCode).ThenBy(i => i.SeqNo).ToListAsync());
+        ViewBag.Team = team;
+        return View(await FilteredAsync(q, team));
     }
 
-    /// <summary>匯出目前搜尋結果。q 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
-    public async Task<IActionResult> Export(string? q)
+    /// <summary>清單與匯出共用的篩選，兩邊各寫一套遲早會對不上。</summary>
+    private async Task<List<InventoryItem>> FilteredAsync(string? q, string? team)
     {
+        // 匯出要帶出「使用資料(欄位)」與「特定目的」這兩個多對多欄位
         var query = _db.InventoryItems
             .Include(i => i.Categories)
             .Include(i => i.Purposes)
@@ -48,7 +45,17 @@ public class RiskController : Controller
                                   || i.SystemCode.Contains(q)
                                   || i.SystemName.Contains(q));
 
-        var rows = await query.OrderBy(i => i.SystemCode).ThenBy(i => i.SeqNo).ToListAsync();
+        var codes = await TeamFilter.CodesOfAsync(_db, team);
+        if (codes is not null)
+            query = query.Where(i => codes.Contains(i.SystemCode));
+
+        return await query.OrderBy(i => i.SystemCode).ThenBy(i => i.SeqNo).ToListAsync();
+    }
+
+    /// <summary>匯出目前搜尋結果。q 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
+    public async Task<IActionResult> Export(string? q, string? team)
+    {
+        var rows = await FilteredAsync(q, team);
         var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Risk", rows);
         return File(content, ExcelExporter.ContentType, fileName);
     }

@@ -3,7 +3,7 @@
     多選欄位的勾選清單。真正送出的是下面那個 hidden input（值以 / 分隔），
     勾選由 site.js 同步進去；沒有 JavaScript 時原值仍會原封不動送回，不會被清空。
 *@
-<div class="pd-multicheck" data-target="@Model.ElementId">
+<div class="pd-multicheck" data-target="@Model.ElementId"@(Model.Teams is null ? "" : " data-person-filter")>
     <input type="hidden" id="@Model.ElementId" name="@Model.FieldName" value="@Model.Value" />
 
     <div class="pd-multicheck-box">
@@ -23,7 +23,8 @@
             var value = Model.Options[i];
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="@(Model.ElementId)__@i"
-                       value="@value" checked="@Model.Selected.Contains(value)" />
+                       value="@value" checked="@Model.Selected.Contains(value)"
+                       data-team="@Model.TeamOf(value)" />
                 <label class="form-check-label" for="@(Model.ElementId)__@i">@value</label>
             </div>
         }

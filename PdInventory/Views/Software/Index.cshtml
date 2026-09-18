@@ -23,10 +23,23 @@
                placeholder="搜尋資產編號/資產名稱" style="min-width: 320px" />
     </div>
     <div class="col-auto">
+        @* 組別＝SW-權責單位。與搜尋欄共用同一顆[搜尋]與[清除]，條件同樣記在 Session *@
+        <select name="team" class="form-select" style="min-width: 150px">
+            <option value="">全部組別</option>
+            @foreach (var unit in Lookup.OptionsFor(nameof(PdInventory.Models.InfoSystem.SwOwnerUnit)))
+            {
+                <option value="@unit" selected="@(unit == (string?)ViewBag.Team)">@unit</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">搜尋</button>
         <a class="btn btn-outline-secondary" asp-action="Index" asp-route-clear="1">清除</a>
+    </div>
+    @* ms-auto：匯出靠右，與左邊的搜尋條件分開 *@
+    <div class="col-auto ms-auto">
         <a class="btn btn-outline-success" asp-action="Export"
-           asp-route-q="@ViewBag.Query">匯出 Excel</a>
+           asp-route-q="@ViewBag.Query" asp-route-team="@ViewBag.Team">匯出 Excel</a>
     </div>
 </form>
 

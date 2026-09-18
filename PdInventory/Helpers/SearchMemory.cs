@@ -10,10 +10,14 @@ namespace PdInventory.Helpers;
 /// 儲存：按下[搜尋]時存搜尋欄文字；點[檢視]/[編輯]時存該筆的資產編號。
 /// 清除：按下[清除]、[取消]、[回列表] 時（這些連結都帶 clear）。
 /// 使用：直接進入任一清單頁（網址沒有 q）時帶出記憶值並套用篩選。
+///
+/// 0918 起組別（<c>SW-權責單位</c>）的篩選也一起記，規則相同——同一顆[搜尋]送出、
+/// 同一顆[清除]清掉。兩者分開存，但六張清單共用，切換清單時篩選跟著走。
 /// </summary>
 public static class SearchMemory
 {
     private const string Key = "search";
+    private const string TeamKey = "searchTeam";
 
     /// <summary>決定本次清單頁要用的搜尋字串，並同步更新記憶。</summary>
     /// <remarks>
@@ -40,6 +44,28 @@ public static class SearchMemory
         }
 
         return session.GetString(Key);
+    }
+
+    /// <summary>決定本次清單頁要用的組別，並同步更新記憶。規則同 <see cref="ResolveSearch"/>。</summary>
+    public static string? ResolveTeam(this Controller controller, string? team)
+    {
+        var session = controller.HttpContext.Session;
+
+        if (controller.Request.Query.ContainsKey("clear"))
+        {
+            session.Remove(TeamKey);
+            return null;
+        }
+
+        // 下拉與搜尋欄在同一個表單裡，按[搜尋]時一定會一起送出（選「全部組別」是空字串）
+        if (controller.Request.Query.ContainsKey("team"))
+        {
+            if (string.IsNullOrWhiteSpace(team)) session.Remove(TeamKey);
+            else session.SetString(TeamKey, team);
+            return team;
+        }
+
+        return session.GetString(TeamKey);
     }
 
     /// <summary>點[檢視]/[編輯]時記住該筆的資產編號，切到其他清單頁即可沿用。</summary>

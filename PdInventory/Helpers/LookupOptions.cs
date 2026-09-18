@@ -18,14 +18,23 @@ namespace PdInventory.Helpers;
 public sealed class LookupOptions
 {
     private readonly AppDbContext _db;
+    private readonly ICurrentUser _currentUser;
     private List<string>? _departments;
     private List<string>? _opsStaff;
     private List<string>? _employees;
     private List<string>? _employeeManagers;
     private List<string>? _vendors;
+    private Dictionary<string, string>? _employeeTeams;
+    private List<(string Name, string Team)>? _employeesWithTeam;
+    private List<(string Name, string Team)>? _managersWithTeam;
+    private string? _currentTeamName;
     private readonly Dictionary<string, IReadOnlyList<string>> _fieldOptions = [];
 
-    public LookupOptions(AppDbContext db) => _db = db;
+    public LookupOptions(AppDbContext db, ICurrentUser currentUser)
+    {
+        _db = db;
+        _currentUser = currentUser;
+    }
 
     /// <summary>部門名稱，代號待補的排在最後（與維護畫面同一個順序）。</summary>
     public IReadOnlyList<string> Departments => _departments ??= _db.Departments
@@ -58,6 +67,48 @@ public sealed class LookupOptions
         .ToList()
         .OrderBy(e => e.TeamName == "").ThenBy(e => e.TeamName)
         .ThenBy(e => !e.IsManager).ThenBy(e => e.Name);
+
+    /// <summary>人員姓名與組別，順序同 <see cref="Employees"/>。人員單選下拉（_PersonSelect）用。</summary>
+    public IReadOnlyList<(string Name, string Team)> EmployeesWithTeam => _employeesWithTeam ??=
+        OrderedEmployees().Select(e => (e.Name, e.TeamName)).ToList();
+
+    /// <summary>同上，只留備註是「組長」或「科長」的人。「SW-應用系統主管」的下拉吃這一份。</summary>
+    public IReadOnlyList<(string Name, string Team)> EmployeeManagersWithTeam => _managersWithTeam ??=
+        OrderedEmployees().Where(e => e.IsManager).Select(e => (e.Name, e.TeamName)).ToList();
+
+    /// <summary>
+    /// 人員姓名 → 組別。新增／編輯畫面用它把人員下拉限制在「SW-權責單位」那個組（0918）。
+    /// 同名的人只會有一筆（姓名在人員表是唯一的）。
+    /// </summary>
+    public IReadOnlyDictionary<string, string> EmployeeTeams => _employeeTeams ??= _db.Employees
+        .Select(e => new { e.Name, e.TeamName })
+        .AsEnumerable()
+        .ToDictionary(e => e.Name, e => e.TeamName);
+
+    /// <summary>目前登入者的組別；人員表查不到（或沒有組別）時是空字串。</summary>
+    public string CurrentTeamName => _currentTeamName ??= _db.Employees
+        .Where(e => e.EmpNo == _currentUser.EmpNo)
+        .Select(e => e.TeamName)
+        .FirstOrDefault() ?? "";
+
+    /// <summary>
+    /// 「SW-權責單位」的選項（0918）：一般使用者只看得到自己的組，避免把資產掛到別組去；
+    /// 管理者不受限制——部室主管與副主管本來就不屬於任何一組，照組別篩會一組都選不到。
+    ///
+    /// 目前值若不在清單中，<see cref="ItemsFor"/> 會自己補上並標示，既有資料不會因為
+    /// 開了編輯畫面按存檔就被清掉。
+    /// </summary>
+    public IReadOnlyList<string> OwnerUnits
+    {
+        get
+        {
+            var all = OptionsFor(nameof(InfoSystem.SwOwnerUnit));
+            if (_currentUser.IsAdmin) return all;
+
+            var mine = CurrentTeamName;
+            return all.Where(u => u == mine).ToList();
+        }
+    }
 
     /// <summary>
     /// 委外廠商的建議清單。業務端決定廠商不進維護表——可以下拉也可以自行輸入，

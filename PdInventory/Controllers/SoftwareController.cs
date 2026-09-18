@@ -23,35 +23,43 @@ public class SoftwareController : Controller
         _access = access;
     }
 
-    public async Task<IActionResult> Index(string? q)
+    /// <param name="team">只看某個組別（SW-權責單位）的資產。與 q 共用同一顆[搜尋]與[清除]。</param>
+    public async Task<IActionResult> Index(string? q, string? team)
     {
-        var query = _db.InfoSystems.AsQueryable();
-
         q = this.ResolveSearch(q);
+        team = this.ResolveTeam(team);
 
-        if (!string.IsNullOrWhiteSpace(q))
-            query = query.Where(s => s.SystemCode.Contains(q)
-                                  || s.SystemName.Contains(q));
-
-        var rows = await query.OrderBy(s => s.SystemCode).ToListAsync();
+        var rows = await FilteredAsync(q, team);
 
         ViewBag.Query = q;
+        ViewBag.Team = team;
         // [檢視]與[編輯]連到統一畫面，而它的主鍵是 DataAssets.Id
         ViewBag.DataAssetIds = await AssetGroups.DataAssetIdsAsync(_db, rows.Select(s => s.SystemCode));
         return View(rows);
     }
 
-    /// <summary>匯出目前搜尋結果。q 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
-    public async Task<IActionResult> Export(string? q)
+    /// <summary>匯出目前搜尋結果。q 與 team 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
+    public async Task<IActionResult> Export(string? q, string? team)
+    {
+        var rows = await FilteredAsync(q, team);
+        var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Software", rows);
+        return File(content, ExcelExporter.ContentType, fileName);
+    }
+
+    /// <summary>清單與匯出共用的篩選，兩邊各寫一套遲早會對不上。</summary>
+    private async Task<List<InfoSystem>> FilteredAsync(string? q, string? team)
     {
         var query = _db.InfoSystems.AsQueryable();
+
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(s => s.SystemCode.Contains(q)
                                   || s.SystemName.Contains(q));
 
-        var rows = await query.OrderBy(s => s.SystemCode).ToListAsync();
-        var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Software", rows);
-        return File(content, ExcelExporter.ContentType, fileName);
+        // SW 自己就有權責單位，不必繞 SystemCode
+        if (!string.IsNullOrWhiteSpace(team))
+            query = query.Where(s => s.SwOwnerUnit == team);
+
+        return await query.OrderBy(s => s.SystemCode).ToListAsync();
     }
 
     // 新增、編輯與檢視畫面都整併在 DataController（統一畫面的主鍵是 DataAssets.Id），

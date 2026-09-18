@@ -543,3 +543,69 @@
         modal.show();
     });
 })();
+
+// ── 人員欄位依組別連動（0918）───────────────────────────────────────
+// 「SW-權責單位」選了哪一組，五個人員欄位就只列那一組的人：
+//   SW-應用系統主管、SW-115上檢視人員、DA-115檢視人員（單選，_PersonSelect）
+//   SW-應用系統維護人員、SW-應用系統維護代理人、SW-程式設計人員（多選，_MultiCheckList）
+//
+// 已經選好的人即使不是那一組也一定留著並標示「不在這個組」——藏起來的話，
+// 使用者只是打開畫面按存檔，原本的資料就沒了。
+// 權責單位是空的、或選到不屬於任何組的值（例如「資訊系統開發一部」）時不篩，全部列出。
+(function () {
+    var unit = document.querySelector('.sw-owner-unit');
+    if (!unit) return;
+
+    var NOTE = '（不在這個組）';
+    var selects = [].slice.call(document.querySelectorAll('select[data-person-filter]'));
+    var boxes = [].slice.call(document.querySelectorAll('.pd-multicheck[data-person-filter]'));
+
+    // 這個值是不是真的某一組：有人掛在底下才算
+    function isTeam(value) {
+        if (!value) return false;
+        var found = false;
+        selects.concat(boxes).forEach(function (el) {
+            el.querySelectorAll('[data-team]').forEach(function (item) {
+                if (item.dataset.team === value) found = true;
+            });
+        });
+        return found;
+    }
+
+    function refresh() {
+        var team = isTeam(unit.value) ? unit.value : '';
+
+        selects.forEach(function (select) {
+            [].slice.call(select.options).forEach(function (option) {
+                if (!option.value || option.dataset.keep !== undefined) return;
+
+                var mine = !team || option.dataset.team === team;
+                var keep = option.selected;
+                option.hidden = !mine && !keep;
+                option.disabled = option.hidden;
+
+                var label = option.value + (keep && !mine ? NOTE : '');
+                if (option.textContent !== label) option.textContent = label;
+            });
+        });
+
+        boxes.forEach(function (box) {
+            box.querySelectorAll('.form-check-input[data-team]').forEach(function (input) {
+                var mine = !team || input.dataset.team === team;
+                var keep = input.checked;
+                var row = input.closest('.form-check');
+                row.hidden = !mine && !keep;
+
+                var label = row.querySelector('.form-check-label');
+                var text = input.value + (keep && !mine ? NOTE : '');
+                if (label.textContent !== text) label.textContent = text;
+            });
+        });
+    }
+
+    unit.addEventListener('change', refresh);
+    // 勾選改變時重算：剛取消勾選的外組人員要收起來
+    boxes.forEach(function (box) { box.addEventListener('change', refresh); });
+    selects.forEach(function (select) { select.addEventListener('change', refresh); });
+    refresh();
+})();

@@ -1,0 +1,20 @@
+﻿@model PdInventory.Models.ViewModels.PersonSelectModel
+@*
+    人員單選下拉。與一般的 <select asp-for> 差在每個選項掛著 data-team，
+    site.js 依「SW-權責單位」選到的組隱藏其他組的人（0918）。
+    SelectListItem 沒辦法帶自訂屬性，所以 <option> 在這裡自己寫。
+*@
+<select name="@Model.FieldName" id="@Model.ElementId" class="form-select" data-person-filter>
+    <option value="">-- 請選擇 --</option>
+    @if (Model.ValueIsUnknown)
+    {
+        @* 目前值不在清單裡（離職、或本來就是清單外的名稱）：照樣列出並選中，
+           否則畫面顯示空白，使用者一按儲存就把原本的資料清掉 *@
+        <option value="@Model.Value" selected data-keep>@Model.Value（目前值，不在選項中）</option>
+    }
+    @foreach (var person in Model.People)
+    {
+        <option value="@person.Name" selected="@(person.Name == Model.Value)"
+                data-team="@person.Team">@person.Name</option>
+    }
+</select>

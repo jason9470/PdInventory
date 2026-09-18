@@ -28,30 +28,37 @@ public class SystemsController : Controller
         _access = access;
     }
 
-    public async Task<IActionResult> Index(string? q)
+    /// <param name="team">只看某個組別（SW-權責單位）的資產。與 q 共用同一顆[搜尋]與[清除]。</param>
+    public async Task<IActionResult> Index(string? q, string? team)
     {
         q = this.ResolveSearch(q);
-        var rows = await FilteredAsync(q);
+        team = this.ResolveTeam(team);
+        var rows = await FilteredAsync(q, team);
 
         ViewBag.Query = q;
+        ViewBag.Team = team;
         await LoadAssetLookupAsync(rows);
         return View(rows);
     }
 
     /// <summary>匯出目前搜尋結果。q 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
-    public async Task<IActionResult> Export(string? q)
+    public async Task<IActionResult> Export(string? q, string? team)
     {
-        var rows = await FilteredAsync(q);
+        var rows = await FilteredAsync(q, team);
         var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Systems", rows);
         return File(content, ExcelExporter.ContentType, fileName);
     }
 
-    private async Task<List<SystemInventory>> FilteredAsync(string? q)
+    private async Task<List<SystemInventory>> FilteredAsync(string? q, string? team)
     {
         var query = _db.SystemInventories.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(i => i.SystemCode.Contains(q) || i.DbName.Contains(q));
+
+        var codes = await TeamFilter.CodesOfAsync(_db, team);
+        if (codes is not null)
+            query = query.Where(i => codes.Contains(i.SystemCode));
 
         return await query.OrderBy(i => i.SystemCode).ToListAsync();
     }

@@ -122,8 +122,10 @@ else
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwLocation", Model.Software.SwLocation, Lookup.OptionsFor(nameof(InfoSystem.SwLocation)))' /></div>
             <div class="col-md-3"><label asp-for="Software.SwOwnerUnit" class="form-label"></label>
-                <select asp-for="Software.SwOwnerUnit" class="form-select"
-                        asp-items="Lookup.OptionItemsFor(nameof(InfoSystem.SwOwnerUnit), Model.Software.SwOwnerUnit)">
+                @* 0918：一般使用者只選得到自己的組（管理者不受限）。選了哪一組，
+                   下面五個人員欄位就只列那一組的人，見 site.js 的「人員欄位依組別連動」 *@
+                <select asp-for="Software.SwOwnerUnit" class="form-select sw-owner-unit"
+                        asp-items="Lookup.ItemsFor(Lookup.OwnerUnits, Model.Software.SwOwnerUnit)">
                     <option value="">-- 請選擇 --</option>
                 </select></div>
             <div class="col-md-3"><label asp-for="Software.SwCustodianUnit" class="form-label"></label>
@@ -151,17 +153,16 @@ else
                 <div class="form-text text-danger fw-bold sw-core-hint" hidden></div></div>
             <div class="col-md-3"><label asp-for="Software.SwBusinessContact" class="form-label"></label><input asp-for="Software.SwBusinessContact" class="form-control" /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppManager" class="form-label"></label>
-                <select asp-for="Software.SwAppManager" class="form-select"
-                        asp-items="Lookup.ItemsFor(Lookup.EmployeeManagers, Model.Software.SwAppManager)">
-                    <option value="">-- 請選擇 --</option>
-                </select></div>
+                <partial name="_PersonSelect" model='new PersonSelectModel(
+                    "Software.SwAppManager", Model.Software.SwAppManager, Lookup.EmployeeManagersWithTeam)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainer" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
-                    "Software.SwAppMaintainer", Model.Software.SwAppMaintainer, Lookup.Employees, AllowCustom: true)' /></div>
+                    "Software.SwAppMaintainer", Model.Software.SwAppMaintainer, Lookup.Employees,
+                    AllowCustom: true, Teams: Lookup.EmployeeTeams)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwAppMaintainerDeputy" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwAppMaintainerDeputy", Model.Software.SwAppMaintainerDeputy,
-                    Lookup.Employees, AllowCustom: true)' /></div>
+                    Lookup.Employees, AllowCustom: true, Teams: Lookup.EmployeeTeams)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwOperator" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwOperator", Model.Software.SwOperator, Lookup.OpsStaff, AllowCustom: true)' /></div>
@@ -200,7 +201,8 @@ else
             </select></div>
             <div class="col-md-3"><label asp-for="Software.SwDeveloper" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
-                    "Software.SwDeveloper", Model.Software.SwDeveloper, Lookup.Employees, AllowCustom: true)' /></div>
+                    "Software.SwDeveloper", Model.Software.SwDeveloper, Lookup.Employees,
+                    AllowCustom: true, Teams: Lookup.EmployeeTeams)' /></div>
             <div class="col-md-3"><label asp-for="Software.SwDeployer" class="form-label"></label>
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Software.SwDeployer", Model.Software.SwDeployer, Lookup.OpsStaff, AllowCustom: true)' /></div>
@@ -268,10 +270,8 @@ else
                     <option value="">-- 請選擇 --</option>
                 </select></div>
             <div class="col-md-3"><label asp-for="Software.SwReviewer" class="form-label"></label>
-                <select asp-for="Software.SwReviewer" class="form-select"
-                        asp-items="Lookup.ItemsFor(Lookup.Employees, Model.Software.SwReviewer)">
-                    <option value="">-- 請選擇 --</option>
-                </select></div>
+                <partial name="_PersonSelect" model='new PersonSelectModel(
+                    "Software.SwReviewer", Model.Software.SwReviewer, Lookup.EmployeesWithTeam)' /></div>
             <div class="col-12"><label asp-for="Software.SwRemark" class="form-label"></label><textarea asp-for="Software.SwRemark" class="form-control" rows="2"></textarea></div>
         </div>
     </div>
@@ -317,10 +317,8 @@ else
                 <partial name="_MultiCheckList" model='new MultiCheckListModel(
                     "Data.DaBackupConfirm", Model.Data.DaBackupConfirm, Lookup.OptionsFor(nameof(DataAsset.DaBackupConfirm)))' /></div>
             <div class="col-md-3"><label asp-for="Data.DaReviewer" class="form-label"></label>
-                <select asp-for="Data.DaReviewer" class="form-select"
-                        asp-items="Lookup.ItemsFor(Lookup.Employees, Model.Data.DaReviewer)">
-                    <option value="">-- 請選擇 --</option>
-                </select></div>
+                <partial name="_PersonSelect" model='new PersonSelectModel(
+                    "Data.DaReviewer", Model.Data.DaReviewer, Lookup.EmployeesWithTeam)' /></div>
             <div class="col-md-3"><label asp-for="Data.DaRemark" class="form-label"></label><textarea asp-for="Data.DaRemark" class="form-control" rows="2"></textarea></div>
             @* 只有管理者能改。非管理者看得到內容但欄位是唯讀的；
                真正的把關在 AppDbContext.ProtectAdminOnlyFields，送假值進來也會被還原。 *@

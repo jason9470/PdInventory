@@ -29,20 +29,23 @@ public class DataController : Controller
         _access = access;
     }
 
-    public async Task<IActionResult> Index(string? q)
+    /// <param name="team">只看某個組別（SW-權責單位）的資產。與 q 共用同一顆[搜尋]與[清除]。</param>
+    public async Task<IActionResult> Index(string? q, string? team)
     {
         q = this.ResolveSearch(q);
-        var rows = await FilteredAsync(q);
+        team = this.ResolveTeam(team);
+        var rows = await FilteredAsync(q, team);
 
         ViewBag.Query = q;
+        ViewBag.Team = team;
         await LoadAssetLookupAsync(rows);
         return View(rows);
     }
 
     /// <summary>匯出目前搜尋結果。q 由畫面帶入，與清單所見一致，不更動搜尋記憶。</summary>
-    public async Task<IActionResult> Export(string? q)
+    public async Task<IActionResult> Export(string? q, string? team)
     {
-        var rows = await FilteredAsync(q);
+        var rows = await FilteredAsync(q, team);
         var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Data", rows);
         return File(content, ExcelExporter.ContentType, fileName);
     }
@@ -52,12 +55,16 @@ public class DataController : Controller
     /// ——它們只是讓統一畫面有主鍵可用，本身沒有任何資料資產的內容，
     /// 出現在清單與匯出檔裡只會是幾行空白。要編它們請從 SW 清單或盤點表清單進去。
     /// </summary>
-    private async Task<List<DataAsset>> FilteredAsync(string? q)
+    private async Task<List<DataAsset>> FilteredAsync(string? q, string? team)
     {
         var query = _db.DataAssets.Where(d => d.DaAssetCode.Trim() != "");
 
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(d => d.DaAssetCode.Contains(q) || d.SystemCode.Contains(q));
+
+        var codes = await TeamFilter.CodesOfAsync(_db, team);
+        if (codes is not null)
+            query = query.Where(d => codes.Contains(d.SystemCode));
 
         return await query.OrderBy(d => d.DaAssetCode).ToListAsync();
     }

@@ -16,9 +16,18 @@ namespace PdInventory.Models.ViewModels;
 /// 允許自行輸入清單以外的值。委外廠商就是這種情況——業務端決定廠商不進維護表，
 /// 打進來的名稱也不回寫，因此人員類欄位要留一個「其他」讓人直接填。
 /// </param>
+/// <param name="Teams">
+/// 人員類欄位專用：姓名 → 組別。給了就會在每個勾選框掛上 data-team，
+/// site.js 依「SW-權責單位」選到的組隱藏其他組的人（0918）。
+/// </param>
 public record MultiCheckListModel(string FieldName, string? Value, IReadOnlyList<string> Options,
-                                  bool AllowCustom = false)
+                                  bool AllowCustom = false,
+                                  IReadOnlyDictionary<string, string>? Teams = null)
 {
+    /// <summary>某個選項的組別；沒給 Teams（不是人員欄位）時回傳 null。</summary>
+    public string? TeamOf(string value) =>
+        Teams is null ? null : Teams.GetValueOrDefault(value, "");
+
     /// <summary>目前已選的值，依原字串的順序。</summary>
     public List<string> Selected { get; } = MultiValue.Split(Value);
 

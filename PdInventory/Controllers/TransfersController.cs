@@ -23,37 +23,43 @@ public class TransfersController : Controller
         _currentUser = currentUser;
     }
 
-    public async Task<IActionResult> Index(string? q, string? type)
+    /// <param name="team">只看某個組別（SW-權責單位）的資產。與 q 共用同一顆[搜尋]與[清除]。</param>
+    public async Task<IActionResult> Index(string? q, string? type, string? team)
     {
-        var query = _db.TransferRecords.AsQueryable();
-
         q = this.ResolveSearch(q);
-
-        if (!string.IsNullOrWhiteSpace(q))
-            query = query.Where(t => t.SystemCode.Contains(q)
-                                  || t.SystemName.Contains(q));
-
-        if (!string.IsNullOrWhiteSpace(type))
-            query = query.Where(t => t.TransferType.Contains(type));
+        team = this.ResolveTeam(team);
 
         ViewBag.Query = q;
         ViewBag.Type = type;
-        return View(await query.OrderBy(t => t.SeqNo).ToListAsync());
+        ViewBag.Team = team;
+        return View(await FilteredAsync(q, type, team));
     }
 
     /// <summary>匯出目前搜尋結果（含拋入/拋出篩選）。q、type 由畫面帶入，不更動搜尋記憶。</summary>
-    public async Task<IActionResult> Export(string? q, string? type)
+    public async Task<IActionResult> Export(string? q, string? type, string? team)
+    {
+        var rows = await FilteredAsync(q, type, team);
+        var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Transfers", rows);
+        return File(content, ExcelExporter.ContentType, fileName);
+    }
+
+    /// <summary>清單與匯出共用的篩選，兩邊各寫一套遲早會對不上。</summary>
+    private async Task<List<TransferRecord>> FilteredAsync(string? q, string? type, string? team)
     {
         var query = _db.TransferRecords.AsQueryable();
+
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(t => t.SystemCode.Contains(q)
                                   || t.SystemName.Contains(q));
+
         if (!string.IsNullOrWhiteSpace(type))
             query = query.Where(t => t.TransferType.Contains(type));
 
-        var rows = await query.OrderBy(t => t.SeqNo).ToListAsync();
-        var (content, fileName) = await ExcelExporter.BuildAsync(_db, "Transfers", rows);
-        return File(content, ExcelExporter.ContentType, fileName);
+        var codes = await TeamFilter.CodesOfAsync(_db, team);
+        if (codes is not null)
+            query = query.Where(t => codes.Contains(t.SystemCode));
+
+        return await query.OrderBy(t => t.SeqNo).ToListAsync();
     }
 
     public async Task<IActionResult> Details(int id)
