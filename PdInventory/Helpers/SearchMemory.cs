@@ -8,7 +8,8 @@ namespace PdInventory.Helpers;
 /// 在 SW 清單點開某筆後切到 DA 清單，搜尋欄會自動帶入同一個 SW-XXX。
 ///
 /// 儲存：按下[搜尋]時存搜尋欄文字；點[檢視]/[編輯]時存該筆的資產編號。
-/// 清除：按下[清除]、[取消]、[回列表] 時（這些連結都帶 clear）。
+/// 清除：按下[清除]（連結帶 clear）；[取消]／[回列表]（連結帶 back）只清搜尋字，
+///       組別留著——那是「我在看哪一組」，看完一筆回到清單時不該跳回全部組別（0918）。
 /// 使用：直接進入任一清單頁（網址沒有 q）時帶出記憶值並套用篩選。
 ///
 /// 0918 起組別（<c>SW-權責單位</c>）的篩選也一起記，規則相同——同一顆[搜尋]送出、
@@ -19,6 +20,12 @@ public static class SearchMemory
     private const string Key = "search";
     private const string TeamKey = "searchTeam";
 
+    /// <summary>[清除]：搜尋字與組別都清掉。</summary>
+    private static bool IsClear(Controller c) => c.Request.Query.ContainsKey("clear");
+
+    /// <summary>[取消]／[回列表]：只清搜尋字，組別留著。</summary>
+    private static bool IsBack(Controller c) => c.Request.Query.ContainsKey("back");
+
     /// <summary>決定本次清單頁要用的搜尋字串，並同步更新記憶。</summary>
     /// <remarks>
     /// clear 與 q 都以「網址有沒有這個參數」判斷，不用 action 參數：
@@ -28,8 +35,7 @@ public static class SearchMemory
     {
         var session = controller.HttpContext.Session;
 
-        // [清除]/[取消]/[回列表] 的連結都帶 clear
-        if (controller.Request.Query.ContainsKey("clear"))
+        if (IsClear(controller) || IsBack(controller))
         {
             session.Remove(Key);
             return null;
@@ -51,7 +57,8 @@ public static class SearchMemory
     {
         var session = controller.HttpContext.Session;
 
-        if (controller.Request.Query.ContainsKey("clear"))
+        // [回列表]／[取消]（back）不清組別，只有[清除]（clear）才清
+        if (IsClear(controller))
         {
             session.Remove(TeamKey);
             return null;

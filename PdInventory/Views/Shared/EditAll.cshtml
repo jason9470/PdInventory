@@ -31,7 +31,7 @@
     <div>
         <a class="btn btn-outline-info" asp-controller="Data" asp-action="Details"
            asp-route-id="@Model.DataAssetId" asp-route-from="@from">檢視</a>
-        <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
+        <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-back="1">取消</a>
     </div>
 </div>
 
@@ -425,7 +425,7 @@ else
 
     <div class="mb-4 d-flex gap-2">
         <button type="submit" class="btn btn-info text-white">儲存 盤點表</button>
-        <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-clear="1">取消</a>
+        <a class="btn btn-outline-secondary" asp-controller="@from" asp-action="Index" asp-route-back="1">取消</a>
     </div>
 </form>
 }
