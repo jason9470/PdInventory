@@ -15,7 +15,8 @@ namespace PdInventory.Controllers;
 /// 數字與明細都出自 <see cref="LookupUsage.RowsAsync"/>，因此不可能出現
 /// 「徽章寫 3 筆、點開只有 2 筆」。
 /// </summary>
-[Authorize(Policy = Policies.Admin)]
+// 「使用中」明細只是查詢，主管看得到維護畫面就要看得到明細
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class UsageController : Controller
 {
     private readonly AppDbContext _db;

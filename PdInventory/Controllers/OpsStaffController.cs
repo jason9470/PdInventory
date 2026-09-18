@@ -8,7 +8,8 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>資管維運人員（共用維護檔）。對照「SW-維運人員」。</summary>
-[Authorize(Policy = Policies.Admin)]
+// 主管看得到但不能改（0918）：類別層級只要求可檢視，修改動作另外掛 Admin
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class OpsStaffController : Controller
 {
     private readonly AppDbContext _db;
@@ -32,8 +33,10 @@ public class OpsStaffController : Controller
                                .ToListAsync());
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public IActionResult Create() => View("Form", new OpsStaff());
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(OpsStaff model)
     {
@@ -45,6 +48,7 @@ public class OpsStaffController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var model = await _db.OpsStaffs.FindAsync(id);
@@ -53,6 +57,7 @@ public class OpsStaffController : Controller
         return View("Form", model);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, OpsStaff model)
     {
@@ -69,6 +74,7 @@ public class OpsStaffController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

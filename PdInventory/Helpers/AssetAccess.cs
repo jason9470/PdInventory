@@ -102,8 +102,15 @@ public sealed class AssetAccess : IAssetAccess
 /// </summary>
 public static class Policies
 {
-    /// <summary>管理者專用：維護資料、維護匯出、權限設定。</summary>
+    /// <summary>管理者專用：維護匯出，以及維護資料與權限設定的所有修改動作。</summary>
     public const string Admin = "Admin";
+
+    /// <summary>
+    /// 檢視維護資料與權限設定（0918 起開放給主管，只能看不能改）。
+    /// 這些控制器類別層級掛這個，會修改資料的動作另外再掛 <see cref="Admin"/>——
+    /// 兩個 [Authorize] 要同時通過，所以主管打開新增、編輯網址或直接送出表單都會被擋。
+    /// </summary>
+    public const string ViewMaintenance = "ViewMaintenance";
 
     /// <summary>
     /// 六張主要清單的新增。0917 起只開放給管理者；業務端表示日後可能開放給主管，

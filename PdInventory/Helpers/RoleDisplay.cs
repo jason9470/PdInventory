@@ -19,7 +19,7 @@ public static class RoleDisplay
     public static string Description(UserRole role) => role switch
     {
         UserRole.Admin => "所有畫面與功能：全部系統都能新增、修改、刪除，含維護資料、維護匯出與權限設定。",
-        UserRole.Manager => "目前與一般使用者相同。保留這個角色是為了日後可以單獨開放新增等權限。",
+        UserRole.Manager => "可檢視維護資料與權限設定（不能修改）；六張清單的權限與一般使用者相同。",
         _ => "六張清單都可檢視；只能修改自己科別負責的系統（組長為全組），不能新增或刪除。",
     };
 

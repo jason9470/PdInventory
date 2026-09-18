@@ -14,7 +14,8 @@ namespace PdInventory.Controllers;
 /// 「某個科負責哪些系統」只在這個畫面改。人員畫面只唯讀顯示結果，
 /// 同一件事只有一個地方能改，才不會出現兩邊設定互相矛盾。
 /// </summary>
-[Authorize(Policy = Policies.Admin)]
+// 主管看得到但不能改（0918）：類別層級只要求可檢視，修改動作另外掛 Admin
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class SectionsController : Controller
 {
     private readonly AppDbContext _db;
@@ -67,12 +68,14 @@ public class SectionsController : Controller
         return View(model);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Create()
     {
         await LoadFormAsync(null);
         return View("Form", new Section());
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Section model, int[] systemIds)
     {
@@ -92,6 +95,7 @@ public class SectionsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var model = await _db.Sections.FindAsync(id);
@@ -100,6 +104,7 @@ public class SectionsController : Controller
         return View("Form", model);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Section model, int[] systemIds)
     {
@@ -119,6 +124,7 @@ public class SectionsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

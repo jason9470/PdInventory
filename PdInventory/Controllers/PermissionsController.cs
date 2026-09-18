@@ -10,7 +10,8 @@ namespace PdInventory.Controllers;
 /// 舊的權限設定網址。0918 起角色併進人員表單（權限設定 → 人員，見 <see cref="EmployeesController"/>），
 /// 這裡只負責把舊書籤與舊連結轉過去：帶了 userId 就直接開那個人的編輯畫面。
 /// </summary>
-[Authorize(Policy = Policies.Admin)]
+// 舊網址只負責轉到人員畫面
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class PermissionsController : Controller
 {
     private readonly AppDbContext _db;

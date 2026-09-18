@@ -30,7 +30,10 @@
                         <th style="min-width: 200px">選項</th>
                         <th style="width: 110px">使用中</th>
                         <th style="min-width: 200px">備註</th>
-                        <th style="width: 90px" data-nosort>操作</th>
+                        @if (CurrentUser.IsAdmin)
+                        {
+                            <th style="width: 90px" data-nosort>操作</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -40,18 +43,25 @@
                         var used = usage.GetValueOrDefault(item.Value);
                         <tr>
                             <td class="text-nowrap">
-                                <form method="post" asp-action="Move" asp-route-id="@item.Id" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="delta" value="-1" />
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary py-0 px-1"
-                                            title="上移" disabled="@(i == 0)">▲</button>
-                                </form>
-                                <form method="post" asp-action="Move" asp-route-id="@item.Id" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="delta" value="1" />
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary py-0 px-1"
-                                            title="下移" disabled="@(i == Model.Count - 1)">▼</button>
-                                </form>
+                                @if (CurrentUser.IsAdmin)
+                                {
+                                    <form method="post" asp-action="Move" asp-route-id="@item.Id" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="delta" value="-1" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary py-0 px-1"
+                                                title="上移" disabled="@(i == 0)">▲</button>
+                                    </form>
+                                    <form method="post" asp-action="Move" asp-route-id="@item.Id" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="delta" value="1" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary py-0 px-1"
+                                                title="下移" disabled="@(i == Model.Count - 1)">▼</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    @(i + 1)
+                                }
                             </td>
                             <td class="text-break fw-semibold">
                                 @item.Value
@@ -76,29 +86,39 @@
                                 }
                             </td>
                             <td>
-                                <form method="post" asp-action="Edit" asp-route-id="@item.Id"
-                                      class="d-flex gap-1">
-                                    @Html.AntiForgeryToken()
-                                    <input name="remark" value="@item.Remark" class="form-control form-control-sm"
-                                           placeholder="備註" />
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">存</button>
-                                </form>
+                                @if (CurrentUser.IsAdmin)
+                                {
+                                    <form method="post" asp-action="Edit" asp-route-id="@item.Id"
+                                          class="d-flex gap-1">
+                                        @Html.AntiForgeryToken()
+                                        <input name="remark" value="@item.Remark" class="form-control form-control-sm"
+                                               placeholder="備註" />
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">存</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <small>@item.Remark</small>
+                                }
                             </td>
-                            <td>
-                                <form method="post" asp-action="Delete" asp-route-id="@item.Id" class="d-inline"
-                                      data-delete-kind="@field.Title 選項" data-delete-name="@item.Value"
-                                      data-delete-mode="hard">
-                                    @Html.AntiForgeryToken()
-                                    @{
-                                        var reserved = field.IsReserved(item.Value);
-                                        var reason = reserved ? "程式邏輯依賴這個選項，不能刪除"
-                                                   : used > 0 ? "還被資料使用中，不能刪除"
-                                                   : "刪除";
-                                    }
-                                    <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete
-                                            disabled="@(used > 0 || reserved)" title="@reason">刪除</button>
-                                </form>
-                            </td>
+                            @if (CurrentUser.IsAdmin)
+                            {
+                                <td>
+                                    <form method="post" asp-action="Delete" asp-route-id="@item.Id" class="d-inline"
+                                          data-delete-kind="@field.Title 選項" data-delete-name="@item.Value"
+                                          data-delete-mode="hard">
+                                        @Html.AntiForgeryToken()
+                                        @{
+                                            var reserved = field.IsReserved(item.Value);
+                                            var reason = reserved ? "程式邏輯依賴這個選項，不能刪除"
+                                                       : used > 0 ? "還被資料使用中，不能刪除"
+                                                       : "刪除";
+                                        }
+                                        <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete
+                                                disabled="@(used > 0 || reserved)" title="@reason">刪除</button>
+                                    </form>
+                                </td>
+                            }
                         </tr>
                     }
                     @if (Model.Count == 0)
@@ -110,50 +130,53 @@
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header py-2 fw-bold small">新增選項</div>
-            <div class="card-body pd-form">
-                <form method="post" asp-action="Create">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="field" value="@field.Field" />
-                    <div class="mb-3">
-                        <label class="form-label" for="value">選項</label>
-                        <input id="value" name="value" class="form-control" required />
-                        <div class="form-text">
-                            這就是欄位裡實際存的文字。
-                            @if (field.IsMultiple)
-                            {
-                                <text>不能包含「@PdInventory.Helpers.MultiValue.Separator」，那是分隔符號。</text>
-                            }
-                            @if (field.NumericOnly)
-                            {
-                                <text><strong>必須是數字</strong>——資產價值是把機密性、完整性、
-                                可用性三個等級相加算出來的。</text>
-                            }
+    @if (CurrentUser.IsAdmin)
+    {
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header py-2 fw-bold small">新增選項</div>
+                <div class="card-body pd-form">
+                    <form method="post" asp-action="Create">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="field" value="@field.Field" />
+                        <div class="mb-3">
+                            <label class="form-label" for="value">選項</label>
+                            <input id="value" name="value" class="form-control" required />
+                            <div class="form-text">
+                                這就是欄位裡實際存的文字。
+                                @if (field.IsMultiple)
+                                {
+                                    <text>不能包含「@PdInventory.Helpers.MultiValue.Separator」，那是分隔符號。</text>
+                                }
+                                @if (field.NumericOnly)
+                                {
+                                    <text><strong>必須是數字</strong>——資產價值是把機密性、完整性、
+                                    可用性三個等級相加算出來的。</text>
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="remark">備註</label>
-                        <input id="remark" name="remark" class="form-control" />
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">新增</button>
-                </form>
+                        <div class="mb-3">
+                            <label class="form-label" for="remark">備註</label>
+                            <input id="remark" name="remark" class="form-control" />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">新增</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="alert alert-secondary small mt-3 mb-0">
+                <strong>選項的值不能修改</strong>，只能新增或刪除。
+                各表單存的是文字而不是編號，在這裡改字不會連帶更新那些資料，
+                只會讓它們變成選不到的舊值。要改字請新增正確的選項、把資料改過去，再刪掉舊的。
+                <br />
+                還在使用中的選項不能刪除，「使用中」那一欄看得到有幾筆在用。
+                @if (field.Reserved.Count > 0)
+                {
+                    <br />
+                    <text>標示<span class="badge text-bg-dark">系統保留</span>的選項是程式邏輯直接依賴的，
+                    一律不能刪除。</text>
+                }
             </div>
         </div>
-
-        <div class="alert alert-secondary small mt-3 mb-0">
-            <strong>選項的值不能修改</strong>，只能新增或刪除。
-            各表單存的是文字而不是編號，在這裡改字不會連帶更新那些資料，
-            只會讓它們變成選不到的舊值。要改字請新增正確的選項、把資料改過去，再刪掉舊的。
-            <br />
-            還在使用中的選項不能刪除，「使用中」那一欄看得到有幾筆在用。
-            @if (field.Reserved.Count > 0)
-            {
-                <br />
-                <text>標示<span class="badge text-bg-dark">系統保留</span>的選項是程式邏輯直接依賴的，
-                一律不能刪除。</text>
-            }
-        </div>
-    </div>
+    }
 </div>

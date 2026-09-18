@@ -8,7 +8,8 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>3-2：評估影響程度（維護檔）</summary>
-[Authorize(Policy = Policies.Admin)]
+// 主管看得到但不能改（0918）：類別層級只要求可檢視，修改動作另外掛 Admin
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class RiskImpactsController : Controller
 {
     private readonly AppDbContext _db;
@@ -21,8 +22,10 @@ public class RiskImpactsController : Controller
         return View(levels);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public IActionResult Create() => View("Form", new RiskImpactLevel());
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(RiskImpactLevel model)
     {
@@ -34,6 +37,7 @@ public class RiskImpactsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var model = await _db.RiskImpactLevels.FindAsync(id);
@@ -41,6 +45,7 @@ public class RiskImpactsController : Controller
         return View("Form", model);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, RiskImpactLevel model)
     {
@@ -53,6 +58,7 @@ public class RiskImpactsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

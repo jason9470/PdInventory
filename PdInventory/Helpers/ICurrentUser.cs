@@ -25,6 +25,9 @@ public interface ICurrentUser
 
     /// <summary>管理者：所有畫面與功能。</summary>
     bool IsAdmin { get; }
+
+    /// <summary>看得到維護資料與權限設定（管理者與主管，0918）。能不能改仍看 <see cref="IsAdmin"/>。</summary>
+    bool CanViewMaintenance => IsAdmin || Role == UserRole.Manager;
 }
 
 /// <summary>Claim 型別名稱。字串只在這裡出現一次，簽發與讀取共用。</summary>

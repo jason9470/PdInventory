@@ -16,7 +16,8 @@ namespace PdInventory.Controllers;
 ///   人屬於哪個科（決定能改哪些系統）、角色（決定能做哪些動作）。
 /// 科負責哪些系統仍在科別畫面設定。帳號跟著人員走的規則見 <see cref="UserProvisioning"/>。
 /// </summary>
-[Authorize(Policy = Policies.Admin)]
+// 主管看得到但不能改（0918）：類別層級只要求可檢視，修改動作另外掛 Admin
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class EmployeesController : Controller
 {
     private readonly AppDbContext _db;
@@ -116,6 +117,7 @@ public class EmployeesController : Controller
         return View(model);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Create()
     {
         var model = new Employee();
@@ -123,6 +125,7 @@ public class EmployeesController : Controller
         return View("Form", model);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Employee model, UserRole role = UserRole.AssetOwner)
     {
@@ -166,6 +169,7 @@ public class EmployeesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var model = await _db.Employees.FindAsync(id);
@@ -181,6 +185,7 @@ public class EmployeesController : Controller
     /// 畫面載入當下帳號的並行權杖。人員表本身沒有並行控制，角色有——
     /// 兩位管理者同時改同一個人的角色時，後存的要被擋下，而不是悄悄蓋掉前一位。
     /// </param>
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Employee model, UserRole role = UserRole.AssetOwner,
                                           Guid? accountRowVersion = null)
@@ -249,6 +254,7 @@ public class EmployeesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

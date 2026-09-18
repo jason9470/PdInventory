@@ -8,7 +8,8 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>附表一：法務部公告個人資料類別（維護檔）</summary>
-[Authorize(Policy = Policies.Admin)]
+// 主管看得到但不能改（0918）：類別層級只要求可檢視，修改動作另外掛 Admin
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class CategoriesController : Controller
 {
     private readonly AppDbContext _db;
@@ -32,8 +33,10 @@ public class CategoriesController : Controller
         return View(await query.OrderBy(c => c.Code).ToListAsync());
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public IActionResult Create() => View("Form", new PdCategory());
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(PdCategory category)
     {
@@ -45,6 +48,7 @@ public class CategoriesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var category = await _db.Categories.FindAsync(id);
@@ -52,6 +56,7 @@ public class CategoriesController : Controller
         return View("Form", category);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, PdCategory category)
     {
@@ -64,6 +69,7 @@ public class CategoriesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

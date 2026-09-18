@@ -8,7 +8,8 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>附表二：法務部公告特定目的列表（維護檔）</summary>
-[Authorize(Policy = Policies.Admin)]
+// 主管看得到但不能改（0918）：類別層級只要求可檢視，修改動作另外掛 Admin
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class PurposesController : Controller
 {
     private readonly AppDbContext _db;
@@ -26,8 +27,10 @@ public class PurposesController : Controller
         return View(await query.OrderBy(p => p.Code).ToListAsync());
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public IActionResult Create() => View("Form", new Purpose());
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Purpose purpose)
     {
@@ -39,6 +42,7 @@ public class PurposesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var purpose = await _db.Purposes.FindAsync(id);
@@ -46,6 +50,7 @@ public class PurposesController : Controller
         return View("Form", purpose);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Purpose purpose)
     {
@@ -58,6 +63,7 @@ public class PurposesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

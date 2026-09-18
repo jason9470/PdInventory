@@ -17,7 +17,10 @@
     </h2>
     <div class="d-flex gap-2">
         <a class="btn btn-outline-primary" asp-action="OrgChart">組織圖</a>
-        <a class="btn btn-primary" asp-action="Create">＋ 新增人員</a>
+        @if (CurrentUser.IsAdmin)
+        {
+            <a class="btn btn-primary" asp-action="Create">＋ 新增人員</a>
+        }
     </div>
 </div>
 
@@ -87,7 +90,10 @@
                 <th style="width: 110px">可修改系統</th>
                 <th style="min-width: 200px">備註</th>
                 <th style="width: 110px">使用中</th>
-                <th style="min-width: 120px" data-nosort>操作</th>
+                @if (CurrentUser.IsAdmin)
+                {
+                    <th style="min-width: 120px" data-nosort>操作</th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -180,17 +186,20 @@
                             <span class="text-muted small">未使用</span>
                         }
                     </td>
-                    <td>
-                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@e.Id">編輯</a>
-                        <form method="post" asp-action="Delete" asp-route-id="@e.Id" class="d-inline"
-                              data-delete-kind="人員" data-delete-name="@e.Name"
-                              data-delete-mode="soft" data-delete-detail="登入帳號與權限會一併停用。">
-                            @Html.AntiForgeryToken()
-                            <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete
-                                    disabled="@(used > 0)"
-                                    title="@(used > 0 ? "還被資料使用中，不能刪除" : "刪除")">刪除</button>
-                        </form>
-                    </td>
+                    @if (CurrentUser.IsAdmin)
+                    {
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@e.Id">編輯</a>
+                            <form method="post" asp-action="Delete" asp-route-id="@e.Id" class="d-inline"
+                                  data-delete-kind="人員" data-delete-name="@e.Name"
+                                  data-delete-mode="soft" data-delete-detail="登入帳號與權限會一併停用。">
+                                @Html.AntiForgeryToken()
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-confirm-delete
+                                        disabled="@(used > 0)"
+                                        title="@(used > 0 ? "還被資料使用中，不能刪除" : "刪除")">刪除</button>
+                            </form>
+                        </td>
+                    }
                 </tr>
             }
         </tbody>

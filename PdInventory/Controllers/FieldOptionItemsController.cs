@@ -14,7 +14,8 @@ namespace PdInventory.Controllers;
 ///
 /// 哪些欄位走這條路見 <see cref="OptionCatalog"/>。
 /// </summary>
-[Authorize(Policy = Policies.Admin)]
+// 主管看得到但不能改（0918）：類別層級只要求可檢視，修改動作另外掛 Admin
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class FieldOptionItemsController : Controller
 {
     private readonly AppDbContext _db;
@@ -30,6 +31,7 @@ public class FieldOptionItemsController : Controller
         return View(await ItemsOfAsync(target.Field));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(string field, string value, string? remark)
     {
@@ -63,6 +65,7 @@ public class FieldOptionItemsController : Controller
         return RedirectToAction(nameof(Index), new { field });
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, string? remark)
     {
@@ -78,6 +81,7 @@ public class FieldOptionItemsController : Controller
         return RedirectToAction(nameof(Index), new { field = item.FieldName });
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Move(int id, int delta)
     {
@@ -98,6 +102,7 @@ public class FieldOptionItemsController : Controller
         return RedirectToAction(nameof(Index), new { field = item.FieldName });
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

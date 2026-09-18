@@ -8,7 +8,8 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>部門（共用維護檔）。六張表都會用到，因此掛在側邊欄的「共用」底下。</summary>
-[Authorize(Policy = Policies.Admin)]
+// 主管看得到但不能改（0918）：類別層級只要求可檢視，修改動作另外掛 Admin
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class DepartmentsController : Controller
 {
     private readonly AppDbContext _db;
@@ -32,8 +33,10 @@ public class DepartmentsController : Controller
                                .ToListAsync());
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public IActionResult Create() => View("Form", new Department());
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Department model)
     {
@@ -45,6 +48,7 @@ public class DepartmentsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var model = await _db.Departments.FindAsync(id);
@@ -53,6 +57,7 @@ public class DepartmentsController : Controller
         return View("Form", model);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Department model)
     {
@@ -69,6 +74,7 @@ public class DepartmentsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

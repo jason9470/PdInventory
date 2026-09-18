@@ -8,7 +8,8 @@ using PdInventory.Helpers;
 namespace PdInventory.Controllers;
 
 /// <summary>3-4：有效性評估（維護檔）</summary>
-[Authorize(Policy = Policies.Admin)]
+// 主管看得到但不能改（0918）：類別層級只要求可檢視，修改動作另外掛 Admin
+[Authorize(Policy = Policies.ViewMaintenance)]
 public class RiskEffectivenessController : Controller
 {
     private readonly AppDbContext _db;
@@ -21,8 +22,10 @@ public class RiskEffectivenessController : Controller
         return View(levels);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public IActionResult Create() => View("Form", new RiskEffectivenessLevel());
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(RiskEffectivenessLevel model)
     {
@@ -34,6 +37,7 @@ public class RiskEffectivenessController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var model = await _db.RiskEffectivenessLevels.FindAsync(id);
@@ -41,6 +45,7 @@ public class RiskEffectivenessController : Controller
         return View("Form", model);
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, RiskEffectivenessLevel model)
     {
@@ -53,6 +58,7 @@ public class RiskEffectivenessController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Policy = Policies.Admin)]
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {

@@ -74,8 +74,9 @@
                            asp-controller="Risk" asp-action="Index">個人資料風險自評表</a>
                     </div>
 
-                    @* 維護資料、維護匯出與權限設定只有管理者能用，非管理者連入口都不顯示 *@
-                    @if (CurrentUser.IsAdmin)
+                    @* 維護資料與權限設定：管理者與主管看得到（主管只能看，0918）；
+                       維護匯出只有管理者。其他人連入口都不顯示 *@
+                    @if (CurrentUser.CanViewMaintenance)
                     {
                     <button id="maintToggle" type="button"
                             class="sidebar-heading btn btn-link text-muted small fw-bold text-decoration-none
@@ -108,6 +109,8 @@
                         }
                     </div>
 
+                    @if (CurrentUser.IsAdmin)
+                    {
                     <button id="exportToggle" type="button"
                             class="sidebar-heading btn btn-link text-muted small fw-bold text-decoration-none
                                    d-flex align-items-center justify-content-between w-100 mt-3 mb-1 px-3"
@@ -122,6 +125,7 @@
                                asp-controller="ExportSettings" asp-action="Edit" asp-route-list="@key">@info.Title</a>
                         }
                     </div>
+                    }
 
                     @* 權限設定：一個人的科別與角色在「人員」、科負責哪些系統在「科別」。
                        0918 起兩者從「維護資料-共用」移到這裡，原本的權限設定頁併進人員表單。 *@
@@ -250,8 +254,8 @@
     }
 
     @* 「使用中」明細。內容由 UsageController 以部分檢視回傳，換進這裡。
-       只有管理者進得了維護畫面，因此這個視窗也只對管理者輸出。 *@
-    @if (CurrentUser.IsAdmin)
+       看得到維護畫面的人（管理者與主管）才需要這個視窗。 *@
+    @if (CurrentUser.CanViewMaintenance)
     {
         <div class="modal fade" id="usageModal" tabindex="-1" aria-labelledby="usageModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-xl">

@@ -83,6 +83,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(Policies.ViewAssets, policy =>
         policy.RequireAuthenticatedUser());
 
+    // 0918 起主管可以檢視維護資料與權限設定，但不能修改（修改動作另外要求 Admin）
+    options.AddPolicy(Policies.ViewMaintenance, policy =>
+        policy.RequireRole(nameof(UserRole.Admin), nameof(UserRole.Manager)));
+
     // 沒掛任何屬性的動作一律要求登入，避免新增控制器時忘了保護
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
